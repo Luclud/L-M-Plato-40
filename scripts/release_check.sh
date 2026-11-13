@@ -85,7 +85,7 @@ echo "commit: $(git log -1 --format='%h %s')"
 step "venv ($("$PY" --version 2>&1))" "$PY" -m venv .venv
 if [[ -x .venv/bin/python ]]; then VPY="$CLONE/.venv/bin/python"; else VPY="$CLONE/.venv/Scripts/python.exe"; fi
 step "pip install -r requirements-dev.txt" "$VPY" -m pip install --disable-pip-version-check -q -r requirements-dev.txt
-step "pytest -q" "$VPY" -m pytest -q
+step "pytest -q" env -u RELEASE_CHECK_E2E "$VPY" -m pytest -q   # no recursion into the opt-in e2e test
 
 DEV_OUT="$CLONE/out/release_dev_eval.txt"
 mkdir -p out

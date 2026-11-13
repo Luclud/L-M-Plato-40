@@ -84,6 +84,7 @@ $pyVer = (& $Python --version 2>&1 | Out-String).Trim()
 Step "venv ($pyVer)" { & $Python -m venv .venv }
 $VPy = if (Test-Path ".venv/Scripts/python.exe") { Join-Path $Clone ".venv/Scripts/python.exe" } else { Join-Path $Clone ".venv/bin/python" }
 Step "pip install -r requirements-dev.txt" { & $VPy -m pip install --disable-pip-version-check -q -r requirements-dev.txt }
+Remove-Item Env:RELEASE_CHECK_E2E -ErrorAction SilentlyContinue   # no recursion into the opt-in e2e test
 Step "pytest -q" { & $VPy -m pytest -q }
 
 New-Item -ItemType Directory -Force -Path "out" | Out-Null
