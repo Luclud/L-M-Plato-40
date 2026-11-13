@@ -28,6 +28,8 @@ pages = {
         st.Page("views/housekeeping.py", title="Housekeeping", icon=":material/cleaning_services:"),
         st.Page("views/incidents.py", title="Incidents", icon=":material/report:"),
         st.Page("views/approvals.py", title=f"Approvals ({n})", icon=":material/how_to_reg:", url_path="approvals"),
+        st.Page("views/guests.py", title=f"{L.GUESTS_TITLE} ({len(ctx['data'].guest_requests):,})",
+                icon=":material/chat:", url_path="guests"),
         st.Page("views/learned.py", title="What we learned", icon=":material/lightbulb:"),
         st.Page("views/design.py", title="Next building", icon=":material/architecture:"),
         st.Page("views/tour.py", title="Guided demo", icon=":material/play_circle:"),
