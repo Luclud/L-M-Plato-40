@@ -143,3 +143,23 @@ def test_filter_that_excludes_selection_switches_thread(sets, monkeypatch, tmp_p
     at.multiselect(key="g_lang").set_value(["en"]).run()
     assert not V.errors(at)
     assert not any("Zu kalt zum Schlafen" in m.value for m in at.markdown)
+
+
+def test_action_without_message_still_shows_no_reply(sets, monkeypatch, tmp_path):
+    dec, data = sets["quickstart"]
+    df = core.load_decisions(dec)
+    th = K.threads(io.load(data), df)
+    r = th[th.first_reply.notna()].iloc[0]
+    keep = [json.loads(x) for x in dec.read_text().splitlines() if x.strip()]
+    for d in keep:
+        if r.request_id in (d.get("guest_request_ids") or []):
+            d["message"] = None
+    p = tmp_path / "nomsg.jsonl"
+    p.write_text("\n".join(json.dumps(d) for d in keep) + "\n")
+    at = V.app(monkeypatch, p, data, tmp_path / "appr.json")
+    at.run()
+    at.switch_page(PAGE)
+    at.query_params["request"] = r.request_id
+    at.run()
+    assert not V.errors(at)
+    assert any("No reply" in w.value for w in at.warning)

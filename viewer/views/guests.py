@@ -90,7 +90,7 @@ def thread(c, r, consents: dict, path):
     st.markdown(f"#### {L.label('asset', r['room_id'])} · {L.REQUEST_TYPES.get(r['request_type'], r['request_type'])}")
     guest_bubble(r)
     rows = K.thread_decisions(df, r["event_ids"])
-    if rows.empty:
+    if pd.isna(r["first_reply"]):
         st.warning(L.GUESTS_NO_REPLY, icon=":material/error:")
     first = True
     for d in rows.itertuples(index=False):
