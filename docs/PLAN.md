@@ -6,7 +6,7 @@
 ## Status (Fri 13 Nov, 20:45)
 - ✅ Backbone, data-quality agent, eval harness, Docker, docs
 - ✅ Merged: T01–T13 + T16 (Devin + teammate), robustness check #17, viewer fix #12
-- 🔍 In review (Devin): t02-warmup #19, t06-robot-replan #20, t16-quickstart #21, release dry run (this PR). Humans: T14, T15, `pre-holdout` tag Sat
+- ✅ Merged Fri evening: t02-warmup #19, t06-robot-replan #20, t16-quickstart #21, release dry run #22 (+ root `decisions.jsonl` refresh). Humans: T14, T15, `pre-holdout` tag Sat
 
 main @ 73a2a5b: quickstart **7/7**, dev **39/40** (miss: SURGE-2026-09-19), validate PASS (0 violations), 313 tests, dev run ~31 s,
 `scripts/release_check.sh` PASS. Unmatched on dev: 39 `room_turnaround` (real waits / shortfalls), 4 `occupancy_surge`, 2 `ventilation_maintenance`.
@@ -17,7 +17,7 @@ T11 re-run on 73a2a5b: insights regenerate byte-identical (5 PLATO, 6 CLARA; all
 | Ticket | Title | Lane | Prio | Depends | Status |
 |---|---|---|---|---|---|
 | [T01](tasks/T01-water-leaks.md) | S02 water leaks (loud, subtle, gap) | A | P0 | — | ✅ #1 Devin |
-| [T02](tasks/T02-heating-comfort.md) | S03 comfort + heat-pump model | A | P0 | — | ✅ #4 Devin, warm-up #19 🔍 |
+| [T02](tasks/T02-heating-comfort.md) | S03 comfort + heat-pump model | A | P0 | — | ✅ #4 Devin, warm-up #19 |
 | [T03](tasks/T03-maintenance-cascade.md) | S04 AHU filter cascade | A | P0 | — | ✅ #3 Devin |
 | [T05](tasks/T05-turnaround-planner.md) | S01 turnaround + shared housekeeping planner | B | P0 | — | ✅ #10 teammate |
 | [T09](tasks/T09-messaging.md) | Multilingual messages, time parsing, approval notes | B | P0 | — | ✅ #7 teammate |
@@ -27,10 +27,10 @@ T11 re-run on 73a2a5b: insights regenerate byte-identical (5 PLATO, 6 CLARA; all
 | [T07](tasks/T07-energy.md) | Energy / battery (simulated) | A | P1 | — | ✅ #9 Devin |
 | [T12](tasks/T12-bms-compare.md) | BMS vs ours + look-alikes | C | P1 | T01–T03 | ✅ #8 Devin |
 | [T13](tasks/T13-release-holdout.md) | Release check + holdout runbook | R | P0 | — | ✅ #6 Devin (dry run Fri PASS; re-run Sat 10:30) |
-| [T06](tasks/T06-event-weekend.md) | S05 event weekend | B | **P0** | T05 ✅ | ✅ #14, #20 robot re-plan 🔍 — qs 7/7, dev 39/40 |
-| [T16](tasks/T16-turnaround-noise.md) | Turnaround: only real conflicts are incidents | B | P1 | T05 ✅ | ✅ #15, #21 🔍 — dev unmatched 137→39 |
+| [T06](tasks/T06-event-weekend.md) | S05 event weekend | B | **P0** | T05 ✅ | ✅ #14, #20 robot re-plan — qs 7/7, dev 39/40 |
+| [T16](tasks/T16-turnaround-noise.md) | Turnaround: only real conflicts are incidents | B | P1 | T05 ✅ | ✅ #15, #21 — dev unmatched 137→39 |
 | [T08](tasks/T08-logistics.md) | Waste, vending, robot bin runs | B | P1 | — | ✅ #16 — 78 % in time, 16 % unnecessary |
-| — | Robustness check (trimmed dev copies) | R | P1 | — | ✅ #17 — no crashes; comfort warm-up fix #19 🔍 |
+| — | Robustness check (trimmed dev copies) | R | P1 | — | ✅ #17 — no crashes; comfort warm-up fix #19 |
 | [T14](tasks/T14-pitch-video.md) | Pitch, demo script, video | C | P0 | T10, T11 | humans, Sat |
 | [T15](tasks/T15-submission-repo.md) | Submission logistics, Proximata org repo | R | P0 | — | humans, now |
 
