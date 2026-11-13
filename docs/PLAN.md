@@ -1,34 +1,44 @@
 # Project plan
 
-**Planner:** Claude (this repo's docs) · **Team:** Luca + teammate · **Implementation:** Devin agents, one ticket per session/PR.
+**Planner:** Claude (this repo's docs) · **Team:** Luca + teammate · **Implementation:** Devin (Luca) + Claude Code (teammate), one ticket per session/PR.
 **Code freeze: Saturday 14 Nov, 14:00 Europe/Vienna** (see docs/DECISIONS.md D8). Holdout release ~11:00. Live demo 15:00.
 
-## Status (Fri 13 Nov, evening)
-- ✅ Backbone: loader + cleaning, as-of views, state, autonomy policy, episodes, replay engine, CLI, validator
-- ✅ Data-quality agent (gateway outages, frozen sensors, implausible values, meter resets)
-- ✅ Evaluation harness (`eval/`), 25 tests, Docker, docs, tickets
-- ⬜ Scenario agents, messaging, viewer, insights, release
+## Status (Fri 13 Nov, 19:05)
+- ✅ Backbone, data-quality agent, eval harness, Docker, docs
+- ✅ Merged: T01, T02, T03, T07, T10, T11, T12, T13 (Devin) · T04, T05, T09 (teammate, Claude Code) · #12 viewer fix
+- 🔍 In review (Devin, Fri evening): T06 #14, T16 #15, T08 #16, robustness check #17; T11 re-run: no change needed
+  (regenerates byte-identical from dev; findings all say PLATO-40 + uncertainty). Humans: T14, T15
 
-Baseline: quickstart incidents detected **0/7**, dev weak-label incidents **0/40**, validator PASS.
+main @ dba0be4: quickstart **6/7** (only S05 missing), dev **33/40** (all 7 misses are S05 surges), validate PASS (0 violations),
+291 tests, dev run ~24 s. Validator warnings "later turned out unavailable" are expected: both agents re-plan once the
+sick shift becomes known; the validator only checks the original booking.
+Unmatched episodes on dev: 137 `room_turnaround` (feasible early check-ins, see T16), 2 `ventilation_maintenance`
+(real postponed filter changes, lift platform unavailable — keep).
 
 ## Ticket board
-| Ticket | Title | Lane | Prio | Depends | Wave |
+| Ticket | Title | Lane | Prio | Depends | Status |
 |---|---|---|---|---|---|
-| [T01](tasks/T01-water-leaks.md) | S02 water leaks (loud, subtle, gap) | A | P0 | — | 1 |
-| [T02](tasks/T02-heating-comfort.md) | S03 comfort + heat-pump model | A | P0 | — | 1 |
-| [T03](tasks/T03-maintenance-cascade.md) | S04 AHU filter cascade | A | P0 | — | 1 |
-| [T05](tasks/T05-turnaround-planner.md) | S01 turnaround + shared housekeeping planner | B | P0 | — | 1 |
-| [T09](tasks/T09-messaging.md) | Multilingual messages, time parsing, approval notes | B | P0 | — (stub exists) | 1 |
-| [T10](tasks/T10-viewer.md) | Streamlit demo viewer | C | P0 | — | 1 |
-| [T11](tasks/T11-insights.md) | Level 3 insights + target architecture | C | P0 | — | 1 |
-| [T06](tasks/T06-event-weekend.md) | S05 event weekend | B | P0 | T05 | 2 |
-| [T04](tasks/T04-guest-service.md) | Guest service agent | B | P1 | T09 | 2 |
-| [T07](tasks/T07-energy.md) | Energy / battery (simulated) | A | P1 | T02 optional | 2 |
-| [T08](tasks/T08-logistics.md) | Waste, vending, robot bin runs | B | P1 | T05 optional | 2 |
-| [T12](tasks/T12-bms-compare.md) | BMS vs ours + look-alikes | C | P1 | T01–T03 | 3 |
-| [T13](tasks/T13-release-holdout.md) | Release check + holdout runbook | R | P0 | — | 2 (re-run Sat 10:30) |
+| [T01](tasks/T01-water-leaks.md) | S02 water leaks (loud, subtle, gap) | A | P0 | — | ✅ #1 Devin |
+| [T02](tasks/T02-heating-comfort.md) | S03 comfort + heat-pump model | A | P0 | — | ✅ #4 Devin |
+| [T03](tasks/T03-maintenance-cascade.md) | S04 AHU filter cascade | A | P0 | — | ✅ #3 Devin |
+| [T05](tasks/T05-turnaround-planner.md) | S01 turnaround + shared housekeeping planner | B | P0 | — | ✅ #10 teammate |
+| [T09](tasks/T09-messaging.md) | Multilingual messages, time parsing, approval notes | B | P0 | — | ✅ #7 teammate |
+| [T10](tasks/T10-viewer.md) | Streamlit demo viewer | C | P0 | — | ✅ #5, #12 Devin |
+| [T11](tasks/T11-insights.md) | Level 3 insights + target architecture | C | P0 | — | ✅ #2 Devin (re-run Fri: unchanged) |
+| [T04](tasks/T04-guest-service.md) | Guest service agent | B | P1 | T09 | ✅ #11 teammate |
+| [T07](tasks/T07-energy.md) | Energy / battery (simulated) | A | P1 | — | ✅ #9 Devin |
+| [T12](tasks/T12-bms-compare.md) | BMS vs ours + look-alikes | C | P1 | T01–T03 | ✅ #8 Devin |
+| [T13](tasks/T13-release-holdout.md) | Release check + holdout runbook | R | P0 | — | ✅ #6 Devin (re-run Sat 10:30) |
+| [T06](tasks/T06-event-weekend.md) | S05 event weekend | B | **P0** | T05 ✅ | 🔍 #14 Devin — qs 7/7, dev 39/40 |
+| [T16](tasks/T16-turnaround-noise.md) | Turnaround: only real conflicts are incidents | B | P1 | T05 ✅ | 🔍 #15 Devin — dev unmatched 137→39 |
+| [T08](tasks/T08-logistics.md) | Waste, vending, robot bin runs | B | P1 | — | 🔍 #16 Devin — 78 % in time, 16 % unnecessary |
+| — | Robustness check (trimmed dev copies) | R | P1 | — | 🔍 #17 Devin — no crashes; comfort warm-up risk |
 | [T14](tasks/T14-pitch-video.md) | Pitch, demo script, video | C | P0 | T10, T11 | humans, Sat |
 | [T15](tasks/T15-submission-repo.md) | Submission logistics, Proximata org repo | R | P0 | — | humans, now |
+
+**Claiming:** before starting a ticket, post "Taking TNN" in the team chat and push the empty branch `tNN-<slug>` right away
+— an existing branch means the ticket is taken. Open tickets touch disjoint files (T06 `s05_surge.py`, T16 `s01_turnaround.py`,
+T08 `logistics.py`), so they can run in parallel; `plato40/planning/housekeeping.py` changes need a heads-up in the chat.
 
 **Parallelism:** Wave 1 tickets touch disjoint files → run up to 7 Devin sessions in parallel. Merge order inside a lane:
 T05 before T06; T09 before T04. Shared modules (`io/asof/state/decision/log/engine/validate`) change only with `[shared]` PRs.
