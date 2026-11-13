@@ -7,7 +7,8 @@ Once per day, at the first tick after the next day's prices are published (13:00
 - plans BAT1 charge/discharge by dynamic programming over SoC (10-95 kWh, +/-40 kW, eta 0.9 round trip,
   stored energy at day end valued at rte x mean price): charge in cheap hours / PV surplus, discharge in expensive hours,
 - emits ONE optimize_energy decision (episode energy:<local_date>) with the price window as evidence and a
-  SIMULATED effect vs. the recently observed battery schedule. Exported energy is valued at 0 EUR/kWh
+  SIMULATED effect vs. the observed controller (PV self-consumption, which reproduces the observed year's
+  grid cost within ~1 %) on the same forecast. Exported energy is valued at 0 EUR/kWh
   (no feed-in tariff in the data), so savings are conservative.
 
 Heat-pump pre-heating stays with the comfort agent (T02): this agent never changes setpoints, so it cannot
