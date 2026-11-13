@@ -1,4 +1,10 @@
-# L-M · PLATO-40 — autonomous building pipeline
+# Steward — runs the building, answers to people
+
+**Steward** is our prototype for the autonomous operation of **PLATO-40**, the fictional 40-room
+self-check-in hotel of the challenge: domain agents and robots act within strict autonomy rules,
+humans approve where safety, privacy or cost require it, and every year of operation becomes
+advice for CLARA and for the next PLATO building. (Steward is our product name; it is not a
+Rhomberg product.)
 
 Proximata Hackathon '26 · Systems for Built Space · Rhomberg track
 ("PLATO · CLARA Future — The Autonomous Building").

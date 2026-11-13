@@ -178,5 +178,5 @@ already exist. The holdout run stays `--no-llm`; AI runs on outputs afterwards.
 ## 9. Decisions taken / open
 - ✅ Runtime work (`perf-planner`): output byte-identical, dev run ~2× faster → no impact on the viewer design.
 - ✅ Building view shows actual state filled and planned cleanings outlined.
-- ⬜ Product name (`APP_NAME`) — humans decide; placeholder "PLATO-40 Operations" until then (not a product name).
+- ✅ Product name: **Steward** (`APP_NAME` in `viewer/labels.py`).
 - ⬜ T24/T25 only if there is time after T22; the demo must work without them.

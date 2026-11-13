@@ -1,4 +1,4 @@
-# Demo script: PLATO-40 viewer
+# Demo script: Steward (PLATO-40 viewer)
 
 The **Guided demo** page is the live demo and the script for the 3-minute video. It has 8 steps on the real pages,
 with Back / Next and one or two sentences to say per step. The talking points are in

@@ -7,7 +7,7 @@ Code freeze **Sat 14 Nov 14:00 sharp** · holdout release **11:00** (Discord) ·
 ## 0. Decisions only we (humans) can make — needed tonight
 | # | Decision | Default if nobody decides | Needed by |
 |---|---|---|---|
-| D-1 | **Product name** (`APP_NAME` in `viewer/labels.py`, README title, pitch). Not PLATO/CLARA | "PLATO-40 Operations" (weak) | T23 starts |
+| D-1 | ✅ **Product name: Steward** — "Runs the building, answers to people" (`APP_NAME`, README, pitch) | — | done |
 | D-2 | **Pipeline freeze now?** No more changes to `plato40/`, `run.py`, `validate.py` unless a test fails | Yes, from 23:00 | 23:00 |
 | D-3 | Learning loop: add "Proposed rule changes for next year" table with mock approve/adjust (option A) to *What we learned* | Yes (viewer only, ~30 min) | before T23 |
 | D-4 | AI layer: run T24 summaries / T25 copilot? Who holds the Claude key, on which machine? | Only if T22 is merged by 00:30; key on Luca's laptop `.env` | 00:30 |

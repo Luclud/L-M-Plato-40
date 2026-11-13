@@ -122,7 +122,7 @@ def _pick() -> tuple[str, str]:
         st.session_state["dataset"] = options[0]
     c1, c2 = st.columns([5, 2])
     c1.markdown(
-        f"<div class='brand'><div class='brand-mark'>40</div><div><div class='brand-name'>{L.APP_NAME}</div>"
+        f"<div class='brand'><div class='brand-mark'>{L.APP_NAME[:1]}</div><div><div class='brand-name'>{L.APP_NAME}</div>"
         "<div class='brand-note'>Fictional building, synthetic data · simulated effects are marked “Simulated” · "
         "guest messages are proposed and never sent · approvals here are mock</div></div></div>",
         unsafe_allow_html=True)
