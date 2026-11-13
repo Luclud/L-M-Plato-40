@@ -96,9 +96,11 @@ def _pick() -> tuple[str, str]:
     if st.session_state["dataset"] not in options:
         st.session_state["dataset"] = options[0]
     c1, c2 = st.columns([5, 2])
-    c1.markdown(f"### {L.APP_NAME}")
-    c1.caption("Fictional building, synthetic data. Simulated effects are marked “Simulated”; guest messages are "
-               "proposed and never sent; approvals here are mock.")
+    c1.markdown(
+        f"<div class='brand'><div class='brand-mark'>40</div><div><div class='brand-name'>{L.APP_NAME}</div>"
+        "<div class='brand-note'>Fictional building, synthetic data · simulated effects are marked “Simulated” · "
+        "guest messages are proposed and never sent · approvals here are mock</div></div></div>",
+        unsafe_allow_html=True)
     c2.selectbox("Dataset", options, key="dataset", label_visibility="collapsed")
     if st.session_state["dataset"] == CUSTOM:
         with c2.popover("Custom files", icon=":material/folder_open:", width="stretch"):

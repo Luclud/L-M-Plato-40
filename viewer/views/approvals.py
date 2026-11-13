@@ -63,12 +63,12 @@ def _record(c, event_id, status):
 def card(c: dict, row, key: str):
     rows = row.rows
     first = rows.iloc[0]
-    with st.container(border=True):
-        a, b, d = st.columns([6, 1.2, 1.3])
-        a.markdown(f"{L.icon('issue', row.issue_type)} **{L.label('issue', row.issue_type)}** · "
-                   f"{L.assets_text(list(first.affected_assets)[:3])} · since {C.local_time(row.start)}")
-        with b:
-            C.priority_chip(row.priority)
+    with st.container(border=True, key=f"card_{key}_{row.episode}"):
+        a, d = st.columns([6, 1.3])
+        with a:
+            st.markdown(f"{L.icon('issue', row.issue_type)} **{L.label('issue', row.issue_type)}** · "
+                        f"{L.assets_text(list(first.affected_assets)[:3])} · since {C.local_time(row.start)}")
+            C.chips(row.priority)
         d.page_link("views/incidents.py", label="Open incident", icon=":material/open_in_new:",
                     query_params={"episode": row.episode})
         for r in rows.itertuples():

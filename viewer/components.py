@@ -48,6 +48,19 @@ def priority_chip(priority: str):
     st.badge(L.label("priority", priority), color=L.colour("priority", priority))
 
 
+def chips(priority: str | None = None, autonomy: str | None = None):
+    """Priority and status side by side on one line (markdown badges, same colours as the chips)."""
+    parts = []
+    if priority:
+        parts.append(f":{L.colour('priority', priority)}-badge[{L.label('priority', priority)}]")
+    if autonomy:
+        icon = L.icon("autonomy", autonomy)
+        parts.append(f":{L.colour('autonomy', autonomy)}-badge[{icon + ' ' if icon else ''}"
+                     f"{L.label('autonomy', autonomy)}]")
+    if parts:
+        st.markdown("&nbsp;".join(parts))
+
+
 def simulated_badge(value) -> str | None:
     """Markdown for a simulated effect, or None. Always carries the honesty label."""
     if value in (None, "", [], {}):

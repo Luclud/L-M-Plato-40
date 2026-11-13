@@ -1,0 +1,92 @@
+/* Viewer design layer (loaded once in app.py). Colours/fonts/radius come from .streamlit/config.toml;
+   this file only does what the theme cannot: spacing, the header bar, motion, brand row, tiles. */
+:root {
+  --ink: #1D2421;
+  --muted: #5F6B66;
+  --line: #DEDAD0;
+  --paper: #F6F5F1;
+  --surface: #FFFFFF;
+  --accent: #0E6B57;
+  --accent-soft: #E1EFEA;
+  --ok: #2F7D4F;
+  --warn: #C26A12;
+  --crit: #B42318;
+}
+
+/* --- page frame: no empty band above the content, readable line length --- */
+[data-testid="stMainBlockContainer"] {
+  padding-top: 4.75rem;
+  padding-bottom: 4rem;
+  max-width: 1320px;
+}
+[data-testid="stHeader"] {
+  background: rgba(246, 245, 241, 0.9);
+  backdrop-filter: saturate(140%) blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+[data-testid="stTopNavLink"] { border-radius: 999px; transition: background-color .15s ease, color .15s ease; }
+[data-testid="stTopNavLink"]:hover { background: var(--accent-soft); }
+
+/* --- type --- */
+h1, h2, h3, h4 { letter-spacing: -0.015em; }
+[data-testid="stHeading"] h2, [data-testid="stHeading"] h3 { margin-top: .4rem; }
+[data-testid="stCaptionContainer"], [data-testid="stCaptionContainer"] p { color: var(--muted); }
+code, kbd, .mono { font-variant-numeric: tabular-nums; }
+
+/* --- controls answer the pointer --- */
+[data-testid^="stBaseButton"] {
+  transition: transform .12s ease, box-shadow .15s ease, background-color .15s ease, border-color .15s ease;
+}
+[data-testid^="stBaseButton"]:hover { transform: translateY(-1px); }
+[data-testid^="stBaseButton"]:active { transform: translateY(0) scale(.98); }
+[data-testid="stBaseButton-secondary"] { background: var(--surface); }
+[data-testid="stBaseButton-secondary"]:hover { border-color: var(--accent); color: var(--accent);
+  box-shadow: 0 2px 8px rgba(29, 36, 33, .08); }
+[data-testid="stExpander"] details { background: var(--surface); }
+[data-testid="stTextInputRootElement"], [data-testid="stNumberInputContainer"] { background: var(--surface); }
+
+/* --- brand row (common.py) --- */
+.brand { display: flex; align-items: center; gap: .85rem; }
+.brand-mark { width: 2.25rem; height: 2.25rem; border-radius: .6rem; flex: none; display: grid; place-items: center;
+  background: var(--accent); color: #fff; font: 600 .95rem/1 "Space Grotesk", sans-serif; letter-spacing: -.02em; }
+.brand-name { font: 600 1.35rem/1.15 "Space Grotesk", sans-serif; letter-spacing: -.02em; color: var(--ink); }
+.brand-note { font-size: .82rem; color: var(--muted); margin-top: .15rem; }
+
+/* --- building: legend + plant tiles (building.py) --- */
+.legend { display: flex; flex-wrap: wrap; gap: .4rem .9rem; align-items: center; font-size: .82rem; color: var(--muted);
+  margin: .35rem 0 .2rem; }
+.legend .sw { display: inline-block; width: .85rem; height: .85rem; border-radius: .25rem; vertical-align: -2px;
+  margin-right: .35rem; border: 1px solid rgba(29, 36, 33, .12); }
+.legend .sw.planned { background: transparent; border: 2px dashed var(--accent); }
+.legend .dot { color: var(--crit); margin-right: .3rem; }
+.plant { background: var(--surface); border: 1px solid var(--line); border-radius: .75rem; padding: .7rem .9rem;
+  display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.plant .name { font-weight: 500; color: var(--ink); }
+.plant .state { font-size: .8rem; font-weight: 600; padding: .15rem .55rem; border-radius: 999px; white-space: nowrap; }
+.plant .state.ok { color: var(--ok); background: #E4F1E8; }
+.plant .state.incident { color: var(--crit); background: #FBE6E3; }
+.plant .state.no_data { color: var(--muted); background: #ECEAE3; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  [data-testid^="stBaseButton"]:hover, [data-testid^="stBaseButton"]:active { transform: none; }
+}
+@media (max-width: 640px) {
+  [data-testid="stMainBlockContainer"] { padding-top: 4.25rem; }
+  [data-testid="stMarkdownContainer"] h2 { font-size: 1.65rem; line-height: 1.15; }
+  .brand-name { font-size: 1.15rem; }
+}
+
+/* --- cards: bordered containers created with key="card_..." render as white surfaces --- */
+[class*="st-key-card_"] {
+  background: var(--surface);
+  border-color: var(--line) !important;
+  box-shadow: 0 1px 2px rgba(29, 36, 33, .04), 0 4px 14px rgba(29, 36, 33, .04);
+  transition: box-shadow .15s ease, border-color .15s ease;
+}
+[class*="st-key-card_open_"]:hover, [class*="st-key-card_ap_"]:hover {
+  border-color: #C9C4B8 !important;
+  box-shadow: 0 2px 4px rgba(29, 36, 33, .05), 0 10px 24px rgba(29, 36, 33, .07);
+}
+[class*="st-key-card_attention"] { border-left: 3px solid var(--warn) !important; }
+.legend + div, .legend { margin-bottom: .6rem; }

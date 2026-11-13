@@ -102,11 +102,7 @@ def render(ctx: dict, episode: str, key: str = "story"):
     first = rows.iloc[0]
     t0, t1 = rows.t.min(), rows.t.max()
     st.markdown(f"## {title(rows)}")
-    c1, c2, _ = st.columns([1, 2, 5])
-    with c1:
-        C.priority_chip(min(rows.priority, key=lambda p: core.PRIO_RANK.get(p, 9)))
-    with c2:
-        C.status_chip(strictest(rows))
+    C.chips(min(rows.priority, key=lambda p: core.PRIO_RANK.get(p, 9)), strictest(rows))
     bits = [C.time_range(t0, t1)]
     lab = matching_label(rows, core.load_labels(core.profile_of(ctx["data_dir"])))
     if lab:
@@ -126,10 +122,10 @@ def render(ctx: dict, episode: str, key: str = "story"):
         cols = st.columns(min(2, len(charts)))
         for i, ch in enumerate(charts):
             with cols[i % len(cols)]:
-                st.plotly_chart(core.figure(ch, markers, shade=(t0, t1)), width="stretch",
+                st.plotly_chart(core.figure(ch, markers, shade=(t0, t1)), width="stretch", theme=None,
                                 key=f"{key}_{episode}_chart_{i}", config={"displayModeBar": False})
         st.caption("Red numbers = what we did and when (data to the right of a number was not yet known then). "
-                   "Yellow = incident period. Grey = data gap (unknown, never treated as zero).")
+                   "Amber band = incident period. Grey = data gap (unknown, never treated as zero).")
     else:
         st.caption("No measured series for this incident (it is based on bookings and staff plans).")
 
@@ -147,7 +143,7 @@ def render(ctx: dict, episode: str, key: str = "story"):
 
     st.markdown("#### 3 · What we did")
     for n, (_, r) in enumerate(rows.iterrows(), 1):
-        with st.container(border=True):
+        with st.container(border=True, key=f"card_{key}_{episode}_step_{n}"):
             a, b = st.columns([5, 2])
             res = f" · {L.label('resource', r.resource_id)}" if isinstance(r.resource_id, str) else ""
             a.markdown(f"**{n}** · {C.local_time(r.t)} · {L.icon('action', r.action)} "

@@ -9,12 +9,15 @@ from viewer import core, twin
 from viewer import labels as L
 from viewer.views import common
 
-COLOURS = {"occupied": "#90caf9", "vacant_clean": "#c8e6c9", "needs_cleaning": "#ffcc80", "cleaning": "#fff59d",
-           "unknown": "#e0e0e0"}
+COLOURS = {"occupied": "#D7E4F2", "vacant_clean": "#DDEEE3", "needs_cleaning": "#F6DDBC", "cleaning": "#F3E9B0",
+           "unknown": "repeating-linear-gradient(135deg,#ECEAE3 0 6px,#E3E0D8 6px 12px)"}
+EDGES = {"occupied": "#A9C2DE", "vacant_clean": "#AFD2BC", "needs_cleaning": "#E2B57C", "cleaning": "#D9C66A",
+         "unknown": "#D3CFC5"}
+ACCENT = "#0E6B57"
 STATE_NAMES = {"occupied": "occupied", "vacant_clean": "vacant clean", "needs_cleaning": "needs cleaning",
                "cleaning": "cleaning", "unknown": "no data (unknown)"}
 PLANT_NAMES = {"HP1": "Heat pump", "AHU1": "Ventilation", "WM_MAIN": "Water main", "PV1": "PV / battery"}
-PLANT_STATUS = {"ok": ("✓", "#2e7d32"), "incident": ("⚠ incident", "#c62828"), "no_data": ("no data", "#757575")}
+PLANT_STATUS = {"ok": "Running normally", "incident": "Open incident", "no_data": "No data"}
 
 
 @st.cache_resource(show_spinner=False)
@@ -80,7 +83,7 @@ def controls(tw: twin.Twin):
 
 def attention(c: dict, t, open_eps: pd.DataFrame, pending: dict):
     df = c["df"]
-    with st.container(border=True):
+    with st.container(border=True, key="card_attention"):
         st.markdown("**Needs attention now**")
         if open_eps.empty:
             st.caption("Nothing open at this moment.")
@@ -114,22 +117,24 @@ def floors(c: dict, rooms: pd.DataFrame, open_eps: pd.DataFrame, planned: dict):
             tip = f"{L.label('asset', r.room_id)} · {STATE_NAMES[r.state]}"
             if r.state == "unknown":
                 lab += " · no data"
-            border = "1px solid #bbb"
+            border = f"1px solid {EDGES[r.state]}"
             if r.room_id in planned:
                 when, res = planned[r.room_id]
                 lab += f" · {_hm(when)}"
                 tip += f" · cleaning {_hm(when)}" + (f" · {L.label('resource', res)}" if res else "")
-                border = "2px dashed #1565c0"
+                border = f"2px dashed {ACCENT}"
             css.append(f".st-key-tile_{r.room_id} button{{background:{COLOURS[r.state]};border:{border};"
-                       f"min-height:2.4rem;padding:0 .2rem}}")
+                       f"min-height:2.6rem;padding:0 .2rem;font-weight:500;font-variant-numeric:tabular-nums}}"
+                       f".st-key-tile_{r.room_id} button:hover{{border-color:{ACCENT};"
+                       f"box-shadow:0 2px 8px rgba(29,36,33,.10)}}")
             if col.button(lab, key=f"tile_{r.room_id}", help=tip, width="stretch"):
                 st.session_state["b_room"] = r.room_id
     st.html("<style>" + "".join(css) + "</style>")
-    leg = " ".join(f"<span style='background:{COLOURS[s]};padding:1px 8px;border-radius:4px;margin-right:6px'>"
-                   f"{STATE_NAMES[s]}</span>" for s in twin.STATES)
-    st.markdown(f"<small>{leg}<span style='border:2px dashed #1565c0;padding:0 8px;border-radius:4px'>cleaning "
-                f"planned (time)</span> <span style='color:#c62828'>●</span> open incident · click a room for "
-                f"details</small>", unsafe_allow_html=True)
+    leg = "".join(f"<span><i class='sw' style='background:{COLOURS[s]};border-color:{EDGES[s]}'></i>"
+                  f"{STATE_NAMES[s]}</span>" for s in twin.STATES)
+    st.markdown(f"<div class='legend'>{leg}<span><i class='sw planned'></i>cleaning planned (time)</span>"
+                f"<span><span class='dot'>●</span>open incident</span><span>· click a room for details</span></div>",
+                unsafe_allow_html=True)
     if planned:
         st.caption("Planned cleanings (proposal, not yet done): " + " · ".join(
             f"{L.label('asset', r)} {_hm(w)}" + (f" ({L.label('resource', res)})" if res else "")
@@ -139,9 +144,8 @@ def floors(c: dict, rooms: pd.DataFrame, open_eps: pd.DataFrame, planned: dict):
 def plant(status: dict):
     cols = st.columns(len(status))
     for col, (tile, s) in zip(cols, status.items()):
-        mark, colour = PLANT_STATUS[s]
-        col.markdown(f"<div style='border:1px solid #ddd;border-radius:8px;padding:6px 10px'>{PLANT_NAMES[tile]} "
-                     f"<b style='color:{colour}'>{mark}</b></div>", unsafe_allow_html=True)
+        col.markdown(f"<div class='plant'><span class='name'>{PLANT_NAMES[tile]}</span>"
+                     f"<span class='state {s}'>{PLANT_STATUS[s]}</span></div>", unsafe_allow_html=True)
 
 
 def staff(sh: pd.DataFrame, t):
@@ -156,12 +160,13 @@ def staff(sh: pd.DataFrame, t):
         else:
             st_ = r.status.replace("_", " ")
             parts.append(f"**{name} {st_}**" + (f" (known {_hm(r.known)})" if r.known is not None else ""))
+    st.markdown(f"<div style='height:.6rem'></div>", unsafe_allow_html=True)
     st.markdown(f"**Staff today** (as known at {_hm(t)}): " + " · ".join(parts))
 
 
 def room_panel(c: dict, room: str, t, day_start, day_end):
     store, df = c["store"], c["df"]
-    with st.container(border=True):
+    with st.container(border=True, key="card_room"):
         a, b = st.columns([6, 1])
         a.markdown(f"**{L.label('asset', room)}** · {C.local_time(day_start)}")
         if b.button("Close", key="b_close", type="tertiary", icon=":material/close:"):
@@ -184,7 +189,7 @@ def room_panel(c: dict, room: str, t, day_start, day_end):
         cols = st.columns(max(1, len(charts)))
         for col, ch in zip(cols, charts):
             with col:
-                st.plotly_chart(core.figure(ch, markers, height=220), width="stretch",
+                st.plotly_chart(core.figure(ch, markers, height=220), width="stretch", theme=None,
                                 config={"displayModeBar": False}, key=f"b_chart_{room}_{ch.title}")
         if not charts:
             st.caption("No measurements for this room on this day.")
