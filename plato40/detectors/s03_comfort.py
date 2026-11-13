@@ -26,13 +26,14 @@ import pandas as pd
 from ..clock import iso, local_hm
 from ..decision import make_decision
 from ..messaging import compose_guest_message
-from ..models.heatpump import causal_expected_cop, heatpump_frame, performance_residual
+from ..models.heatpump import causal_expected_cop, heatpump_frame, performance_residual, recent_residual_sigma
 from .base import TriggerDetector, run_starts
 
 HP = "HP1"
 RESID_WINDOW = 8            # 2 h load-weighted residual
 MIN_REL_DROP = 0.10         # >= 10 % less heat per kW than expected ...
 SIGMA_K = 6.0               # ... and far outside the learned residual noise
+RECENT_SIGMA_WINDOW = "14D" # residual noise of the current operating regime (two weeks, causal)
 DEGRADED_MIN = 12           # persists >= 3 h
 RECOVERED_MIN = 48          # back to normal for 12 h -> close episode
 STAY_WARMUP = pd.Timedelta(hours=2)   # rooms recover from 18 C setback after check-in
@@ -72,6 +73,10 @@ class ComfortAgent(TriggerDetector):
             resid = performance_residual(hp, expected, window=RESID_WINDOW)
             sigma = pd.Series({k: m.resid_sigma for k, m in models.items()}, dtype=float)
             sigma_t = sigma.reindex(hp.index, method="ffill") if not sigma.empty else pd.Series(np.nan, index=hp.index)
+            # use the tighter of fit sigma and recent-regime sigma: a fit dominated by non-heating history
+            # (data starting in spring/summer) must not hide a winter degradation
+            recent = recent_residual_sigma(resid, RECENT_SIGMA_WINDOW, lag=RESID_WINDOW)
+            sigma_t = pd.Series(np.fmin(sigma_t.to_numpy(), recent.to_numpy()), index=hp.index)
             thr = -np.maximum(MIN_REL_DROP, SIGMA_K * sigma_t)
             self.models = models
         else:

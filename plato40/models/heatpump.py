@@ -135,3 +135,16 @@ def performance_residual(hp: pd.DataFrame, expected: pd.Series, window: int = 8,
     num = heat.rolling(window, min_periods=min_periods).sum()
     den = exp_heat.rolling(window, min_periods=min_periods).sum()
     return (num / den - 1).where(den > 0)
+
+
+def recent_residual_sigma(resid: pd.Series, window: str = "14D", lag: int = 8, min_periods: int = 96) -> pd.Series:
+    """Robust sigma (MAD x 1.4826) of the performance residual over the previous ``window``, ending ``lag``
+    intervals before t (so the window being scored is excluded). Causal.
+
+    The fit sigma of :func:`causal_expected_cop` mixes all history; if the data starts outside the heating
+    season it is inflated by summer/DHW operation, and a winter degradation stays inside -k*sigma. The recent
+    sigma reflects the current operating regime."""
+    r = resid.shift(lag)
+    med = r.rolling(window, min_periods=min_periods).median()
+    return (r - med).abs().rolling(window, min_periods=min_periods).median() * 1.4826
+
