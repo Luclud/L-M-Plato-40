@@ -7,6 +7,7 @@ import streamlit as st
 from viewer import components as C
 from viewer import core
 from viewer import labels as L
+from viewer import summaries
 from viewer.views import common, incident
 
 PAGE = 20
@@ -44,7 +45,7 @@ def _open(ep: str):
     st.query_params["episode"] = ep
 
 
-def card(r, key: str):
+def card(r, key: str, summary: dict | None = None):
     with st.container(border=True):
         a, b, c = st.columns([6, 1.2, 2.6])
         with a:
@@ -54,7 +55,10 @@ def card(r, key: str):
             C.priority_chip(r.priority)
         with c:
             C.status_chip(r.autonomy)
-        st.markdown(f"“{r.headline}”")
+        if summary:
+            summaries.show(summary)
+        else:
+            st.markdown(f"“{r.headline}”")
         x, y = st.columns([6, 1])
         x.caption(f"We: {r.steps}")
         y.button("Open", key=f"{key}_{r.episode}", icon=":material/open_in_new:", on_click=_open, args=(r.episode,))
@@ -88,8 +92,9 @@ def page_list(c: dict):
         if pages > 1:
             page = st.segmented_control("Page", list(range(1, pages + 1)), default=1, key="inc_page") or 1
         st.caption(f"{len(sub)} incident(s)" + (f" · page {page} of {pages}" if pages > 1 else ""))
+        summ = summaries.load(c["decisions"])
         for r in sub.iloc[(page - 1) * PAGE: page * PAGE].itertuples():
-            card(r, "open")
+            card(r, "open", summ.get(r.episode))
     routine(c, eps)
 
 
