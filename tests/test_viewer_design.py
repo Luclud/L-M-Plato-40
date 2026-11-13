@@ -71,6 +71,18 @@ def test_design_page_apptest(sets, monkeypatch, tmp_path, name):
     assert "Rooftop plant" in text and not V.errors(at)
 
 
+def test_clara_pin_link_opens_that_lesson(sets, monkeypatch, tmp_path):
+    dec, data = sets["quickstart"]
+    at = V.app(monkeypatch, dec, data, tmp_path / "appr.json")
+    at.run()
+    at.switch_page(PAGE)
+    at.query_params["pin"] = "CLARA-C4"
+    at.run()
+    assert not V.errors(at)
+    assert at.toggle(key="design_clara").value and at.radio[0].value == "CLARA-C4"
+    assert any("C4. Condition-based filter interval" in m.value for m in at.markdown)
+
+
 def test_design_page_follows_the_insights_file(sets, monkeypatch, tmp_path):
     rows = [dict(r) for r in ROWS]
     rows[0]["finding"] = "PLATO-40: changed finding with 42.0 % for the test. More text."

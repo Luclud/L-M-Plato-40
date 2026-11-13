@@ -89,11 +89,14 @@ def page():
     if not rows:
         empty_state()
         return
+    want = st.query_params.get("pin")
+    clara_ids = [p["id"] for p in D.pins(rows, board, ("CLARA",))[0]]
+    if want in clara_ids and st.session_state.get("_design_q") != want:
+        st.session_state["design_clara"] = True                      # a CLARA pin link opens with its layer shown
     clara = st.toggle("Show operations lessons (CLARA)", value=False, key="design_clara")
     layers = ("PLATO", "CLARA") if clara else ("PLATO",)
     pins, unpinned, unknown = D.pins(rows, board, layers)
     ids = [p["id"] for p in pins]
-    want = st.query_params.get("pin")
     if want in ids and st.session_state.get("_design_q") != want:
         st.session_state["_design_q"] = want
         st.session_state["design_pin"] = want
