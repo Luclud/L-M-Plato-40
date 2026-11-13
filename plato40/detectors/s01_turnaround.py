@@ -39,6 +39,14 @@ ISSUE = "room_turnaround"
 DAILY_LOCAL = "06:30"                    # daily re-plan before the 07:00 housekeeping shift
 MATERIAL = pd.Timedelta(minutes=30)      # ETA change that is worth a follow-up decision
 REASSIGN_WAIT = pd.Timedelta(hours=1)    # propose another room if the guest would wait longer
+# An early check-in is only a conflict if the planned clean end leaves less than this before the requested
+# time: two 15-min planning steps absorb one overrunning room / late check-out without the guest waiting.
+SLACK = pd.Timedelta(minutes=30)
+CHECKOUT_LOOKBACK = pd.Timedelta(days=28)   # typical check-out time learned from recent check-outs
+CHECKOUT_MIN_SAMPLES = 10
+# If the departing guest is still in the room when 4 of 5 recent guests had already checked out, the
+# "leaves at the typical time" assumption of a feasible early check-in failed -> open the incident then.
+VACATE_CHECK_Q = 0.8
 RELEASE_RETRIES = 4
 OWNED_REQUESTS = ("early_checkin", "waiting_for_room", "late_checkout", "arrival_delay")
 ROSTER_ROLES = ("cleaner", "robot")
@@ -65,6 +73,14 @@ class Episode:
     pending: bool = False   # plan provisional (request before the day's 06:30 re-plan): commit at re-plan
     released: bool = False
     last_notify: pd.Timestamp | None = None
+    quiet: bool = False     # feasible early check-in with slack: guest service, not a turnaround incident
+    guest_key: str | None = None
+    force_review: str | None = None   # reason to open the incident at the next review (expectation failed)
+    vacate_check: bool = False
+
+    @property
+    def log_key(self) -> str:
+        return self.guest_key if (self.quiet and self.guest_key) else self.key
 
 
 class TurnaroundAgent(TriggerDetector):
@@ -83,8 +99,12 @@ class TurnaroundAgent(TriggerDetector):
         self.answered: set[str] = set()
         self.oncall_busy: pd.Timestamp | None = None
         self.shortfall_rooms: dict[str, set] = {}
+        self.shortfall_days: set = set()    # local days whose re-plan (as known then) found a shortfall
         self.ruled_out: list[dict] = []
         self._dur = (None, None)
+        co = data.events[data.events.type == "checkout"].timestamp_utc
+        self._checkouts = co.sort_values().reset_index(drop=True)
+        self._typical = (None, None)
         self._plan_cache: dict = {}
         self._version = 0
 
@@ -122,6 +142,31 @@ class TurnaroundAgent(TriggerDetector):
             self._dur = (day, learn_durations(self.records, self.data.rooms, t, robot=self.robot_rec))
         return self._dur[1]
 
+    def _typical_checkout(self, t, q=0.5):
+        """Quantile q (default median) of local check-out times (minutes after midnight) of regular
+        check-outs in the last CHECKOUT_LOOKBACK before t; None while there are too few."""
+        day = local_day(t)
+        if self._typical[0] != (day, q):
+            co = self._checkouts
+            lo, hi = co.searchsorted(t - CHECKOUT_LOOKBACK, side="right"), co.searchsorted(t, side="right")
+            w = co.iloc[lo:hi]
+            med = None
+            if len(w) >= CHECKOUT_MIN_SAMPLES:
+                lt = w.dt.tz_convert("Europe/Vienna")
+                med = int((lt.dt.hour * 60 + lt.dt.minute).quantile(q))
+            self._typical = ((day, q), med)
+        return self._typical[1]
+
+    def _expected_eta(self, ctx, plan, room, day, eta):
+        """Planned clean end if the departing guest leaves at the typical (learned) check-out time instead of
+        the booked 11:00 - used only to classify a request; guests are always told the planned time."""
+        task = plan.tasks.get(room)
+        med = self._typical_checkout(ctx.t)
+        if eta is None or task is None or med is None or not ctx.state.occupied(room, ctx.t):
+            return eta
+        expected = max(ctx.t, at_local_day(day, f"{med // 60:02d}:{med % 60:02d}"))
+        return eta - max(pd.Timedelta(0), task.ready_from - expected)
+
     def _plan(self, ctx, day):
         key = (ctx.t, day, self._version)
         if key in self._plan_cache:
@@ -141,13 +186,29 @@ class TurnaroundAgent(TriggerDetector):
         self._plan_cache = {key: plan}
         return plan
 
+    def _deadline_risk(self, ctx, plan, day, exclude=None) -> bool:
+        """Another arriving guest's room is unplanned, or planned after its deadline even if its departing
+        guest leaves at the typical check-out time (rooms without an arrival that day cannot make a guest wait)."""
+        for r in plan.unplanned:
+            task = plan.tasks.get(r)
+            if r != exclude and task is not None and task.deadline is not None:
+                return True
+        for r in plan.late:
+            task = plan.tasks.get(r)
+            if r == exclude or task is None or task.deadline is None:
+                continue
+            exp = self._expected_eta(ctx, plan, r, day, plan.ready_at.get(r))
+            if exp is None or exp > task.deadline:
+                return True
+        return False
+
     def _key(self, room, day):
         return f"turnaround:{room}:{day}"
 
     def _episode(self, ctx, room, day) -> Episode:
         key = self._key(room, day)
         ep = self.eps.get(key)
-        if ep is None or not ctx.log.is_open(key):
+        if ep is None or not ctx.log.is_open(ep.log_key):
             ep = Episode(room=room, day=day, key=key)
             self.eps[key] = ep
         return ep
@@ -155,12 +216,16 @@ class TurnaroundAgent(TriggerDetector):
     def _add(self, ctx, ep: Episode | None, action, priority, reason, *, room=None, assets=None, issue=ISSUE,
              episode_key=None, **kw):
         room = room or ep.room
+        if ep is not None and ep.quiet and episode_key is None:
+            issue, episode_key = "guest_request", ep.guest_key
         d = make_decision(t=ctx.t, affected_assets=assets or [room], issue_type=issue, action=action,
                           priority=priority, reason=reason, agent=self.name, **kw)
         return ctx.log.add(d, episode_key=episode_key or ep.key, prefix="TA")
 
     def _close(self, ctx, ep: Episode):
         ctx.log.close(ep.key)
+        if ep.guest_key:
+            ctx.log.close(ep.guest_key)
         self.eps.pop(ep.key, None)
 
     def _booking(self, asof, booking_id):
@@ -278,6 +343,8 @@ class TurnaroundAgent(TriggerDetector):
                 self._close(ctx, self.eps[key])
         elif kind == "roster":
             self._roster(ctx, payload)
+        elif kind == "vacate_check":
+            self._vacate_check(ctx, *payload)
 
     # --- triggers -------------------------------------------------------------
     def _daily(self, ctx, day):
@@ -288,6 +355,17 @@ class TurnaroundAgent(TriggerDetector):
         self.deadlines = {k: v for k, v in self.deadlines.items() if k[1] >= today}
         self.waiting = {k for k in self.waiting if k[1] >= today}
         self._review(ctx, day, f"daily re-plan {DAILY_LOCAL} local", [])
+
+    def _vacate_check(self, ctx, room, day):
+        """The feasible early check-in assumed the departing guest leaves at the typical time: if they are
+        still in the room SLACK later, the assumption failed -> open the turnaround incident now."""
+        ep = self.eps.get(self._key(room, day))
+        if ep is None or not ep.quiet or ep.released or not ctx.state.occupied(room, ctx.t):
+            return
+        stay = ctx.state.stay_at(room, ctx.t)
+        ep.force_review = f"departing guest still in {room} at {local_hm(ctx.t)} local (later than the typical check-out)"
+        self._review(ctx, day, ep.force_review,
+                     [f"events.jsonl:{room}:{iso(stay.start)}:stay {stay.booking_id} still in progress, no checkout yet"])
 
     def _roster(self, ctx, row):
         day = local_day(row.start_utc)
@@ -336,17 +414,39 @@ class TurnaroundAgent(TriggerDetector):
                       verification_plan="Guest checks in without waiting", confidence=0.8)
             ctx.log.close(f"guest:{req.request_id}")
             return
+        eta = plan.ready_at.get(room)
+        eta_exp = self._expected_eta(ctx, plan, room, day, eta)
+        feasible = (eta_exp is not None and eta_exp <= deadline - SLACK and not self._deadline_risk(ctx, plan, day, room)
+                    and day not in self.shortfall_days and (room, day) not in self.waiting)
+        existing = self.eps.get(self._key(room, day))
+        fresh = existing is None or not ctx.log.is_open(existing.log_key)
         ep = self._episode(ctx, room, day)
+        if fresh:
+            ep.quiet, ep.guest_key = feasible, (f"guest:{req.request_id}" if feasible else None)
+        elif ep.quiet and not feasible:
+            ep.quiet = False
         ep.deadline, ep.early, ep.language = deadline, early, req.language
         ep.request_ids.append(req.request_id)
-        eta = plan.ready_at.get(room)
         ep.eta = eta
+        if ep.quiet and not ep.vacate_check and ctx.state.occupied(room, t):
+            med = self._typical_checkout(t, VACATE_CHECK_Q)
+            if med is not None:
+                ep.vacate_check = True
+                when = max(t, at_local_day(day, f"{med // 60:02d}:{med % 60:02d}"))
+                heapq.heappush(self._q, (when, next(self._seq), "vacate_check", (room, day)))
         evidence += self._occupant_evidence(ctx, room)
         late = eta is None or eta > deadline
-        why = (f"Turnaround conflict {room}: early check-in requested for {local_hm(deadline)} local on {day} "
-               f"but the room still needs a turnover"
-               + ("" if eta is None else f"; planned clean ~{local_hm(eta)} local")
-               + (" - cannot meet the requested time" if late else " - prioritised to meet it"))
+        if ep.quiet:
+            why = (f"Early check-in {room} {local_hm(deadline)} local on {day} is feasible: planned clean "
+                   f"~{local_hm(eta_exp)} local (departing guest leaves at the typical check-out time; planned "
+                   f"{local_hm(eta)} if they stay until {CHECKOUT_LOCAL}) leaves >= {int(SLACK.total_seconds() // 60)} min "
+                   "slack and the day plan has no shortfall (guest service; becomes a turnaround conflict if the plan slips)")
+        else:
+            why = (f"Turnaround conflict {room}: early check-in requested for {local_hm(deadline)} local on {day} "
+                   f"but the room still needs a turnover"
+                   + ("" if eta is None else f"; planned clean ~{local_hm(eta)} local")
+                   + (" - cannot meet the requested time" if late else
+                      f" - less than {int(SLACK.total_seconds() // 60)} min slack or a shortfall in the day plan; prioritised"))
         sched = rob = None
         if t >= at_local_day(day, DAILY_LOCAL):
             sched = self._schedule(ctx, ep, plan, why, "high" if late else "medium", evidence)
@@ -371,8 +471,10 @@ class TurnaroundAgent(TriggerDetector):
         plan = self._plan(ctx, day)
         t = ctx.t
         lo, hi = day_bounds(day)
+        if local_day(t) == day and self._deadline_risk(ctx, plan, day):
+            self.shortfall_days.add(day)
         for ep in [e for e in list(self.eps.values()) if e.day == day and not e.released]:
-            if not ctx.log.is_open(ep.key):
+            if not ctx.log.is_open(ep.log_key):
                 self.eps.pop(ep.key, None)
                 continue
             if ep.oncall or (ep.room not in plan.ready_at and ep.room not in plan.unplanned):
@@ -384,13 +486,23 @@ class TurnaroundAgent(TriggerDetector):
             late = new_eta is None or (ep.deadline is not None and new_eta > ep.deadline)
             worse = (new_eta is None and ep.eta is not None) or (
                 new_eta is not None and ep.eta is not None and new_eta - ep.eta >= MATERIAL)
+            opened = False
+            if ep.quiet:
+                exp = self._expected_eta(ctx, plan, ep.room, day, new_eta)
+                tight = exp is None or (ep.deadline is not None and exp > ep.deadline - SLACK)
+                if lost or tight or ep.force_review or self._deadline_risk(ctx, plan, day, ep.room):
+                    ep.quiet, opened = False, True   # feasible request became a conflict: open the incident now
+                elif not ep.pending:
+                    continue
             # follow-up only when the situation changed: staff lost, ETA slipped materially, or now late
-            if not (lost or worse or (was_ok and late) or ep.pending):
+            if not (lost or worse or (was_ok and late) or ep.pending or opened):
                 continue
             was_pending, ep.pending = ep.pending, False
+            ep.force_review = None
             ev = evidence + self._occupant_evidence(ctx, ep.room)
             sched = self._schedule(ctx, ep, plan, f"{'Commit plan' if was_pending else 'Re-plan'} {ep.room} ({cause})" +
-                                   (f"; {ep.resource} no longer available" if lost else ""),
+                                   (f"; {ep.resource} no longer available" if lost else "") +
+                                   ("; early check-in no longer has slack -> turnaround conflict" if opened else ""),
                                    "high" if late else "medium", ev)
             if late and not ctx.state.occupied(ep.room, t):
                 self._robot(ctx, ep, plan, ev)
@@ -444,6 +556,7 @@ class TurnaroundAgent(TriggerDetector):
         self._version += 1
         ep = self._episode(ctx, room, day)
         ep.waiting = True
+        ep.quiet = False
         if req is not None:
             ep.language = req.language
             ep.request_ids.append(req.request_id)
@@ -530,7 +643,7 @@ class TurnaroundAgent(TriggerDetector):
         t = ctx.t
         day = local_day(t)
         ep = self.eps.get(self._key(room, day))
-        if ep is None or ep.released or not ctx.log.is_open(ep.key):
+        if ep is None or ep.released or not (ctx.log.is_open(ep.log_key) or ep.waiting):
             return
         ok, why = ctx.state.can_release(room, t)
         if not ok:
