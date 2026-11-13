@@ -11,6 +11,7 @@ import streamlit as st
 from viewer import components as C
 from viewer import core
 from viewer import labels as L
+from viewer import summaries
 
 _STRICT = {"autonomous": 0, "human_approval": 1, "approval_and_consent": 2}
 _CODE = re.compile(r"\b(?:WM_R\d{3}|Z_R\d{3}|R\d{3}|WM_MAIN|HP1|AHU1|PV1|BAT1|ACS1|VEND1|WASTE_F\d|WASTE_MAIN|"
@@ -116,6 +117,7 @@ def render(ctx: dict, episode: str, key: str = "story"):
     if conf:
         bits.append(conf)
     st.caption(" · ".join(bits))
+    summaries.show(summaries.load(ctx["decisions"]).get(episode))
 
     st.markdown("#### 1 · What we saw")
     charts = store.charts_for_decisions(rows)

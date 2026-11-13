@@ -70,6 +70,7 @@ PROPOSED = "Proposed message — not sent"
 SIMULATED = "Simulated"
 MOCK = "Mock approval — nothing is executed"
 CONSENT_NEEDED = "Guest consent needed — not granted"
+AI_SUMMARY = "AI summary — facts from the decision log"
 LANG_FLAGS = {"de": "🇩🇪", "en": "🇬🇧", "it": "🇮🇹", "fr": "🇫🇷", "es": "🇪🇸", "nl": "🇳🇱", "pl": "🇵🇱", "cs": "🇨🇿"}
 
 _PATTERNS = [
