@@ -1,0 +1,112 @@
+# Steward demo video — storyboard (source of truth for scripts/make_video.py, ticket T27).
+# Copied from the doc "Steward — 2-minute video script". Edit voice-over text here, not in code.
+# Every number below was checked on main (quickstart 7/7, dev 39/40, 2,736 dev decisions, 0 violations).
+viewer:
+  base_url: http://localhost:8501          # started by make_video.py: streamlit run viewer/app.py --server.headless true
+  decisions: out/qs.jsonl                  # python run.py data/quickstart --out out/qs.jsonl
+  data: data/quickstart
+  viewport: {width: 1920, height: 1080}
+  zoom: 1.15
+  approvals_file: out/video_approvals.json # fresh file so the staffing request is still pending on camera
+cuts:
+  short: [building, name, water, surge, heating, learned, proof]                   # ~2:10 (target 2:00)
+  submission: [building, name, terminal, water, surge, heating, learned, proof]    # ~2:35, must stay <= 3:00
+placeholders:
+  HOLDOUT: ""   # e.g. "it found 6 incidents with zero safety violations". Empty -> the sentence containing [HOLDOUT] is dropped.
+scenes:
+  - id: building
+    url: "/tour?tour=1"
+    seconds: 12
+    actions:
+      - wait_for_text: "Needs attention now"
+      - hover: room tile "104"
+    voiceover: >-
+      Monday evening in PLATO-40, a fictional 40-room self-check-in hotel with a year of synthetic data.
+      Room 104 is empty, but its water meter has just started running.
+  - id: name
+    url: "/tour?tour=1"
+    seconds: 8
+    actions:
+      - hover: header brand "Steward"
+    voiceover: This is Steward. It runs the building, and answers to people.
+  - id: terminal
+    kind: terminal   # not a browser scene: run the commands for real, render their real output as a terminal clip
+    seconds: 25
+    commands:
+      - python run.py data/holdout --out decisions_holdout.jsonl     # fall back to data/dev if data/holdout is missing
+      - python validate.py decisions_holdout.jsonl data/holdout       # must print RESULT: PASS
+    voiceover: >-
+      Behind the screen is one command. It replays the hotel in 15-minute steps, nine agents decide,
+      and a separate validator re-checks every decision for safety.
+      Here it runs on the unseen holdout data, with the code frozen before that data was released.
+    voiceover_if_dev_fallback: >-
+      Behind the screen is one command. It replays the hotel in 15-minute steps, nine agents decide,
+      and a separate validator re-checks every decision for safety. A full year runs in about 20 seconds.
+  - id: water
+    url: "/tour?tour=2"
+    seconds: 25
+    actions:
+      - wait_for_text: "What we saw"
+      - scroll_to_text: "What we saw"
+      - pause: 4
+      - scroll_to_text: "Why we think so"
+      - pause: 5
+      - scroll_to_text: "What we did"
+      - highlight_text: "Needs approval + guest consent"
+    voiceover: >-
+      Steward sees about 26 litres every 15 minutes, without the pauses a shower would have, and no cleaning in the room.
+      It flags the leak 45 minutes after it starts and asks for an inspection.
+      Shutting off the water is a safety step, so it waits for a manager's approval and the guest's consent.
+      Over the whole dev year, the building's own alarm system raised two night-flow alarms.
+      Steward caught all five leaks in the maintenance records.
+  - id: surge
+    url: "/tour?tour=5"
+    seconds: 20
+    actions:
+      - wait_for_text: "What we saw"
+      - scroll_to_text: "What we did"
+      - pause: 4
+      - click_button_near_text: {button: "Approve", text: "extra"}   # the extra-staff approval request; mock only
+      - wait_for_text: "mock"
+    voiceover: >-
+      Two days before an event weekend, Steward sees 25 arrivals coming and plans cleaners and both robots.
+      Saturday, 6:30: a cleaner calls in sick. Steward re-plans the moment it knows, not a minute earlier,
+      and asks for extra staff instead of inventing capacity. I approve it here; in this prototype, that's a mock.
+  - id: heating
+    urls: ["/tour?tour=3", "/tour?tour=4"]   # first half heat pump, second half early check-in
+    seconds: 15
+    actions:
+      - wait_for_text: "What we did"
+      - scroll_to_text: "What we did"
+      - next_url_at_seconds: 8
+      - scroll_to_text: "proposed"         # the guest message bubble, labelled proposed / not sent
+    voiceover: >-
+      In a cold snap, it notices the heat pump giving 16 percent less heat per kilowatt than it should,
+      orders a service visit, and pre-heats fifteen occupied rooms at the cheapest hour, inside the comfort band.
+      And when an early check-in meets a short-staffed morning, the guest gets a realistic time.
+      A room is only released once it's clean.
+  - id: learned
+    url: "/tour?tour=7"
+    seconds: 22
+    actions:
+      - wait_for_text: "For CLARA next year"
+      - highlight_text: "For CLARA next year"
+      - pause: 8
+      - highlight_text: "car park"
+    voiceover: >-
+      After a year, Steward turns operations into lessons. For CLARA: pre-heat before forecast cold snaps,
+      and change filters by condition, not by calendar. For the next PLATO building: in PLATO-40,
+      the rooms just above the car park are below 20 degrees 17 percent of winter time,
+      against about 10 percent on the floors above. That's a design fix.
+  - id: proof
+    url: "/tour?tour=8"
+    seconds: 18
+    actions:
+      - click_button: "Run check"
+      - wait_for_text: "PASS"
+      - pause: 3
+      - scroll_to_top: true
+    voiceover: >-
+      Every one of its 2,736 decisions passes an independent safety check, with zero violations,
+      and it only ever uses what it knew at the time. On unseen holdout data, unchanged: [HOLDOUT].
+      Steward: runs the building, answers to people.

@@ -43,6 +43,7 @@ Frontend redesign: see [FRONTEND_PLAN.md](FRONTEND_PLAN.md) (T17–T25).
 | [T24](tasks/T24-ai-incident-summaries.md) | AI incident summaries (optional) | C | P2 | T18 | ✅ merged [#35](https://github.com/Luclud/L-M-Plato-40/pull/35) |
 | [T25](tasks/T25-ask-the-building.md) | "Ask the building" copilot (optional) | C | P2 | T18 | ✅ merged [#36](https://github.com/Luclud/L-M-Plato-40/pull/36) |
 | [T23](tasks/T23-viewer-polish.md) | Viewer polish, DEMO.md, screenshots | C | P0 | T22 | ✅ merged [#37](https://github.com/Luclud/L-M-Plato-40/pull/37) |
+| [T27](tasks/T27-demo-video.md) | Generate the demo video automatically (Playwright + ffmpeg) | C | P0 | viewer on main | ⬜ open |
 | [T14](tasks/T14-pitch-video.md) | Pitch, demo script, video | C | P0 | T10, T11 | humans, Sat |
 | [T15](tasks/T15-submission-repo.md) | Submission logistics, Proximata org repo | R | P0 | — | humans, now |
 
