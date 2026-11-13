@@ -21,7 +21,7 @@ _DATE = re.compile(r"\b(\d{4})-(\d{2})-(\d{2})\b")
 _FILE = re.compile(r"\b[\w\-]+\.(?:csv|jsonl|json)(?::[A-Za-z0-9_\-]+)?:?")
 _ACTION = re.compile(r"\b(" + "|".join(sorted(L.ACTIONS, key=len, reverse=True)) + r")\b")
 _ISSUE = re.compile(r"\b(" + "|".join(sorted(L.ISSUE_TYPES, key=len, reverse=True)) + r")\b")
-_ID = re.compile(r"\b(?:D\d{6}|[A-Z]{2}-\d{5}|GR\d{6}|WO\d{5})\b")
+_ID = re.compile(r"\b(?:D\d{6}|[A-Z]{2}-\d{5}|GR\d{6}|WO\d{5}|SH\d{6})\b")
 
 
 def humanize(text) -> str:

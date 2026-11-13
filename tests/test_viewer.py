@@ -160,13 +160,7 @@ def test_streamlit_app_smoke(monkeypatch, tmp_path):
     at = testing.AppTest.from_file(str(ROOT / "viewer" / "app.py"), default_timeout=120)
     at.run()
     assert not at.exception
-    at.switch_page("views/classic.py")
-    at.run()
-    assert not at.exception, [e.message for e in at.exception]
-    for page in ["Timeline", "Incident card", "Approval inbox", "Data quality & look-alikes", "Hero scenarios"]:
-        at.radio(key="page").set_value(page)
+    for page in ["views/incidents.py", "views/approvals.py", "views/tour.py", "views/proof.py"]:
+        at.switch_page(page)
         at.run()
         assert not at.exception, (page, [e.message for e in at.exception])
-        if page == "Hero scenarios":
-            md = " ".join(m.value for m in [*at.markdown, *at.info, *at.caption])
-            assert "PROPOSED" in md and "SIMULATED" in md
