@@ -27,11 +27,11 @@ pages = {
         st.Page("views/incidents.py", title="Incidents", icon=":material/report:"),
         st.Page("views/approvals.py", title=f"Approvals ({n})", icon=":material/how_to_reg:", url_path="approvals"),
         st.Page("views/learned.py", title="What we learned", icon=":material/lightbulb:"),
+        st.Page("views/tour.py", title="Guided demo", icon=":material/play_circle:"),
     ],
     "Proof": [
         st.Page("views/proof.py", title="Proof", icon=":material/verified:"),
         st.Page(common.CLASSIC_PAGE, title="Classic views", icon=":material/history:"),
     ],
-    " ": [st.Page("views/tour.py", title="Guided demo", icon=":material/play_circle:")],
 }
 st.navigation(pages, position="top").run()

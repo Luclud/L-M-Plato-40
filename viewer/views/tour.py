@@ -1,6 +1,9 @@
-"""Guided demo - T22 replaces this placeholder."""
-import streamlit as st  # noqa: F401
+"""Guided demo - T22 replaces this placeholder with the 8-step tour."""
+import streamlit as st
 
-from viewer.views import classic_screens, common  # noqa: F401
+from viewer.views import common
 
-classic_screens.render("Hero scenarios")
+st.subheader("Guided demo")
+st.info("The step-by-step guided demo is being built. Until then the hero scenarios are under Classic views.",
+        icon=":material/play_circle:")
+st.page_link(common.CLASSIC_PAGE, label="Open Classic views → Hero scenarios", icon=":material/history:")
