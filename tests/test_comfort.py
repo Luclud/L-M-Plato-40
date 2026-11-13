@@ -224,3 +224,20 @@ def test_dispatches_technician_when_available_as_known(qs_run, qs):
     assert first.action == "dispatch_technician"
     assert first.resource_id == tech.resource_id.iloc[0] and first.requires_human_approval
     assert first.affected_assets == ["HP1"]
+
+
+# ---- t02-warmup: detection must not depend on the month the data starts ---------------------------
+def test_recent_residual_sigma_is_causal_and_regime_local():
+    import numpy as np
+    from plato40.models.heatpump import recent_residual_sigma
+    idx = pd.date_range("2026-07-01", periods=96 * 40, freq="15min", tz="UTC")
+    rng = np.random.default_rng(0)
+    noisy = pd.Series(rng.normal(0, 0.05, len(idx)), index=idx)           # summer: wide residuals
+    calm = noisy.copy()
+    calm.iloc[96 * 20:] = rng.normal(0, 0.01, len(idx) - 96 * 20)         # winter regime: tight residuals
+    s = recent_residual_sigma(calm)
+    assert s.iloc[96 * 39] < 0.02 < s.iloc[96 * 15]                       # follows the current regime
+    cut = idx[96 * 30]
+    future = calm.copy()
+    future.loc[future.index > cut] = 1.0                                  # changing the future ...
+    assert recent_residual_sigma(future).loc[:cut].equals(s.loc[:cut])    # ... does not change the past
