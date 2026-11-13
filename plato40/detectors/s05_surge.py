@@ -133,23 +133,34 @@ class SurgeAgent(TriggerDetector):
     def _view(self, ctx, day) -> DayView:
         t = ctx.t
         bk = ctx.asof.bookings()
-        bk = bk[bk.status != "cancelled"]
+        ok = bk.status != "cancelled"
         lo, hi = day_bounds(day)
-        arr = bk[(bk.arrival_utc >= lo) & (bk.arrival_utc < hi)]
-        dep = bk[(bk.departure_utc >= lo) & (bk.departure_utc < hi)]
-        past = bk[(bk.arrival_utc <= t) & (bk.arrival_utc > t - BUSY_LOOKBACK)]
-        daily = past.groupby(past.arrival_utc.dt.tz_convert("Europe/Vienna").dt.date).size()
+        # combined masks: only the matching rows are materialised (same rows as filtering step by step)
+        arr = bk[ok & (bk.arrival_utc >= lo) & (bk.arrival_utc < hi)]
+        dep = bk[ok & (bk.departure_utc >= lo) & (bk.departure_utc < hi)]
+        busy, minutes = self._per_t(t, bk, ok)
         roster = ctx.asof.roster()
         cw = resource_windows(roster, self.cleaners, lo, hi)
         rw = resource_windows(roster, self.robots, lo, hi)
-        dur = learn_durations(self.records, self.data.rooms, t, robot=self.robot_rec)
-        minutes = int(dur.pooled[True])
         cleaners = sorted(c for c, w in cw.items() if w)
         return DayView(day=day, arrivals=int(arr.room_id.nunique()), departures=int(dep.room_id.nunique()),
                        same_day=len(set(arr.room_id) & set(dep.room_id)), cleaners=cleaners,
                        robots=sorted(r for r, w in rw.items() if w), minutes=minutes,
                        capacity_rooms=window_capacity_rooms(len(cleaners), minutes),
-                       busy=busy_threshold(daily, self.n_rooms))
+                       busy=busy)
+
+    def _per_t(self, t, bk, ok) -> tuple[float, int]:
+        """Busy threshold and learned minutes/room depend only on t (not on the viewed day): computed once
+        per decision time and reused for every look-ahead day."""
+        hit = getattr(self, "_t_memo", None)
+        if hit is not None and hit[0] == t and hit[1] is bk:
+            return hit[2]
+        past = bk[ok & (bk.arrival_utc <= t) & (bk.arrival_utc > t - BUSY_LOOKBACK)]
+        daily = past.groupby(past.arrival_utc.dt.tz_convert("Europe/Vienna").dt.date).size()
+        dur = learn_durations(self.records, self.data.rooms, t, robot=self.robot_rec)
+        res = (busy_threshold(daily, self.n_rooms), int(dur.pooled[True]))
+        self._t_memo = (t, bk, res)
+        return res
 
     def _evidence(self, ctx, v: DayView) -> list[str]:
         return [f"bookings.csv:BUILDING:{iso(ctx.t)}:{v.day} {v.arrivals} arrivals, {v.departures} departures, "

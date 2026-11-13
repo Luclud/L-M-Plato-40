@@ -27,6 +27,7 @@ from dataclasses import dataclass, field
 
 import pandas as pd
 
+from ..asof import prefix_of
 from ..clock import at_local, iso, local, local_hm
 from ..decision import make_decision
 from ..messaging import compose_guest_message, parse_requested_time
@@ -81,6 +82,21 @@ class Episode:
     @property
     def log_key(self) -> str:
         return self.guest_key if (self.quiet and self.guest_key) else self.key
+
+
+_FIRST_POS: dict = {}
+
+
+def _first_pos(src) -> dict:
+    """booking_id -> first row position in the bookings table (cached per table)."""
+    hit = _FIRST_POS.get(id(src))
+    if hit is None or hit[0] is not src or hit[1] != len(src):
+        mp = {}
+        for i, bid in enumerate(src.booking_id.tolist()):
+            if isinstance(bid, str):
+                mp.setdefault(bid, i)
+        hit = _FIRST_POS[id(src)] = (src, len(src), mp)
+    return hit[2]
 
 
 class TurnaroundAgent(TriggerDetector):
@@ -230,6 +246,12 @@ class TurnaroundAgent(TriggerDetector):
 
     def _booking(self, asof, booking_id):
         b = asof.bookings()
+        pre = prefix_of(b)
+        if pre is not None:
+            # b == src.iloc[:n]: first row of booking_id in b == its first row in src if that is within n
+            src, n = pre
+            pos = _first_pos(src).get(booking_id)
+            return None if pos is None or pos >= n else b.iloc[pos]
         m = b[b.booking_id == booking_id]
         return None if m.empty else m.iloc[0]
 
