@@ -76,6 +76,10 @@ Guest requests quickstart: early_checkin 27, temperature_cold 23, late_checkout 
 ## Open questions (document findings in PRs / docs/DECISIONS.md)
 1. R305 subtle leak shows on the room meter but main − Σrooms turns slightly **negative** from 19 Jan — meter drift
    artefact mixed in? How should the gap detector treat it?
+   *Finding (T01):* yes — the negative gap is the R305 meter over-reading vs. the main meter, so the gap
+   detector (`s02_water.py`) only alarms on a **positive** night excess (night median of main − Σrooms vs. a rolling
+   baseline of previous non-incident nights, ≥ 2 L/15 min for ≥ 2 nights). R305 is caught by the room-meter subtle
+   rule (no zero interval for 6 h) instead; a negative gap is never treated as a leak.
 2. Is the floor-1 cold effect real after controlling for occupancy, orientation and room size? (PLATO insight P1)
 3. Robots "can carry bins — not used in current operations": quantify what using them would change (logistics + insight).
 4. Holdout period/profile unknown — never assume January or 365 days.
