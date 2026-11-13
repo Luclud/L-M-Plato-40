@@ -142,3 +142,18 @@ def colour(kind: str, code) -> str:
 
 def assets_text(codes) -> str:
     return ", ".join(label("asset", c) for c in (codes or []) if c != "BUILDING") or label("asset", "BUILDING")
+
+ALARM_CODES = {  # building-alarm codes (events.jsonl bms_alarm) -> plain words
+    "ROOM_TEMP_LOW": "Room too cold", "ROOM_TEMP_HIGH": "Room too warm", "SENSOR_COMM_LOSS": "Sensor offline",
+    "FILTER_DP_HIGH": "Filter pressure high", "AIRFLOW_LOW": "Airflow low", "WATER_NIGHT_FLOW": "Water flow at night",
+}
+ALARMS_TITLE = "Alarms vs Steward"
+ALARMS_INTRO = ("The building's alarm system raises an alarm for every threshold it crosses. Steward groups what it "
+                "sees into incidents. Same year, same building (PLATO-40, fictional), both counted from this run.")
+ALARMS_LINK = "See alarms vs Steward →"
+ALARMS_LABELS_NOTE = {"hand": "Dev aid: hand labels for this dataset. Labels are not ground truth.",
+                      "weak": "Dev aid: labels derived from repair work orders and guest waits. Labels are not "
+                              "ground truth."}
+ALARMS_HONEST = ("Alarms and labels are both imperfect evidence: an alarm can be right where no work order was "
+                 "written, and Steward also misses things.")
+ALARMS_EMPTY = "This dataset has no building alarms and no Steward incidents to compare."

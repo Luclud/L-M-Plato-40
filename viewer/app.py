@@ -34,6 +34,7 @@ pages = {
     ],
     "Proof": [
         st.Page("views/proof.py", title="Proof", icon=":material/verified:"),
+        st.Page("views/alarms.py", title="Alarms vs Steward", icon=":material/notifications_active:"),
     ],
 }
 st.navigation(pages, position="top").run()
