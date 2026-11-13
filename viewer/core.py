@@ -397,12 +397,12 @@ def figure(chart: Chart, markers: list[tuple[pd.Timestamp, str]] | None = None, 
         else:
             fig.add_scatter(x=_local(s.index), y=s.values, name=name, mode="lines", connectgaps=False)
     for a, b in chart.gaps:
-        fig.add_vrect(x0=_local(a), x1=_local(b), fillcolor="#9e9e9e", opacity=0.25, line_width=0)
+        fig.add_vrect(x0=_local(a), x1=_local(b), fillcolor="#8A8F8C", opacity=0.18, line_width=0)
     if chart.gaps:
         fig.add_scatter(x=[None], y=[None], mode="markers", name="data gap (unknown)",
-                        marker=dict(symbol="square", size=12, color="rgba(158,158,158,0.5)"))
+                        marker=dict(symbol="square", size=12, color="rgba(138,143,140,0.35)"))
     if shade is not None:
-        fig.add_vrect(x0=_local(shade[0]), x1=_local(shade[1]), fillcolor="#fff59d", opacity=0.35, line_width=0)
+        fig.add_vrect(x0=_local(shade[0]), x1=_local(shade[1]), fillcolor="#F2C46D", opacity=0.22, line_width=0)
     if markers:
         ref = series[0][1] if series else None
         xs, ys, texts, hovers = [], [], [], []
@@ -414,12 +414,21 @@ def figure(chart: Chart, markers: list[tuple[pd.Timestamp, str]] | None = None, 
             hovers.append(f"{i}. {label}<br>{_local(t):%a %-d %b, %H:%M}")
         fig.add_scatter(x=xs, y=ys, mode="markers+text", text=texts, textposition="middle center",
                         textfont=dict(color="white", size=10), hovertext=hovers, hoverinfo="text",
-                        marker=dict(size=18, color="#c62828", line=dict(color="white", width=1)),
+                        marker=dict(size=18, color="#B42318", line=dict(color="white", width=1.5)),
                         name="what we did", showlegend=True)
-    fig.update_layout(title=dict(text=humanize(chart.title) or chart.title, font=dict(size=13)), height=height,
-                      margin=dict(l=10, r=10, t=35, b=10), yaxis_title=chart.unit,
-                      legend=dict(orientation="h", y=-0.2), hovermode="closest",
-                      xaxis=dict(title="local time (Europe/Vienna)", hoverformat="%a %-d %b, %H:%M"))
+    grid = dict(gridcolor="#E7E4DC", zerolinecolor="#DEDAD0", linecolor="#DEDAD0", tickfont=dict(color="#5F6B66"),
+                automargin=True, title_font=dict(color="#5F6B66", size=12))
+    fig.update_layout(title=dict(text=humanize(chart.title) or chart.title, x=0, xanchor="left", xref="paper",
+                                 font=dict(size=14, family="Space Grotesk, sans-serif", color="#1D2421")),
+                      height=height + 30, margin=dict(l=10, r=10, t=40, b=10),
+                      legend=dict(orientation="h", y=-0.32, yanchor="top", x=0, xanchor="left", font=dict(size=11)),
+                      hovermode="closest",
+                      font=dict(family="IBM Plex Sans, sans-serif", color="#1D2421", size=12),
+                      colorway=["#0E6B57", "#C26A12", "#2F6BA8", "#7A8B3C", "#5F6B66"],
+                      paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+                      hoverlabel=dict(bgcolor="#FFFFFF", bordercolor="#DEDAD0", font=dict(color="#1D2421")),
+                      xaxis=dict(title="local time (Europe/Vienna)", hoverformat="%a %-d %b, %H:%M", **grid),
+                      yaxis=dict(title=chart.unit, **grid))
     return fig
 
 

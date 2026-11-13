@@ -1,6 +1,19 @@
 [theme]
 base = "light"
-primaryColor = "#1565c0"
+# Operations console for a timber building: warm paper ground, spruce-green accent, calm semantic status colours.
+primaryColor = "#0E6B57"
+backgroundColor = "#F6F5F1"
+secondaryBackgroundColor = "#ECEAE3"
+textColor = "#1D2421"
+linkColor = "#0E6B57"
+borderColor = "#DEDAD0"
+showWidgetBorder = true
+baseRadius = "0.6rem"
+baseFontSize = 15
+font = "IBM Plex Sans:https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+headingFont = "Space Grotesk:https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap"
+codeFont = "IBM Plex Mono:https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap"
+chartCategoricalColors = ["#0E6B57", "#C26A12", "#2F6BA8", "#B42318", "#7A8B3C", "#5F6B66"]
 
 [client]
 toolbarMode = "minimal"

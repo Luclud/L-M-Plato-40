@@ -46,15 +46,10 @@ def _open(ep: str):
 
 
 def card(r, key: str, summary: dict | None = None):
-    with st.container(border=True):
-        a, b, c = st.columns([6, 1.2, 2.6])
-        with a:
-            st.markdown(f"**{L.icon('issue', r.issue_type)} {L.label('issue', r.issue_type)} · "
-                        f"{_short(r.assets)}** · {C.time_range(r.start, r.end)}")
-        with b:
-            C.priority_chip(r.priority)
-        with c:
-            C.status_chip(r.autonomy)
+    with st.container(border=True, key=f"card_{key}_{r.episode}"):
+        st.markdown(f"**{L.icon('issue', r.issue_type)} {L.label('issue', r.issue_type)} · "
+                    f"{_short(r.assets)}** · {C.time_range(r.start, r.end)}")
+        C.chips(r.priority, r.autonomy)
         if summary:
             summaries.show(summary)
         else:
