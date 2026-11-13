@@ -21,7 +21,8 @@ def stats(data_dir: str, decisions: str, mtime: float) -> dict:
     df = common.load_decisions(decisions, mtime)
     labels, source = A.labels_for(data_dir)
     return {"events": A.events_by_code(data), "episodes": A.alarm_episodes(data), "weeks": A.alarms_by_week(data),
-            "inc": A.incident_episodes(df), "inc_weeks": A.incidents_by_week(df), "labels_source": source,
+            "inc": A.incident_episodes(df), "inc_weeks": A.incidents_by_week(df, data.start, data.end),
+            "labels_source": source,
             "detection": A.incident_detection(data, df, labels), "coverage": A.coverage(data, df, labels),
             "noise": A.noise(data), "outages": A.gateway_outages(data)}
 

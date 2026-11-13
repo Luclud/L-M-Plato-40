@@ -1,4 +1,5 @@
 """T29 Alarms vs Steward: alarm statistics computed from the run + AppTest of the page."""
+import pandas as pd
 import pytest
 
 from plato40 import io
@@ -47,6 +48,11 @@ def test_incidents_by_week_counts_incident_episodes_only(dev):
     inc = A.incident_episodes(df)
     assert set(inc.issue_type) <= set(A.INCIDENT_TYPES)
     assert A.incidents_by_week(df).n.sum() == len(inc) > 0
+    data = dev[0]
+    full = A.incidents_by_week(df, data.start, data.end)
+    assert full.n.sum() == len(inc) and (full.n == 0).any()          # quiet weeks stay in the line as 0
+    assert full.week.diff().dropna().eq(pd.Timedelta(days=7)).all()
+    assert len(full) >= len(A.alarms_by_week(data).week.unique())
 
 
 def test_noise_is_computed(dev):

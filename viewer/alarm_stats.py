@@ -49,11 +49,16 @@ def incident_episodes(df: pd.DataFrame) -> pd.DataFrame:
     return ep[ep.issue_type.isin(INCIDENT_TYPES)].reset_index(drop=True)
 
 
-def incidents_by_week(df: pd.DataFrame) -> pd.DataFrame:
+def incidents_by_week(df: pd.DataFrame, start=None, end=None) -> pd.DataFrame:
+    """Steward incident episodes started per local week; with start/end every week in between is listed (0 = quiet)."""
     ep = incident_episodes(df)
-    if ep.empty:
+    n = ep.assign(week=_week(ep.start)).groupby("week").size() if len(ep) else pd.Series(dtype=int)
+    if start is not None and end is not None:
+        span = _week(pd.Series([pd.Timestamp(start), pd.Timestamp(end) - pd.Timedelta(minutes=15)]))
+        n = n.reindex(pd.date_range(span.iloc[0], span.iloc[1], freq="7D"), fill_value=0)
+    if n.empty:
         return pd.DataFrame(columns=["week", "n"])
-    return ep.assign(week=_week(ep.start)).groupby("week").size().rename("n").reset_index()
+    return n.rename("n").rename_axis("week").reset_index()
 
 
 def labels_for(data_dir) -> tuple[list[dict], str]:
