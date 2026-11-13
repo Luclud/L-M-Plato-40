@@ -1,0 +1,4 @@
+# Viewer only (pipeline needs just ../requirements.txt). Licences: Streamlit Apache-2.0, Plotly MIT.
+-r ../requirements.txt
+streamlit>=1.46,<2
+plotly>=5.20
