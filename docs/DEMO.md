@@ -62,6 +62,24 @@ You can reach every hero incident in ≤ 3 clicks from the start screen:
 Water leak → Room 104**. The story headline says it: a loud leak in vacant Room 104, flagged 45 min after it
 started, inspection requested, water shut-off waiting for approval and guest consent.
 
+## Housekeeping: who cleans what, when
+
+**Housekeeping** (after Building) shows one local day as a timeline: one lane per cleaner, robot and the on-call
+housekeeper, with shifts, absences, planned (outlined) and actual (filled) cleanings, the deadline row (check-in
+15:00, early check-in requests, guests waiting, rooms released) and red re-plan lines. "Only what was known at the
+selected time" is on by default; turn it off to see how the day really went, and turn on "Show plan changes" to
+see the earlier plans that were replaced. Room turnaround and busy-weekend stories show the same chart under
+"The day's plan".
+
+- **Thu 8 Jan** (quickstart, `?t=2026-01-08T05:00Z` = 06:00): at 06:00 Cleaner 1 is still on shift and only one
+  plan exists. Slide to 06:15: Cleaner 1 is shown sick (known 06:15), the re-plan line appears at exactly that time
+  and Room 308 moves to Cleaner 3. Turn the toggle off: a robot floor pre-clean runs before Cleaner 3, and Room 308
+  is released at 12:00, before check-in.
+- **Sat 24 Jan** (quickstart, busy weekend): Cleaner 1 sick, the 06:30 daily re-plan, robots pre-cleaning vacated
+  rooms, and two on-call calls (Rooms 101 and 306). The summary says "more work than staff".
+
+![Housekeeping, Thu 8 Jan](img/viewer_housekeeping.png)
+
 ## Honesty lines to say out loud
 
 - "Nothing is sent or executed: messages are proposals, approvals are mock, effects are simulated."

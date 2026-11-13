@@ -159,6 +159,16 @@ def render(ctx: dict, episode: str, key: str = "story"):
             if r.requires_human_approval:
                 _approve_buttons(ctx, r, key)
 
+    if first.issue_type in ("room_turnaround", "occupancy_surge"):
+        from viewer.views import housekeeping
+        st.markdown(f"#### {L.SCHEDULE_DAY_PLAN}")
+        rooms = [a for x in rows.affected_assets for a in x]
+        res = [r for r in rows.resource_id if isinstance(r, str)]
+        housekeeping.render_day(ctx, t0.tz_convert(L.TZ).date(), t1, key=f"{key}_plan", known_only=False,
+                                highlight_rooms=rooms, highlight_res=res if not rooms else ())
+        st.page_link("views/housekeeping.py", label=L.SCHEDULE_OPEN_PAGE, icon=":material/cleaning_services:",
+                     query_params={"t": t1.strftime("%Y-%m-%dT%H:%MZ")})
+
     st.markdown("#### 4 · How we'll know it worked")
     plans = [humanize(v) for v in dict.fromkeys(rows.verification_plan) if isinstance(v, str) and v]
     outs = [humanize(v) for v in dict.fromkeys(rows.expected_outcome) if isinstance(v, str) and v]
