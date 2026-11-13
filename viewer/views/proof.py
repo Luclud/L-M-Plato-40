@@ -65,6 +65,7 @@ c = common.ctx()
 df = c["df"]
 st.subheader("Proof")
 st.caption("Evidence for the jury and developers. This page shows raw file names, ids and UTC on purpose.")
+st.page_link("views/alarms.py", label=L.ALARMS_LINK, icon=":material/notifications_active:")
 
 st.markdown("#### Safety & contract check")
 key = ("proof_check", str(c["decisions"]), c["mtime"])
