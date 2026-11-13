@@ -28,6 +28,7 @@ pages = {
         st.Page("views/approvals.py", title=f"Approvals ({n})", icon=":material/how_to_reg:", url_path="approvals"),
         st.Page("views/learned.py", title="What we learned", icon=":material/lightbulb:"),
         st.Page("views/tour.py", title="Guided demo", icon=":material/play_circle:"),
+        st.Page("views/ask.py", title="Ask the building", icon=":material/forum:"),
     ],
     "Proof": [
         st.Page("views/proof.py", title="Proof", icon=":material/verified:"),
