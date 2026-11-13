@@ -20,6 +20,7 @@ from plato40.clock import LOCAL_TZ
 
 ROOT = Path(__file__).resolve().parents[1]
 INTERVAL = pd.Timedelta(minutes=15)
+LOCAL_TZ = "Europe/Vienna"
 PRIO_RANK = {"critical": 0, "high": 1, "medium": 2, "low": 3}
 
 SIMULATED = "SIMULATED"
@@ -364,33 +365,59 @@ class SeriesStore:
         return charts[:max_charts]
 
 
+def _local(x):
+    """UTC timestamps/index -> Europe/Vienna wall clock (naive) for the chart axis."""
+    if isinstance(x, pd.Index):
+        return x.tz_convert(LOCAL_TZ).tz_localize(None) if getattr(x, "tz", None) is not None else x
+    t = pd.Timestamp(x)
+    return t.tz_convert(LOCAL_TZ).tz_localize(None) if t.tzinfo is not None else t
+
+
+def _value_at(s: pd.Series, t):
+    s = s.dropna()
+    if s.empty:
+        return None
+    i = s.index.searchsorted(t, side="right") - 1
+    return float(s.iloc[max(i, 0)])
+
+
 def figure(chart: Chart, markers: list[tuple[pd.Timestamp, str]] | None = None, height: int = 260,
            shade: tuple[pd.Timestamp, pd.Timestamp] | None = None):
-    """Plotly figure: series, shaded data gaps (unknown, not zero), vertical decision markers."""
+    """Plotly figure in local time: series, shaded data gaps (unknown, not zero), shaded episode period and
+    numbered markers on the series at decision times (hover = what was done + local time)."""
     import plotly.graph_objects as go
 
     fig = go.Figure()
-    for name, s in chart.series.items():
-        if s is None or not len(s):
-            continue
+    series = [(n, s) for n, s in chart.series.items() if s is not None and len(s)]
+    for name, s in series:
         if chart.kind == "bar":
-            fig.add_bar(x=s.index, y=s.values, name=name)
+            fig.add_bar(x=_local(s.index), y=s.values, name=name)
         else:
-            fig.add_scatter(x=s.index, y=s.values, name=name, mode="lines", connectgaps=False)
+            fig.add_scatter(x=_local(s.index), y=s.values, name=name, mode="lines", connectgaps=False)
     for a, b in chart.gaps:
-        fig.add_vrect(x0=a, x1=b, fillcolor="#9e9e9e", opacity=0.25, line_width=0)
+        fig.add_vrect(x0=_local(a), x1=_local(b), fillcolor="#9e9e9e", opacity=0.25, line_width=0)
     if chart.gaps:
         fig.add_scatter(x=[None], y=[None], mode="markers", name="data gap (unknown)",
                         marker=dict(symbol="square", size=12, color="rgba(158,158,158,0.5)"))
     if shade is not None:
-        fig.add_vrect(x0=shade[0], x1=shade[1], fillcolor="#fff59d", opacity=0.25, line_width=0)
-    for t, label in markers or []:
-        fig.add_shape(type="line", x0=t, x1=t, y0=0, y1=1, yref="paper", line=dict(color="#c62828", dash="dot"))
-        fig.add_annotation(x=t, y=1, yref="paper", text=label, showarrow=False, textangle=-90,
-                           xanchor="right", yanchor="top", font=dict(size=9, color="#c62828"))
+        fig.add_vrect(x0=_local(shade[0]), x1=_local(shade[1]), fillcolor="#fff59d", opacity=0.35, line_width=0)
+    if markers:
+        ref = series[0][1] if series else None
+        xs, ys, texts, hovers = [], [], [], []
+        for i, (t, label) in enumerate(sorted(markers, key=lambda m: m[0]), 1):
+            y = _value_at(ref, t) if ref is not None else None
+            xs.append(_local(t))
+            ys.append(y if y is not None else 0)
+            texts.append(str(i))
+            hovers.append(f"{i}. {label}<br>{_local(t):%a %-d %b, %H:%M}")
+        fig.add_scatter(x=xs, y=ys, mode="markers+text", text=texts, textposition="middle center",
+                        textfont=dict(color="white", size=10), hovertext=hovers, hoverinfo="text",
+                        marker=dict(size=18, color="#c62828", line=dict(color="white", width=1)),
+                        name="what we did", showlegend=True)
     fig.update_layout(title=dict(text=chart.title, font=dict(size=13)), height=height,
                       margin=dict(l=10, r=10, t=35, b=10), yaxis_title=chart.unit,
-                      legend=dict(orientation="h", y=-0.2), hovermode="x unified")
+                      legend=dict(orientation="h", y=-0.2), hovermode="closest",
+                      xaxis=dict(title="local time (Europe/Vienna)", hoverformat="%a %-d %b, %H:%M"))
     return fig
 
 
