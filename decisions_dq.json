@@ -1,0 +1,426 @@
+[
+ {
+  "kind": "duplicate",
+  "source": "room_telemetry.csv",
+  "asset": "*",
+  "count": 40,
+  "first_utc": "2026-01-06 02:00:00+00:00",
+  "detail": "keys=['timestamp_utc', 'room_id']"
+ },
+ {
+  "kind": "implausible",
+  "source": "room_telemetry.csv",
+  "asset": "R201",
+  "count": 1,
+  "first_utc": "2026-09-10 09:30:00+00:00",
+  "detail": "temperature_c outside [-5.0,45.0]"
+ },
+ {
+  "kind": "implausible",
+  "source": "room_telemetry.csv",
+  "asset": "R204",
+  "count": 1,
+  "first_utc": "2026-10-28 06:45:00+00:00",
+  "detail": "temperature_c outside [-5.0,45.0]"
+ },
+ {
+  "kind": "implausible",
+  "source": "room_telemetry.csv",
+  "asset": "R205",
+  "count": 1,
+  "first_utc": "2026-02-06 02:30:00+00:00",
+  "detail": "temperature_c outside [-5.0,45.0]"
+ },
+ {
+  "kind": "implausible",
+  "source": "room_telemetry.csv",
+  "asset": "R303",
+  "count": 2,
+  "first_utc": "2026-03-10 10:00:00+00:00",
+  "detail": "temperature_c outside [-5.0,45.0]"
+ },
+ {
+  "kind": "implausible",
+  "source": "room_telemetry.csv",
+  "asset": "R306",
+  "count": 1,
+  "first_utc": "2026-02-15 21:15:00+00:00",
+  "detail": "temperature_c outside [-5.0,45.0]"
+ },
+ {
+  "kind": "implausible",
+  "source": "room_telemetry.csv",
+  "asset": "R307",
+  "count": 1,
+  "first_utc": "2026-12-30 05:30:00+00:00",
+  "detail": "temperature_c outside [-5.0,45.0]"
+ },
+ {
+  "kind": "implausible",
+  "source": "room_telemetry.csv",
+  "asset": "R406",
+  "count": 1,
+  "first_utc": "2026-12-20 19:30:00+00:00",
+  "detail": "temperature_c outside [-5.0,45.0]"
+ },
+ {
+  "kind": "implausible",
+  "source": "room_telemetry.csv",
+  "asset": "R205",
+  "count": 1,
+  "first_utc": "2026-02-04 23:45:00+00:00",
+  "detail": "co2_ppm outside [250.0,10000.0]"
+ },
+ {
+  "kind": "implausible",
+  "source": "room_telemetry.csv",
+  "asset": "R401",
+  "count": 1,
+  "first_utc": "2026-03-01 19:15:00+00:00",
+  "detail": "co2_ppm outside [250.0,10000.0]"
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R101",
+  "count": 108,
+  "first_utc": "2026-01-03 06:45:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R102",
+  "count": 98,
+  "first_utc": "2026-01-01 10:00:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R103",
+  "count": 99,
+  "first_utc": "2026-01-02 18:00:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R104",
+  "count": 112,
+  "first_utc": "2026-01-09 13:00:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R105",
+  "count": 99,
+  "first_utc": "2026-01-11 17:00:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R106",
+  "count": 106,
+  "first_utc": "2026-01-11 15:15:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R107",
+  "count": 108,
+  "first_utc": "2026-01-01 18:00:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R108",
+  "count": 99,
+  "first_utc": "2026-01-01 21:45:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R109",
+  "count": 104,
+  "first_utc": "2026-01-21 13:30:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R110",
+  "count": 120,
+  "first_utc": "2026-01-02 00:45:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R201",
+  "count": 60,
+  "first_utc": "2026-01-04 10:30:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R202",
+  "count": 80,
+  "first_utc": "2026-01-02 15:00:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R203",
+  "count": 58,
+  "first_utc": "2026-01-17 01:45:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R204",
+  "count": 66,
+  "first_utc": "2026-01-05 19:15:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R205",
+  "count": 78,
+  "first_utc": "2026-01-09 09:45:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R206",
+  "count": 68,
+  "first_utc": "2026-01-09 13:15:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R207",
+  "count": 76,
+  "first_utc": "2026-01-02 15:15:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R208",
+  "count": 70,
+  "first_utc": "2026-01-02 04:45:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R209",
+  "count": 72,
+  "first_utc": "2026-01-05 12:15:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R210",
+  "count": 84,
+  "first_utc": "2026-01-07 07:30:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R301",
+  "count": 281,
+  "first_utc": "2026-01-01 11:30:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R302",
+  "count": 278,
+  "first_utc": "2026-01-01 00:15:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R303",
+  "count": 276,
+  "first_utc": "2026-01-13 06:30:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R304",
+  "count": 280,
+  "first_utc": "2026-01-02 16:15:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R305",
+  "count": 290,
+  "first_utc": "2026-01-01 20:30:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R306",
+  "count": 277,
+  "first_utc": "2026-01-14 16:45:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R307",
+  "count": 267,
+  "first_utc": "2026-01-04 01:00:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R308",
+  "count": 279,
+  "first_utc": "2026-01-13 20:15:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R309",
+  "count": 277,
+  "first_utc": "2026-01-02 09:15:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R310",
+  "count": 293,
+  "first_utc": "2026-01-10 09:00:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R401",
+  "count": 63,
+  "first_utc": "2026-01-06 15:15:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R402",
+  "count": 64,
+  "first_utc": "2026-01-02 08:00:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R403",
+  "count": 65,
+  "first_utc": "2026-01-06 03:30:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R404",
+  "count": 68,
+  "first_utc": "2026-01-03 05:00:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R405",
+  "count": 73,
+  "first_utc": "2026-01-02 04:15:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R406",
+  "count": 79,
+  "first_utc": "2026-01-03 21:30:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R407",
+  "count": 82,
+  "first_utc": "2026-01-22 08:00:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R408",
+  "count": 63,
+  "first_utc": "2026-01-03 08:00:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R409",
+  "count": 70,
+  "first_utc": "2026-01-03 10:15:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "missing",
+  "source": "room_water.csv",
+  "asset": "R410",
+  "count": 77,
+  "first_utc": "2026-01-02 10:00:00+00:00",
+  "detail": ""
+ },
+ {
+  "kind": "meter_reset",
+  "source": "room_water.csv",
+  "asset": "R105",
+  "count": 1,
+  "first_utc": "2026-07-04 21:00:00+00:00",
+  "detail": "counter restarted (exchange?) - consumption unknown for that step"
+ },
+ {
+  "kind": "meter_reset",
+  "source": "room_water.csv",
+  "asset": "R405",
+  "count": 1,
+  "first_utc": "2026-12-19 19:30:00+00:00",
+  "detail": "counter restarted (exchange?) - consumption unknown for that step"
+ },
+ {
+  "kind": "meter_jitter",
+  "source": "room_water.csv",
+  "asset": "*",
+  "count": 8114,
+  "first_utc": "2026-07-04 21:30:00+00:00",
+  "detail": "small negative steps clipped to 0"
+ }
+]

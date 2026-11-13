@@ -1,0 +1,31 @@
+{
+  "model_id": "PLATO-40",
+  "dataset_version": "2.0.0-dev",
+  "profile": "dev",
+  "synthetic": true,
+  "start_utc": "2026-01-01T00:00:00Z",
+  "end_utc": "2027-01-01T00:00:00Z",
+  "days": 365,
+  "interval_seconds": 900,
+  "units": {
+    "temperature": "degC",
+    "power": "kW",
+    "energy_storage": "kWh",
+    "water": "L (cumulative meter readings)",
+    "price": "EUR/kWh incl. grid fees",
+    "co2": "ppm",
+    "humidity": "%"
+  },
+  "conventions": {
+    "battery_discharge_kw_signed": "positive = discharging, negative = charging",
+    "missing_values": "empty field",
+    "timestamps": "UTC, ISO 8601"
+  },
+  "limitations": [
+    "Fictional building; not a real PLATO site or CLARA export",
+    "Simplified, uncalibrated thermal/HVAC/water models",
+    "Offline replay: proposed actions do not change later observations",
+    "BMS alarms are rule-based, delayed, incomplete and can be false",
+    "Guest messages are synthetic; no message is ever delivered or answered in the data"
+  ]
+}

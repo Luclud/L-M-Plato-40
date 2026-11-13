@@ -1,0 +1,10 @@
+work_order_id,created_utc,asset_id,type,status,scheduled_utc,completed_utc,assigned_to,summary
+WO00001,2026-01-03T09:00:00Z,BUILDING,preventive,completed,2026-01-08T09:00:00Z,2026-01-08T10:30:00Z,TECH_1,"Legionella prevention: taps flushed in long-vacant rooms R102, R104, R106, R204, R205"
+WO00002,2026-01-11T14:15:00Z,R405,corrective,completed,2026-01-11T16:45:00Z,2026-01-12T01:00:00Z,TECH_1,Guest-reported room defect; entry with guest consent or while vacant
+WO00003,2026-01-13T22:30:00Z,R104,corrective,completed,2026-01-13T22:45:00Z,2026-01-14T00:00:00Z,EXTERNAL_PLUMBER,Burst flexible hose under washbasin replaced; floor dried; room inspected
+WO00004,2026-01-15T05:15:00Z,WM_R403,metering,completed,2026-01-18T05:15:00Z,2026-01-18T05:30:00Z,EXTERNAL_METERING,Water meter WM_R403 exchanged (calibration interval)
+WO00005,2026-01-16T07:15:00Z,R408,corrective,completed,2026-01-16T09:45:00Z,2026-01-17T05:45:00Z,TECH_1,Guest-reported room defect; entry with guest consent or while vacant
+WO00006,2026-01-16T20:30:00Z,R305,corrective,completed,2026-01-17T06:15:00Z,2026-01-17T16:00:00Z,TECH_1,Guest-reported room defect; entry with guest consent or while vacant
+WO00007,2026-01-17T23:00:00Z,HP1,corrective,completed,2026-01-18T04:30:00Z,2026-01-18T05:00:00Z,EXTERNAL_HVAC,Heat pump service: refrigerant leak sealed and recharged
+WO00008,2026-01-23T04:15:00Z,AHU1,corrective,completed,2026-01-23T10:15:00Z,2026-01-23T11:45:00Z,EXTERNAL_HVAC,Heavily loaded AHU1 filters replaced (unplanned)
+WO00009,2026-01-25T21:45:00Z,R305,corrective,completed,2026-01-25T23:30:00Z,2026-01-26T00:15:00Z,EXTERNAL_PLUMBER,Toilet fill valve replaced (continuous running)

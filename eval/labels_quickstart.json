@@ -1,0 +1,84 @@
+{
+  "_note": "Hand-made evaluation labels for the QUICKSTART dataset, derived by the planner from work_orders.csv, events.jsonl and the sensor data. NOT official ground truth. NEVER read these from the pipeline (plato40/) - evaluation only.",
+  "dataset": "quickstart",
+  "incidents": [
+    {
+      "id": "QS-S02-R104-burst",
+      "scenario": "S02",
+      "issue_type": "water_leak",
+      "assets": ["R104", "WM_R104"],
+      "start_utc": "2026-01-12T17:00:00Z",
+      "end_utc": "2026-01-13T22:45:00Z",
+      "good_by_utc": "2026-01-12T19:00:00Z",
+      "notes": "Burst flexible hose. Room meter shows ~25-29 L per 15 min continuously from 12 Jan 17:00Z (~100 L/h, ~3000 L total). BMS WATER_NIGHT_FLOW on WM_MAIN only at 13 Jan 01:45Z; plumber work order WO00003 created 13 Jan 22:30Z, flow stops 23:00Z. Goal: detect within ~2 h, request inspection (approval; consent if occupied), consider water_shutoff (approval+consent)."
+    },
+    {
+      "id": "QS-S02-R305-toilet",
+      "scenario": "S02",
+      "issue_type": "water_leak",
+      "assets": ["R305", "WM_R305"],
+      "start_utc": "2026-01-19T00:00:00Z",
+      "end_utc": "2026-01-25T21:45:00Z",
+      "good_by_utc": "2026-01-22T08:50:00Z",
+      "notes": "Toilet fill valve running. Subtle: ~1 L per 15 min, nonzero in 70% of intervals on 19 Jan, 100% from 20 Jan; ~18 L per night (00-04Z) vs ~0-6 normally. Guest reports 'La cisterna no para de correr' GR at 22 Jan 08:50Z; plumber WO00009 created 25 Jan 21:45Z. Beat the guest report. Open question: main meter does NOT rise accordingly (main-minus-rooms gap turns slightly negative from 19 Jan) - investigate, document."
+    },
+    {
+      "id": "QS-S03-HP1-coldsnap",
+      "scenario": "S03",
+      "issue_type": "heating_comfort",
+      "assets": ["HP1"],
+      "start_utc": "2026-01-14T00:00:00Z",
+      "end_utc": "2026-01-17T23:00:00Z",
+      "good_by_utc": "2026-01-15T12:00:00Z",
+      "notes": "Cold snap 14-17 Jan (daily mean -9 to -13.6 C). HP1 COP 2.8 -> 1.6, supply temp up, status lockout_high_pressure 16 Jan 15:15Z/22:00Z and 17 Jan 15:15Z/22:00Z. ~60 ROOM_TEMP_LOW alarms, many temperature_cold guest requests. Refrigerant leak sealed WO00007 created 17 Jan 23:00Z. TECH_1 sick 15 Jan (known 01:15Z). The cold itself lowers COP (look-alike): show degradation beyond the expected COP for that outdoor temperature. Use forecast (issued 06:00 local) to pre-heat."
+    },
+    {
+      "id": "QS-S04-AHU1-filter",
+      "scenario": "S04",
+      "issue_type": "ventilation_maintenance",
+      "assets": ["AHU1"],
+      "start_utc": "2026-01-14T00:00:00Z",
+      "end_utc": "2026-01-23T04:15:00Z",
+      "good_by_utc": "2026-01-16T12:00:00Z",
+      "notes": "filter_dp_pa daily mean 92 -> 110 (14 Jan) -> 135 -> 165 (16 Jan), then MISSING 16 Jan 22:30Z .. 21 Jan 03:15Z (data gap, not repair), then 256 Pa and airflow 3850 -> 3316 m3/h. BMS FILTER_DP_HIGH only from 21 Jan 05:45Z. TECH_1 on vacation 19-23 Jan (known since Dec). Contractor replaced filters WO00008 23 Jan. Expected: trend detection before the gap, keep episode open through the gap, order contractor service (approval) because TECH_1 unavailable."
+    },
+    {
+      "id": "QS-S05-event-weekend",
+      "scenario": "S05",
+      "issue_type": "occupancy_surge",
+      "assets": ["BUILDING"],
+      "start_utc": "2026-01-21T00:00:00Z",
+      "end_utc": "2026-01-24T11:00:00Z",
+      "good_by_utc": "2026-01-23T06:00:00Z",
+      "notes": "25 arrivals on 23 Jan, 20 on 26 Jan (bookings visible days ahead by created_utc). CLEANER_1 sick 24 Jan, known 05:30Z. 24 Jan: 6 arrival_waiting_room events (R403, R302, R108, R304, R101, R306), ONCALL_1 called twice. Expected: capacity plan before the weekend, re-plan at 05:30Z on 24 Jan, robots for floors, on-call for waiting guests, realistic guest messages, request_human_approval for extra staff."
+    },
+    {
+      "id": "QS-S01-R308-0108",
+      "scenario": "S01",
+      "issue_type": "room_turnaround",
+      "assets": ["R308"],
+      "start_utc": "2026-01-07T22:00:00Z",
+      "end_utc": "2026-01-08T10:30:00Z",
+      "good_by_utc": "2026-01-08T09:00:00Z",
+      "notes": "CLEANER_1 sick 8 Jan (known 05:15Z); early departure R105 05:00Z; guest waits for R308 at 10:30Z. Expected: prioritise R308 cleaning, realistic ETA to the guest, never release before clean."
+    },
+    {
+      "id": "QS-S01-R207-0123",
+      "scenario": "S01",
+      "issue_type": "room_turnaround",
+      "assets": ["R207"],
+      "start_utc": "2026-01-22T22:00:00Z",
+      "end_utc": "2026-01-23T11:15:00Z",
+      "good_by_utc": "2026-01-23T10:00:00Z",
+      "notes": "Busy arrival day (25 arrivals); guest waits for R207 at 11:15Z."
+    }
+  ],
+  "data_quality_known": [
+    "GW_F3 outage 11 Jan (all floor-3 rooms missing)",
+    "R205 frozen temperature 12 Jan",
+    "R106 temperature 85.0 C on 24 Jan",
+    "WM_R403 meter exchange: work order created 15 Jan, counter reset seen 18 Jan 05:15Z",
+    "338 small negative room-meter steps (jitter)",
+    "2 duplicate telemetry rows"
+  ]
+}

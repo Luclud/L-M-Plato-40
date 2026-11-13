@@ -1,0 +1,2885 @@
+{
+  "schema_version": "2.0.0",
+  "model_id": "PLATO-40",
+  "model_kind": "synthetic_reference_not_real_digital_twin",
+  "profile": "dev",
+  "time": {
+    "data_timezone": "UTC",
+    "local_timezone": "Europe/Vienna",
+    "interval_seconds": 900
+  },
+  "building": {
+    "floors": 4,
+    "rooms": [
+      {
+        "id": "R101",
+        "floor": 1,
+        "area_m2": 22,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R101",
+        "water_meter_id": "WM_R101"
+      },
+      {
+        "id": "R102",
+        "floor": 1,
+        "area_m2": 28,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R102",
+        "water_meter_id": "WM_R102"
+      },
+      {
+        "id": "R103",
+        "floor": 1,
+        "area_m2": 32,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": true,
+        "thermal_zone_id": "Z_R103",
+        "water_meter_id": "WM_R103"
+      },
+      {
+        "id": "R104",
+        "floor": 1,
+        "area_m2": 28,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R104",
+        "water_meter_id": "WM_R104"
+      },
+      {
+        "id": "R105",
+        "floor": 1,
+        "area_m2": 22,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R105",
+        "water_meter_id": "WM_R105"
+      },
+      {
+        "id": "R106",
+        "floor": 1,
+        "area_m2": 22,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R106",
+        "water_meter_id": "WM_R106"
+      },
+      {
+        "id": "R107",
+        "floor": 1,
+        "area_m2": 28,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R107",
+        "water_meter_id": "WM_R107"
+      },
+      {
+        "id": "R108",
+        "floor": 1,
+        "area_m2": 32,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": true,
+        "thermal_zone_id": "Z_R108",
+        "water_meter_id": "WM_R108"
+      },
+      {
+        "id": "R109",
+        "floor": 1,
+        "area_m2": 28,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R109",
+        "water_meter_id": "WM_R109"
+      },
+      {
+        "id": "R110",
+        "floor": 1,
+        "area_m2": 22,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R110",
+        "water_meter_id": "WM_R110"
+      },
+      {
+        "id": "R201",
+        "floor": 2,
+        "area_m2": 22,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R201",
+        "water_meter_id": "WM_R201"
+      },
+      {
+        "id": "R202",
+        "floor": 2,
+        "area_m2": 28,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R202",
+        "water_meter_id": "WM_R202"
+      },
+      {
+        "id": "R203",
+        "floor": 2,
+        "area_m2": 32,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": true,
+        "thermal_zone_id": "Z_R203",
+        "water_meter_id": "WM_R203"
+      },
+      {
+        "id": "R204",
+        "floor": 2,
+        "area_m2": 28,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R204",
+        "water_meter_id": "WM_R204"
+      },
+      {
+        "id": "R205",
+        "floor": 2,
+        "area_m2": 22,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R205",
+        "water_meter_id": "WM_R205"
+      },
+      {
+        "id": "R206",
+        "floor": 2,
+        "area_m2": 22,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R206",
+        "water_meter_id": "WM_R206"
+      },
+      {
+        "id": "R207",
+        "floor": 2,
+        "area_m2": 28,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R207",
+        "water_meter_id": "WM_R207"
+      },
+      {
+        "id": "R208",
+        "floor": 2,
+        "area_m2": 32,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": true,
+        "thermal_zone_id": "Z_R208",
+        "water_meter_id": "WM_R208"
+      },
+      {
+        "id": "R209",
+        "floor": 2,
+        "area_m2": 28,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R209",
+        "water_meter_id": "WM_R209"
+      },
+      {
+        "id": "R210",
+        "floor": 2,
+        "area_m2": 22,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R210",
+        "water_meter_id": "WM_R210"
+      },
+      {
+        "id": "R301",
+        "floor": 3,
+        "area_m2": 22,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R301",
+        "water_meter_id": "WM_R301"
+      },
+      {
+        "id": "R302",
+        "floor": 3,
+        "area_m2": 28,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R302",
+        "water_meter_id": "WM_R302"
+      },
+      {
+        "id": "R303",
+        "floor": 3,
+        "area_m2": 32,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": true,
+        "thermal_zone_id": "Z_R303",
+        "water_meter_id": "WM_R303"
+      },
+      {
+        "id": "R304",
+        "floor": 3,
+        "area_m2": 28,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R304",
+        "water_meter_id": "WM_R304"
+      },
+      {
+        "id": "R305",
+        "floor": 3,
+        "area_m2": 22,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R305",
+        "water_meter_id": "WM_R305"
+      },
+      {
+        "id": "R306",
+        "floor": 3,
+        "area_m2": 22,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R306",
+        "water_meter_id": "WM_R306"
+      },
+      {
+        "id": "R307",
+        "floor": 3,
+        "area_m2": 28,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R307",
+        "water_meter_id": "WM_R307"
+      },
+      {
+        "id": "R308",
+        "floor": 3,
+        "area_m2": 32,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": true,
+        "thermal_zone_id": "Z_R308",
+        "water_meter_id": "WM_R308"
+      },
+      {
+        "id": "R309",
+        "floor": 3,
+        "area_m2": 28,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R309",
+        "water_meter_id": "WM_R309"
+      },
+      {
+        "id": "R310",
+        "floor": 3,
+        "area_m2": 22,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R310",
+        "water_meter_id": "WM_R310"
+      },
+      {
+        "id": "R401",
+        "floor": 4,
+        "area_m2": 22,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R401",
+        "water_meter_id": "WM_R401"
+      },
+      {
+        "id": "R402",
+        "floor": 4,
+        "area_m2": 28,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R402",
+        "water_meter_id": "WM_R402"
+      },
+      {
+        "id": "R403",
+        "floor": 4,
+        "area_m2": 32,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": true,
+        "thermal_zone_id": "Z_R403",
+        "water_meter_id": "WM_R403"
+      },
+      {
+        "id": "R404",
+        "floor": 4,
+        "area_m2": 28,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R404",
+        "water_meter_id": "WM_R404"
+      },
+      {
+        "id": "R405",
+        "floor": 4,
+        "area_m2": 22,
+        "orientation": "S",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R405",
+        "water_meter_id": "WM_R405"
+      },
+      {
+        "id": "R406",
+        "floor": 4,
+        "area_m2": 22,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R406",
+        "water_meter_id": "WM_R406"
+      },
+      {
+        "id": "R407",
+        "floor": 4,
+        "area_m2": 28,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R407",
+        "water_meter_id": "WM_R407"
+      },
+      {
+        "id": "R408",
+        "floor": 4,
+        "area_m2": 32,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": true,
+        "thermal_zone_id": "Z_R408",
+        "water_meter_id": "WM_R408"
+      },
+      {
+        "id": "R409",
+        "floor": 4,
+        "area_m2": 28,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R409",
+        "water_meter_id": "WM_R409"
+      },
+      {
+        "id": "R410",
+        "floor": 4,
+        "area_m2": 22,
+        "orientation": "N",
+        "max_guests": 2,
+        "has_bathtub": false,
+        "thermal_zone_id": "Z_R410",
+        "water_meter_id": "WM_R410"
+      }
+    ],
+    "common_areas": [
+      "lobby",
+      "corridors",
+      "technical_room",
+      "storage",
+      "staff_room"
+    ],
+    "assets": [
+      {
+        "id": "HP1",
+        "type": "heat_pump",
+        "nominal_thermal_kw_at_7c": 95,
+        "serves": "space heating + domestic hot water",
+        "metrics": [
+          "heat_output_kw",
+          "electric_kw",
+          "cop",
+          "supply_temp_c",
+          "status"
+        ]
+      },
+      {
+        "id": "AHU1",
+        "type": "air_handling_unit",
+        "nominal_airflow_m3h": 4200,
+        "heat_recovery": true,
+        "metrics": [
+          "airflow_m3h",
+          "filter_dp_pa",
+          "fan_kw",
+          "supply_air_c"
+        ]
+      },
+      {
+        "id": "PV1",
+        "type": "pv",
+        "peak_kwp": 60,
+        "metrics": [
+          "pv_kw"
+        ]
+      },
+      {
+        "id": "BAT1",
+        "type": "battery",
+        "usable_kwh": 100,
+        "max_charge_kw": 40,
+        "max_discharge_kw": 40,
+        "round_trip_efficiency": 0.9,
+        "soc_bounds_kwh": [
+          10,
+          95
+        ],
+        "metrics": [
+          "soc_kwh",
+          "power_kw_signed"
+        ]
+      },
+      {
+        "id": "WM_MAIN",
+        "type": "water_meter",
+        "metrics": [
+          "meter_total_l"
+        ]
+      },
+      {
+        "id": "ACS1",
+        "type": "access_control",
+        "doors": [
+          "MAIN_ENTRANCE",
+          "room doors (door_id = room id)"
+        ],
+        "credentials": "booking_id for guests, resource_id for staff/robots",
+        "file": "access_log.csv"
+      },
+      {
+        "id": "WASTE_F1",
+        "type": "waste_bin",
+        "floor": 1,
+        "volume_l": 240,
+        "metrics": [
+          "fill_pct"
+        ]
+      },
+      {
+        "id": "WASTE_F2",
+        "type": "waste_bin",
+        "floor": 2,
+        "volume_l": 240,
+        "metrics": [
+          "fill_pct"
+        ]
+      },
+      {
+        "id": "WASTE_F3",
+        "type": "waste_bin",
+        "floor": 3,
+        "volume_l": 240,
+        "metrics": [
+          "fill_pct"
+        ]
+      },
+      {
+        "id": "WASTE_F4",
+        "type": "waste_bin",
+        "floor": 4,
+        "volume_l": 240,
+        "metrics": [
+          "fill_pct"
+        ]
+      },
+      {
+        "id": "WASTE_MAIN",
+        "type": "waste_container",
+        "volume_l": 1100,
+        "metrics": [
+          "fill_pct"
+        ],
+        "pickup": "municipal service Tue + Fri 07:00 local; extra pickup can be ordered (~24 h lead time)"
+      },
+      {
+        "id": "VEND1",
+        "type": "vending_machine",
+        "location": "lobby",
+        "capacity": {
+          "drinks": 100,
+          "snacks": 60
+        },
+        "metrics": [
+          "stock_drinks",
+          "stock_snacks"
+        ],
+        "restock": "external vendor Mon + Thu 10:00 local; extra restock can be ordered (~24 h lead time)"
+      }
+    ],
+    "gateways": [
+      {
+        "id": "GW_F1",
+        "floor": 1
+      },
+      {
+        "id": "GW_F2",
+        "floor": 2
+      },
+      {
+        "id": "GW_F3",
+        "floor": 3
+      },
+      {
+        "id": "GW_F4",
+        "floor": 4
+      }
+    ],
+    "sensors": [
+      {
+        "id": "TEMPERATURE_R101",
+        "asset_id": "R101",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "SETPOINT_R101",
+        "asset_id": "R101",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "HUMIDITY_R101",
+        "asset_id": "R101",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "CO2_R101",
+        "asset_id": "R101",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "PRESENCE_R101",
+        "asset_id": "R101",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WINDOW_R101",
+        "asset_id": "R101",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WM_R101",
+        "asset_id": "R101",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "TEMPERATURE_R102",
+        "asset_id": "R102",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "SETPOINT_R102",
+        "asset_id": "R102",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "HUMIDITY_R102",
+        "asset_id": "R102",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "CO2_R102",
+        "asset_id": "R102",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "PRESENCE_R102",
+        "asset_id": "R102",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WINDOW_R102",
+        "asset_id": "R102",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WM_R102",
+        "asset_id": "R102",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "TEMPERATURE_R103",
+        "asset_id": "R103",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "SETPOINT_R103",
+        "asset_id": "R103",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "HUMIDITY_R103",
+        "asset_id": "R103",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "CO2_R103",
+        "asset_id": "R103",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "PRESENCE_R103",
+        "asset_id": "R103",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WINDOW_R103",
+        "asset_id": "R103",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WM_R103",
+        "asset_id": "R103",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "TEMPERATURE_R104",
+        "asset_id": "R104",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "SETPOINT_R104",
+        "asset_id": "R104",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "HUMIDITY_R104",
+        "asset_id": "R104",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "CO2_R104",
+        "asset_id": "R104",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "PRESENCE_R104",
+        "asset_id": "R104",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WINDOW_R104",
+        "asset_id": "R104",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WM_R104",
+        "asset_id": "R104",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "TEMPERATURE_R105",
+        "asset_id": "R105",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "SETPOINT_R105",
+        "asset_id": "R105",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "HUMIDITY_R105",
+        "asset_id": "R105",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "CO2_R105",
+        "asset_id": "R105",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "PRESENCE_R105",
+        "asset_id": "R105",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WINDOW_R105",
+        "asset_id": "R105",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WM_R105",
+        "asset_id": "R105",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "TEMPERATURE_R106",
+        "asset_id": "R106",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "SETPOINT_R106",
+        "asset_id": "R106",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "HUMIDITY_R106",
+        "asset_id": "R106",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "CO2_R106",
+        "asset_id": "R106",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "PRESENCE_R106",
+        "asset_id": "R106",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WINDOW_R106",
+        "asset_id": "R106",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WM_R106",
+        "asset_id": "R106",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "TEMPERATURE_R107",
+        "asset_id": "R107",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "SETPOINT_R107",
+        "asset_id": "R107",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "HUMIDITY_R107",
+        "asset_id": "R107",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "CO2_R107",
+        "asset_id": "R107",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "PRESENCE_R107",
+        "asset_id": "R107",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WINDOW_R107",
+        "asset_id": "R107",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WM_R107",
+        "asset_id": "R107",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "TEMPERATURE_R108",
+        "asset_id": "R108",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "SETPOINT_R108",
+        "asset_id": "R108",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "HUMIDITY_R108",
+        "asset_id": "R108",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "CO2_R108",
+        "asset_id": "R108",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "PRESENCE_R108",
+        "asset_id": "R108",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WINDOW_R108",
+        "asset_id": "R108",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WM_R108",
+        "asset_id": "R108",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "TEMPERATURE_R109",
+        "asset_id": "R109",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "SETPOINT_R109",
+        "asset_id": "R109",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "HUMIDITY_R109",
+        "asset_id": "R109",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "CO2_R109",
+        "asset_id": "R109",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "PRESENCE_R109",
+        "asset_id": "R109",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WINDOW_R109",
+        "asset_id": "R109",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WM_R109",
+        "asset_id": "R109",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "TEMPERATURE_R110",
+        "asset_id": "R110",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "SETPOINT_R110",
+        "asset_id": "R110",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "HUMIDITY_R110",
+        "asset_id": "R110",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "CO2_R110",
+        "asset_id": "R110",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "PRESENCE_R110",
+        "asset_id": "R110",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WINDOW_R110",
+        "asset_id": "R110",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "WM_R110",
+        "asset_id": "R110",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F1"
+      },
+      {
+        "id": "TEMPERATURE_R201",
+        "asset_id": "R201",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "SETPOINT_R201",
+        "asset_id": "R201",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "HUMIDITY_R201",
+        "asset_id": "R201",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "CO2_R201",
+        "asset_id": "R201",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "PRESENCE_R201",
+        "asset_id": "R201",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WINDOW_R201",
+        "asset_id": "R201",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WM_R201",
+        "asset_id": "R201",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "TEMPERATURE_R202",
+        "asset_id": "R202",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "SETPOINT_R202",
+        "asset_id": "R202",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "HUMIDITY_R202",
+        "asset_id": "R202",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "CO2_R202",
+        "asset_id": "R202",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "PRESENCE_R202",
+        "asset_id": "R202",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WINDOW_R202",
+        "asset_id": "R202",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WM_R202",
+        "asset_id": "R202",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "TEMPERATURE_R203",
+        "asset_id": "R203",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "SETPOINT_R203",
+        "asset_id": "R203",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "HUMIDITY_R203",
+        "asset_id": "R203",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "CO2_R203",
+        "asset_id": "R203",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "PRESENCE_R203",
+        "asset_id": "R203",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WINDOW_R203",
+        "asset_id": "R203",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WM_R203",
+        "asset_id": "R203",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "TEMPERATURE_R204",
+        "asset_id": "R204",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "SETPOINT_R204",
+        "asset_id": "R204",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "HUMIDITY_R204",
+        "asset_id": "R204",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "CO2_R204",
+        "asset_id": "R204",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "PRESENCE_R204",
+        "asset_id": "R204",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WINDOW_R204",
+        "asset_id": "R204",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WM_R204",
+        "asset_id": "R204",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "TEMPERATURE_R205",
+        "asset_id": "R205",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "SETPOINT_R205",
+        "asset_id": "R205",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "HUMIDITY_R205",
+        "asset_id": "R205",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "CO2_R205",
+        "asset_id": "R205",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "PRESENCE_R205",
+        "asset_id": "R205",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WINDOW_R205",
+        "asset_id": "R205",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WM_R205",
+        "asset_id": "R205",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "TEMPERATURE_R206",
+        "asset_id": "R206",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "SETPOINT_R206",
+        "asset_id": "R206",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "HUMIDITY_R206",
+        "asset_id": "R206",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "CO2_R206",
+        "asset_id": "R206",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "PRESENCE_R206",
+        "asset_id": "R206",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WINDOW_R206",
+        "asset_id": "R206",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WM_R206",
+        "asset_id": "R206",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "TEMPERATURE_R207",
+        "asset_id": "R207",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "SETPOINT_R207",
+        "asset_id": "R207",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "HUMIDITY_R207",
+        "asset_id": "R207",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "CO2_R207",
+        "asset_id": "R207",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "PRESENCE_R207",
+        "asset_id": "R207",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WINDOW_R207",
+        "asset_id": "R207",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WM_R207",
+        "asset_id": "R207",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "TEMPERATURE_R208",
+        "asset_id": "R208",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "SETPOINT_R208",
+        "asset_id": "R208",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "HUMIDITY_R208",
+        "asset_id": "R208",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "CO2_R208",
+        "asset_id": "R208",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "PRESENCE_R208",
+        "asset_id": "R208",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WINDOW_R208",
+        "asset_id": "R208",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WM_R208",
+        "asset_id": "R208",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "TEMPERATURE_R209",
+        "asset_id": "R209",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "SETPOINT_R209",
+        "asset_id": "R209",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "HUMIDITY_R209",
+        "asset_id": "R209",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "CO2_R209",
+        "asset_id": "R209",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "PRESENCE_R209",
+        "asset_id": "R209",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WINDOW_R209",
+        "asset_id": "R209",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WM_R209",
+        "asset_id": "R209",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "TEMPERATURE_R210",
+        "asset_id": "R210",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "SETPOINT_R210",
+        "asset_id": "R210",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "HUMIDITY_R210",
+        "asset_id": "R210",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "CO2_R210",
+        "asset_id": "R210",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "PRESENCE_R210",
+        "asset_id": "R210",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WINDOW_R210",
+        "asset_id": "R210",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "WM_R210",
+        "asset_id": "R210",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F2"
+      },
+      {
+        "id": "TEMPERATURE_R301",
+        "asset_id": "R301",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "SETPOINT_R301",
+        "asset_id": "R301",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "HUMIDITY_R301",
+        "asset_id": "R301",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "CO2_R301",
+        "asset_id": "R301",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "PRESENCE_R301",
+        "asset_id": "R301",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WINDOW_R301",
+        "asset_id": "R301",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WM_R301",
+        "asset_id": "R301",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "TEMPERATURE_R302",
+        "asset_id": "R302",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "SETPOINT_R302",
+        "asset_id": "R302",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "HUMIDITY_R302",
+        "asset_id": "R302",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "CO2_R302",
+        "asset_id": "R302",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "PRESENCE_R302",
+        "asset_id": "R302",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WINDOW_R302",
+        "asset_id": "R302",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WM_R302",
+        "asset_id": "R302",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "TEMPERATURE_R303",
+        "asset_id": "R303",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "SETPOINT_R303",
+        "asset_id": "R303",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "HUMIDITY_R303",
+        "asset_id": "R303",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "CO2_R303",
+        "asset_id": "R303",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "PRESENCE_R303",
+        "asset_id": "R303",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WINDOW_R303",
+        "asset_id": "R303",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WM_R303",
+        "asset_id": "R303",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "TEMPERATURE_R304",
+        "asset_id": "R304",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "SETPOINT_R304",
+        "asset_id": "R304",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "HUMIDITY_R304",
+        "asset_id": "R304",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "CO2_R304",
+        "asset_id": "R304",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "PRESENCE_R304",
+        "asset_id": "R304",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WINDOW_R304",
+        "asset_id": "R304",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WM_R304",
+        "asset_id": "R304",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "TEMPERATURE_R305",
+        "asset_id": "R305",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "SETPOINT_R305",
+        "asset_id": "R305",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "HUMIDITY_R305",
+        "asset_id": "R305",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "CO2_R305",
+        "asset_id": "R305",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "PRESENCE_R305",
+        "asset_id": "R305",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WINDOW_R305",
+        "asset_id": "R305",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WM_R305",
+        "asset_id": "R305",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "TEMPERATURE_R306",
+        "asset_id": "R306",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "SETPOINT_R306",
+        "asset_id": "R306",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "HUMIDITY_R306",
+        "asset_id": "R306",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "CO2_R306",
+        "asset_id": "R306",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "PRESENCE_R306",
+        "asset_id": "R306",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WINDOW_R306",
+        "asset_id": "R306",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WM_R306",
+        "asset_id": "R306",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "TEMPERATURE_R307",
+        "asset_id": "R307",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "SETPOINT_R307",
+        "asset_id": "R307",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "HUMIDITY_R307",
+        "asset_id": "R307",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "CO2_R307",
+        "asset_id": "R307",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "PRESENCE_R307",
+        "asset_id": "R307",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WINDOW_R307",
+        "asset_id": "R307",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WM_R307",
+        "asset_id": "R307",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "TEMPERATURE_R308",
+        "asset_id": "R308",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "SETPOINT_R308",
+        "asset_id": "R308",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "HUMIDITY_R308",
+        "asset_id": "R308",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "CO2_R308",
+        "asset_id": "R308",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "PRESENCE_R308",
+        "asset_id": "R308",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WINDOW_R308",
+        "asset_id": "R308",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WM_R308",
+        "asset_id": "R308",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "TEMPERATURE_R309",
+        "asset_id": "R309",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "SETPOINT_R309",
+        "asset_id": "R309",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "HUMIDITY_R309",
+        "asset_id": "R309",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "CO2_R309",
+        "asset_id": "R309",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "PRESENCE_R309",
+        "asset_id": "R309",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WINDOW_R309",
+        "asset_id": "R309",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WM_R309",
+        "asset_id": "R309",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "TEMPERATURE_R310",
+        "asset_id": "R310",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "SETPOINT_R310",
+        "asset_id": "R310",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "HUMIDITY_R310",
+        "asset_id": "R310",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "CO2_R310",
+        "asset_id": "R310",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "PRESENCE_R310",
+        "asset_id": "R310",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WINDOW_R310",
+        "asset_id": "R310",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "WM_R310",
+        "asset_id": "R310",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F3"
+      },
+      {
+        "id": "TEMPERATURE_R401",
+        "asset_id": "R401",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "SETPOINT_R401",
+        "asset_id": "R401",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "HUMIDITY_R401",
+        "asset_id": "R401",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "CO2_R401",
+        "asset_id": "R401",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "PRESENCE_R401",
+        "asset_id": "R401",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WINDOW_R401",
+        "asset_id": "R401",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WM_R401",
+        "asset_id": "R401",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "TEMPERATURE_R402",
+        "asset_id": "R402",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "SETPOINT_R402",
+        "asset_id": "R402",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "HUMIDITY_R402",
+        "asset_id": "R402",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "CO2_R402",
+        "asset_id": "R402",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "PRESENCE_R402",
+        "asset_id": "R402",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WINDOW_R402",
+        "asset_id": "R402",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WM_R402",
+        "asset_id": "R402",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "TEMPERATURE_R403",
+        "asset_id": "R403",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "SETPOINT_R403",
+        "asset_id": "R403",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "HUMIDITY_R403",
+        "asset_id": "R403",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "CO2_R403",
+        "asset_id": "R403",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "PRESENCE_R403",
+        "asset_id": "R403",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WINDOW_R403",
+        "asset_id": "R403",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WM_R403",
+        "asset_id": "R403",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "TEMPERATURE_R404",
+        "asset_id": "R404",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "SETPOINT_R404",
+        "asset_id": "R404",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "HUMIDITY_R404",
+        "asset_id": "R404",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "CO2_R404",
+        "asset_id": "R404",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "PRESENCE_R404",
+        "asset_id": "R404",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WINDOW_R404",
+        "asset_id": "R404",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WM_R404",
+        "asset_id": "R404",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "TEMPERATURE_R405",
+        "asset_id": "R405",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "SETPOINT_R405",
+        "asset_id": "R405",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "HUMIDITY_R405",
+        "asset_id": "R405",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "CO2_R405",
+        "asset_id": "R405",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "PRESENCE_R405",
+        "asset_id": "R405",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WINDOW_R405",
+        "asset_id": "R405",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WM_R405",
+        "asset_id": "R405",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "TEMPERATURE_R406",
+        "asset_id": "R406",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "SETPOINT_R406",
+        "asset_id": "R406",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "HUMIDITY_R406",
+        "asset_id": "R406",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "CO2_R406",
+        "asset_id": "R406",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "PRESENCE_R406",
+        "asset_id": "R406",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WINDOW_R406",
+        "asset_id": "R406",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WM_R406",
+        "asset_id": "R406",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "TEMPERATURE_R407",
+        "asset_id": "R407",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "SETPOINT_R407",
+        "asset_id": "R407",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "HUMIDITY_R407",
+        "asset_id": "R407",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "CO2_R407",
+        "asset_id": "R407",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "PRESENCE_R407",
+        "asset_id": "R407",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WINDOW_R407",
+        "asset_id": "R407",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WM_R407",
+        "asset_id": "R407",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "TEMPERATURE_R408",
+        "asset_id": "R408",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "SETPOINT_R408",
+        "asset_id": "R408",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "HUMIDITY_R408",
+        "asset_id": "R408",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "CO2_R408",
+        "asset_id": "R408",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "PRESENCE_R408",
+        "asset_id": "R408",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WINDOW_R408",
+        "asset_id": "R408",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WM_R408",
+        "asset_id": "R408",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "TEMPERATURE_R409",
+        "asset_id": "R409",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "SETPOINT_R409",
+        "asset_id": "R409",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "HUMIDITY_R409",
+        "asset_id": "R409",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "CO2_R409",
+        "asset_id": "R409",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "PRESENCE_R409",
+        "asset_id": "R409",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WINDOW_R409",
+        "asset_id": "R409",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WM_R409",
+        "asset_id": "R409",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "TEMPERATURE_R410",
+        "asset_id": "R410",
+        "metric": "temperature_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "SETPOINT_R410",
+        "asset_id": "R410",
+        "metric": "setpoint_c",
+        "unit": "degC",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "HUMIDITY_R410",
+        "asset_id": "R410",
+        "metric": "humidity_pct",
+        "unit": "%",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "CO2_R410",
+        "asset_id": "R410",
+        "metric": "co2_ppm",
+        "unit": "ppm",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "PRESENCE_R410",
+        "asset_id": "R410",
+        "metric": "presence",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WINDOW_R410",
+        "asset_id": "R410",
+        "metric": "window_open",
+        "unit": "0/1",
+        "file": "room_telemetry.csv",
+        "gateway": "GW_F4"
+      },
+      {
+        "id": "WM_R410",
+        "asset_id": "R410",
+        "metric": "meter_total_l",
+        "unit": "L",
+        "file": "room_water.csv",
+        "gateway": "GW_F4"
+      }
+    ]
+  },
+  "staff": {
+    "resources": [
+      {
+        "resource_id": "CLEANER_1",
+        "role": "cleaner"
+      },
+      {
+        "resource_id": "CLEANER_2",
+        "role": "cleaner"
+      },
+      {
+        "resource_id": "CLEANER_3",
+        "role": "cleaner"
+      },
+      {
+        "resource_id": "TECH_1",
+        "role": "technician"
+      },
+      {
+        "resource_id": "ROBOT_1",
+        "role": "robot"
+      },
+      {
+        "resource_id": "ROBOT_2",
+        "role": "robot"
+      },
+      {
+        "resource_id": "ONCALL_1",
+        "role": "on_call_housekeeping"
+      }
+    ],
+    "notes": {
+      "cleaner": "human housekeeping; only humans can mark a room clean and release it",
+      "robot": "floor-cleaning robot; shortens human turnover time, cannot clean bathrooms, cannot certify or release a room, never enters an occupied room; can also carry a floor waste bin to the central container (~20 min) - not used in current operations",
+      "technician": "in-house technician; external contractors appear in work_orders.csv",
+      "on_call_housekeeping": "one person on call 15:30-22:00 local; ~45 min until on site; one room at a time; costly, for waiting guests only"
+    }
+  },
+  "operations": {
+    "check_in_from_local": "15:00",
+    "check_out_until_local": "11:00",
+    "housekeeping_shift_local": "07:00-15:30",
+    "technician_shift_local": "08:00-16:30 Mon-Fri",
+    "self_check_in": true,
+    "setpoint_policy": "18 °C setback when unoccupied; 21 °C default when occupied, guests may adjust 19-24 °C",
+    "cooling": "none (heating-only heat pump; ventilation provides night flushing in summer)"
+  },
+  "constraints": {
+    "max_guests_per_room": 2,
+    "occupied_comfort_c": [
+      20,
+      23
+    ],
+    "room_release_requires": [
+      "vacant",
+      "clean",
+      "not_blocked",
+      "inspection_passed_if_required"
+    ],
+    "water_balance": "main_meter ≈ sum(room meters) + common areas + losses",
+    "energy_balance": "grid_import + pv + battery_discharge = building_load + battery_charge + grid_export",
+    "no_unapproved_safety_critical_actuation": true,
+    "occupied_room_entry_requires_guest_consent": true
+  },
+  "scenario_classes": [
+    "S01_turnaround_conflict",
+    "S02_water_leak",
+    "S03_energy_vs_comfort",
+    "S04_maintenance_cascade",
+    "S05_event_weekend"
+  ],
+  "provenance": {
+    "brand_context": "Inspired by public PLATO/CLARA descriptions; no real property data",
+    "all_numeric_parameters": "synthetic, illustrative, not calibrated"
+  }
+}

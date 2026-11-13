@@ -1,0 +1,113 @@
+request_id,timestamp_utc,room_id,booking_id,channel,language,request_type,text,priority,response_due_utc,requires_guest_consent
+GR000001,2026-01-05T09:10:28Z,R309,BK000133,kiosk,de,invoice,Bitte Rechnung auf die Firmenadresse ausstellen.,low,2026-01-06T09:10:28Z,not_required
+GR000002,2026-01-05T11:16:50Z,R404,BK000132,email,en,parking,Where can we park the car?,low,2026-01-05T15:16:50Z,not_required
+GR000003,2026-01-05T21:15:51Z,R409,BK000028,app_chat,en,wifi_help,What is the WiFi password?,medium,2026-01-05T23:15:51Z,not_required
+GR000004,2026-01-05T21:57:20Z,R307,BK000104,kiosk,it,noise_complaint,Musica alta dalla camera accanto.,high,2026-01-05T22:27:20Z,not_required
+GR000005,2026-01-05T22:37:53Z,R308,BK000173,app_chat,de,early_checkin,"Wir kommen schon gegen 13:00 an, wäre ein früherer Check-in möglich?",medium,2026-01-06T01:37:53Z,not_required
+GR000006,2026-01-06T03:52:59Z,R201,BK000119,email,en,early_checkin,"Arriving at 14:30, any chance the room is ready?",medium,2026-01-06T06:52:59Z,not_required
+GR000007,2026-01-06T08:20:17Z,R209,BK000071,app_chat,en,extra_towels,Could we get two more towels please?,low,2026-01-06T12:20:17Z,not_required
+GR000008,2026-01-06T21:09:21Z,R305,BK000108,phone,en,noise_complaint,Loud music from the room next door.,high,2026-01-06T21:39:21Z,not_required
+GR000009,2026-01-07T07:24:23Z,R402,BK000131,app_chat,de,early_checkin,"Wir kommen schon gegen 13:15 an, wäre ein früherer Check-in möglich?",medium,2026-01-07T10:24:23Z,not_required
+GR000010,2026-01-07T09:33:00Z,R208,BK000025,phone,de,early_checkin,Ist ein Early Check-in um 12:30 machbar?,medium,2026-01-07T12:33:00Z,not_required
+GR000011,2026-01-07T18:05:16Z,R407,BK000156,kiosk,en,arrival_delay,"Running late, arriving after midnight.",medium,2026-01-07T20:05:16Z,not_required
+GR000012,2026-01-07T22:58:21Z,R308,BK000165,app_chat,en,early_checkin,"Our train arrives early, could we check in around 11:30?",medium,2026-01-08T01:58:21Z,not_required
+GR000013,2026-01-08T09:49:32Z,R401,BK000128,app_chat,it,early_checkin,"Arriviamo alle 13:30, è possibile il check-in anticipato?",medium,2026-01-08T12:49:32Z,not_required
+GR000014,2026-01-09T22:49:02Z,R305,BK000184,email,en,early_checkin,"Our train arrives early, could we check in around 11:00?",medium,2026-01-10T01:49:02Z,not_required
+GR000015,2026-01-10T07:01:26Z,R407,BK000156,app_chat,en,late_checkout,Late check-out until 13:00 possible?,medium,2026-01-10T10:01:26Z,not_required
+GR000016,2026-01-10T07:19:20Z,R109,BK000099,app_chat,en,luggage_storage,Can we leave our luggage somewhere after check-out?,low,2026-01-10T11:19:20Z,not_required
+GR000017,2026-01-10T08:19:53Z,R410,BK000199,app_chat,it,early_checkin,"Arriviamo alle 12:30, è possibile il check-in anticipato?",medium,2026-01-10T11:19:53Z,not_required
+GR000018,2026-01-10T14:03:45Z,R110,BK000075,phone,en,temperature_cold,Too cold to sleep. Heating on max but no change.,high,2026-01-10T14:48:45Z,required
+GR000019,2026-01-10T21:51:03Z,R201,BK000059,phone,de,noise_complaint,"Könnten Sie die Nachbarn bitten, leiser zu sein?",high,2026-01-10T22:21:03Z,not_required
+GR000020,2026-01-11T03:04:13Z,R406,BK000007,kiosk,en,early_checkin,Is an early check-in at 12:45 possible?,medium,2026-01-11T06:04:13Z,not_required
+GR000021,2026-01-11T11:28:29Z,R410,BK000199,email,it,cleaning_request,Potete pulire la camera oggi?,low,2026-01-11T19:28:29Z,required
+GR000022,2026-01-11T14:16:27Z,R405,BK000088,email,de,maintenance_issue,Die Nachttischlampe geht nicht.,medium,2026-01-11T22:16:27Z,required
+GR000023,2026-01-12T14:05:46Z,R206,BK000068,kiosk,es,parking,¿Dónde podemos aparcar?,low,2026-01-12T18:05:46Z,not_required
+GR000024,2026-01-12T14:10:26Z,R402,BK000201,email,de,temperature_cold,"Es ist eiskalt im Zimmer, bitte Heizung prüfen.",high,2026-01-12T14:55:26Z,required
+GR000025,2026-01-13T06:38:51Z,R201,BK000191,app_chat,fr,late_checkout,Un départ tardif à 13:00 est-il possible ?,medium,2026-01-13T09:38:51Z,not_required
+GR000026,2026-01-13T10:35:17Z,R402,BK000201,phone,de,parking,Wo können wir parken?,low,2026-01-13T14:35:17Z,not_required
+GR000027,2026-01-14T02:47:20Z,R303,BK000200,app_chat,de,early_checkin,Ist ein Early Check-in um 12:00 machbar?,medium,2026-01-14T05:47:20Z,not_required
+GR000028,2026-01-14T16:24:37Z,R401,BK000128,email,it,wifi_help,Il WiFi non funziona.,medium,2026-01-14T18:24:37Z,not_required
+GR000029,2026-01-14T18:35:17Z,R205,BK000192,app_chat,en,extra_towels,Could we get two more towels please?,low,2026-01-14T22:35:17Z,not_required
+GR000030,2026-01-14T19:20:14Z,R303,BK000200,app_chat,de,luggage_storage,Können wir nach dem Check-out unser Gepäck abstellen?,low,2026-01-14T23:20:14Z,not_required
+GR000031,2026-01-15T00:17:22Z,R206,BK000206,email,en,noise_complaint,Loud music from the room next door.,high,2026-01-15T00:47:22Z,not_required
+GR000032,2026-01-15T08:04:15Z,R407,BK000218,phone,de,late_checkout,Wäre ein Late Check-out bis 13:00 möglich?,medium,2026-01-15T11:04:15Z,not_required
+GR000033,2026-01-15T11:35:28Z,R408,BK000002,phone,de,extra_towels,Bitte frische Handtücher.,low,2026-01-15T15:35:28Z,not_required
+GR000034,2026-01-15T17:11:11Z,R101,BK000231,app_chat,de,temperature_cold,"Zu kalt zum Schlafen, Heizung bringt nichts.",high,2026-01-15T17:56:11Z,required
+GR000035,2026-01-15T17:57:34Z,R303,BK000200,phone,de,invoice,Bitte Rechnung auf die Firmenadresse ausstellen.,low,2026-01-16T17:57:34Z,not_required
+GR000036,2026-01-15T18:44:49Z,R402,BK000225,email,en,arrival_delay,"Running late, arriving after midnight.",medium,2026-01-15T20:44:49Z,not_required
+GR000037,2026-01-15T21:36:16Z,R204,BK000057,app_chat,de,temperature_cold,"Zu kalt zum Schlafen, Heizung bringt nichts.",high,2026-01-15T22:21:16Z,required
+GR000038,2026-01-16T02:42:07Z,R203,BK000040,kiosk,fr,early_checkin,"Nous arrivons vers 12:00, un check-in anticipé est-il possible ?",medium,2026-01-16T05:42:07Z,not_required
+GR000039,2026-01-16T03:02:23Z,R108,BK000189,kiosk,en,temperature_cold,Room feels cold even with the thermostat at 22. Is something wrong?,high,2026-01-16T03:47:23Z,required
+GR000040,2026-01-16T03:21:25Z,R310,BK000029,app_chat,en,temperature_cold,"The room is quite cold, the heating doesn't seem to work.",high,2026-01-16T04:06:25Z,required
+GR000041,2026-01-16T07:16:44Z,R408,BK000002,email,de,maintenance_issue,Der Duschkopf ist kaputt.,medium,2026-01-16T15:16:44Z,required
+GR000042,2026-01-16T07:59:38Z,R110,BK000228,kiosk,en,late_checkout,Late check-out until 13:00 possible?,medium,2026-01-16T10:59:38Z,not_required
+GR000043,2026-01-16T09:04:53Z,R110,BK000228,app_chat,en,temperature_cold,Too cold to sleep. Heating on max but no change.,high,2026-01-16T09:49:53Z,required
+GR000044,2026-01-16T12:08:59Z,R101,BK000231,phone,de,temperature_cold,"Thermostat steht auf 22 Grad, trotzdem kalt. Können Sie das ansehen?",high,2026-01-16T12:53:59Z,required
+GR000045,2026-01-16T20:43:06Z,R305,BK000152,phone,es,maintenance_issue,La luz de la mesita no funciona.,medium,2026-01-17T04:43:06Z,required
+GR000046,2026-01-16T22:18:56Z,R306,BK000016,app_chat,de,temperature_cold,"Es ist eiskalt im Zimmer, bitte Heizung prüfen.",high,2026-01-16T23:03:56Z,required
+GR000047,2026-01-17T01:51:28Z,R101,BK000231,phone,de,temperature_cold,"Thermostat steht auf 22 Grad, trotzdem kalt. Können Sie das ansehen?",high,2026-01-17T02:36:28Z,required
+GR000048,2026-01-17T03:52:41Z,R410,BK000073,phone,de,temperature_cold,"Zu kalt zum Schlafen, Heizung bringt nichts.",high,2026-01-17T04:37:41Z,required
+GR000049,2026-01-17T07:41:34Z,R305,BK000152,app_chat,es,late_checkout,¿Podemos salir a las 13:00?,medium,2026-01-17T10:41:34Z,not_required
+GR000050,2026-01-17T17:40:20Z,R105,BK000006,app_chat,it,temperature_cold,"Fa freddo in camera, potete controllare il riscaldamento?",high,2026-01-17T18:25:20Z,required
+GR000051,2026-01-17T17:59:08Z,R406,BK000213,app_chat,en,temperature_cold,"It's freezing in here, can you check the heating please?",high,2026-01-17T18:44:08Z,required
+GR000052,2026-01-17T18:08:17Z,R107,BK000138,app_chat,en,temperature_cold,"It's freezing in here, can you check the heating please?",high,2026-01-17T18:53:17Z,required
+GR000053,2026-01-17T18:46:19Z,R104,BK000177,email,de,temperature_cold,"Zu kalt zum Schlafen, Heizung bringt nichts.",high,2026-01-17T19:31:19Z,required
+GR000054,2026-01-17T21:44:38Z,R101,BK000202,kiosk,fr,temperature_cold,"La chambre est froide, le chauffage ne marche pas.",high,2026-01-17T22:29:38Z,required
+GR000055,2026-01-18T02:20:11Z,R310,BK000029,phone,en,temperature_cold,"The room is quite cold, the heating doesn't seem to work.",high,2026-01-18T03:05:11Z,required
+GR000056,2026-01-18T07:33:09Z,R208,BK000142,kiosk,en,cleaning_request,Could the room be cleaned today while we are out?,low,2026-01-18T15:33:09Z,required
+GR000057,2026-01-18T08:24:01Z,R310,BK000029,phone,en,late_checkout,Late check-out until 13:00 possible?,medium,2026-01-18T11:24:01Z,not_required
+GR000058,2026-01-18T09:00:03Z,R306,BK000016,phone,de,wifi_help,Internet im Zimmer ist sehr langsam.,medium,2026-01-18T11:00:03Z,not_required
+GR000059,2026-01-18T17:59:57Z,R310,BK000029,app_chat,en,wifi_help,Internet is very slow in my room.,medium,2026-01-18T19:59:57Z,not_required
+GR000060,2026-01-19T08:03:27Z,R410,BK000073,app_chat,de,cleaning_request,"Könnte das Zimmer heute gereinigt werden, während wir unterwegs sind?",low,2026-01-19T16:03:27Z,required
+GR000061,2026-01-19T15:46:29Z,R310,BK000145,app_chat,en,luggage_storage,Can we leave our luggage somewhere after check-out?,low,2026-01-19T19:46:29Z,not_required
+GR000062,2026-01-19T22:34:15Z,R208,BK000142,phone,en,noise_complaint,Can you ask the neighbours to be quieter?,high,2026-01-19T23:04:15Z,not_required
+GR000063,2026-01-19T23:03:39Z,R409,BK000044,kiosk,en,early_checkin,"Our train arrives early, could we check in around 12:30?",medium,2026-01-20T02:03:39Z,not_required
+GR000064,2026-01-20T01:44:59Z,R208,BK000142,app_chat,en,air_quality,The air in the room feels stuffy.,medium,2026-01-20T05:44:59Z,required
+GR000065,2026-01-20T07:58:26Z,R108,BK000246,phone,en,late_checkout,Could we check out at 13:00 instead of 11?,medium,2026-01-20T10:58:26Z,not_required
+GR000066,2026-01-20T08:24:56Z,R302,BK000137,email,de,late_checkout,Wäre ein Late Check-out bis 13:00 möglich?,medium,2026-01-20T11:24:56Z,not_required
+GR000067,2026-01-20T08:52:04Z,R202,BK000086,phone,en,early_checkin,Is an early check-in at 11:30 possible?,medium,2026-01-20T11:52:04Z,not_required
+GR000068,2026-01-20T10:01:21Z,R307,BK000027,app_chat,de,extra_towels,Könnten wir bitte zwei zusätzliche Handtücher bekommen?,low,2026-01-20T14:01:21Z,not_required
+GR000069,2026-01-20T17:04:21Z,R406,BK000216,app_chat,fr,arrival_delay,"Nous aurons du retard, arrivée vers 22:00.",medium,2026-01-20T19:04:21Z,not_required
+GR000070,2026-01-21T06:37:21Z,R407,BK000230,app_chat,en,cleaning_request,Please empty the bins.,low,2026-01-21T14:37:21Z,required
+GR000071,2026-01-21T07:18:47Z,R310,BK000145,app_chat,en,wifi_help,Internet is very slow in my room.,medium,2026-01-21T09:18:47Z,not_required
+GR000072,2026-01-21T19:42:10Z,R408,BK000261,phone,it,arrival_delay,"Arriveremo in ritardo, verso le 23:45.",medium,2026-01-21T21:42:10Z,not_required
+GR000073,2026-01-22T00:21:26Z,R307,BK000022,app_chat,de,early_checkin,"Wir kommen schon gegen 13:00 an, wäre ein früherer Check-in möglich?",medium,2026-01-22T03:21:26Z,not_required
+GR000074,2026-01-22T00:31:25Z,R103,BK000117,phone,en,noise_complaint,Can you ask the neighbours to be quieter?,high,2026-01-22T01:01:25Z,not_required
+GR000075,2026-01-22T06:51:20Z,R102,BK000031,kiosk,fr,early_checkin,"Nous arrivons vers 13:30, un check-in anticipé est-il possible ?",medium,2026-01-22T09:51:20Z,not_required
+GR000076,2026-01-22T07:26:02Z,R305,BK000236,app_chat,es,late_checkout,¿Podemos salir a las 13:00?,medium,2026-01-22T10:26:02Z,not_required
+GR000077,2026-01-22T08:50:14Z,R305,BK000236,phone,es,water_issue,La cisterna no para de correr.,medium,2026-01-22T12:50:14Z,required
+GR000078,2026-01-22T17:11:09Z,R307,BK000022,app_chat,de,extra_towels,Bitte frische Handtücher.,low,2026-01-22T21:11:09Z,not_required
+GR000079,2026-01-22T22:23:04Z,R304,BK000257,email,de,noise_complaint,Am Gang ist es sehr laut.,high,2026-01-22T22:53:04Z,not_required
+GR000080,2026-01-22T22:24:37Z,R110,BK000139,email,nl,early_checkin,"We komen rond 12:15 aan, kunnen we eerder inchecken?",medium,2026-01-23T01:24:37Z,not_required
+GR000081,2026-01-22T23:03:22Z,R207,BK000195,app_chat,nl,noise_complaint,Veel lawaai van de buren.,high,2026-01-22T23:33:22Z,not_required
+GR000082,2026-01-22T23:56:08Z,R407,BK000230,app_chat,en,noise_complaint,"Very noisy in the corridor, people talking loudly.",high,2026-01-23T00:26:08Z,not_required
+GR000083,2026-01-23T00:14:34Z,R410,BK000021,email,de,early_checkin,Ist ein Early Check-in um 14:30 machbar?,medium,2026-01-23T03:14:34Z,not_required
+GR000084,2026-01-23T01:18:32Z,R307,BK000105,kiosk,de,early_checkin,Ankunft ca. 13:45 – ist das Zimmer dann schon fertig?,medium,2026-01-23T04:18:32Z,not_required
+GR000085,2026-01-23T02:52:02Z,R405,BK000205,kiosk,en,early_checkin,Is an early check-in at 12:45 possible?,medium,2026-01-23T05:52:02Z,not_required
+GR000086,2026-01-23T04:02:54Z,R207,BK000195,phone,nl,air_quality,De lucht in de kamer is benauwd.,medium,2026-01-23T08:02:54Z,required
+GR000087,2026-01-23T06:02:16Z,R101,BK000262,email,it,extra_towels,Potremmo avere altri asciugamani?,low,2026-01-23T10:02:16Z,not_required
+GR000088,2026-01-23T06:16:24Z,R104,BK000203,app_chat,en,early_checkin,Is an early check-in at 14:45 possible?,medium,2026-01-23T09:16:24Z,not_required
+GR000089,2026-01-23T07:07:07Z,R107,BK000260,app_chat,de,early_checkin,Ankunft ca. 14:15 – ist das Zimmer dann schon fertig?,medium,2026-01-23T10:07:07Z,not_required
+GR000090,2026-01-23T08:51:27Z,R207,BK000096,kiosk,nl,early_checkin,"We komen rond 12:15 aan, kunnen we eerder inchecken?",medium,2026-01-23T11:51:27Z,not_required
+GR000091,2026-01-23T11:54:19Z,R306,BK000050,email,it,early_checkin,"Arriviamo alle 13:45, è possibile il check-in anticipato?",medium,2026-01-23T14:54:19Z,not_required
+GR000092,2026-01-23T12:45:56Z,R405,BK000205,app_chat,en,temperature_cold,"It's freezing in here, can you check the heating please?",high,2026-01-23T13:30:56Z,required
+GR000093,2026-01-23T13:21:18Z,R209,BK000101,email,de,temperature_cold,"Thermostat steht auf 20 Grad, trotzdem kalt. Können Sie das ansehen?",high,2026-01-23T14:06:18Z,required
+GR000094,2026-01-23T13:33:52Z,R109,BK000054,phone,es,temperature_cold,"La habitación está muy fría, la calefacción no funciona.",high,2026-01-23T14:18:52Z,required
+GR000095,2026-01-23T13:39:02Z,R301,BK000019,phone,de,temperature_cold,"Zu kalt zum Schlafen, Heizung bringt nichts.",high,2026-01-23T14:24:02Z,required
+GR000096,2026-01-23T17:30:15Z,R409,BK000223,email,en,wifi_help,WiFi keeps disconnecting.,medium,2026-01-23T19:30:15Z,not_required
+GR000097,2026-01-23T21:32:59Z,R106,BK000060,phone,de,luggage_storage,Können wir nach dem Check-out unser Gepäck abstellen?,low,2026-01-24T01:32:59Z,not_required
+GR000098,2026-01-23T23:20:20Z,R403,BK000079,app_chat,es,early_checkin,"Llegamos a las 12:15, ¿es posible hacer el check-in antes?",medium,2026-01-24T02:20:20Z,not_required
+GR000099,2026-01-24T01:24:54Z,R409,BK000055,kiosk,de,early_checkin,Ankunft ca. 14:00 – ist das Zimmer dann schon fertig?,medium,2026-01-24T04:24:54Z,not_required
+GR000100,2026-01-24T08:29:55Z,R106,BK000060,app_chat,de,late_checkout,Wäre ein Late Check-out bis 13:00 möglich?,medium,2026-01-24T11:29:55Z,not_required
+GR000101,2026-01-24T10:45:28Z,R307,BK000091,app_chat,en,early_checkin,"Our train arrives early, could we check in around 12:45?",medium,2026-01-24T13:45:28Z,not_required
+GR000102,2026-01-24T12:39:00Z,R302,BK000085,app_chat,en,waiting_for_room,"Still waiting for the room, any update?",high,2026-01-24T12:59:00Z,not_required
+GR000103,2026-01-24T13:40:16Z,R108,BK000250,app_chat,en,waiting_for_room,Check-in says room not ready. We are waiting in the lobby.,high,2026-01-24T14:00:16Z,not_required
+GR000104,2026-01-24T14:03:00Z,R304,BK000094,app_chat,de,waiting_for_room,Self-Check-in sagt Zimmer nicht bereit. Wir warten in der Lobby.,high,2026-01-24T14:23:00Z,not_required
+GR000105,2026-01-24T14:35:41Z,R105,BK000113,app_chat,en,temperature_cold,"It's freezing in here, can you check the heating please?",high,2026-01-24T15:20:41Z,required
+GR000106,2026-01-24T15:43:16Z,R101,BK000214,kiosk,de,waiting_for_room,"Warten immer noch auf das Zimmer, gibt es ein Update?",high,2026-01-24T16:03:16Z,not_required
+GR000107,2026-01-24T15:48:24Z,R306,BK000208,email,en,waiting_for_room,We are here but the room is not ready yet. How long will it take?,high,2026-01-24T16:08:24Z,not_required
+GR000108,2026-01-24T17:27:10Z,R306,BK000208,app_chat,en,waiting_for_room,Check-in says room not ready. We are waiting in the lobby.,high,2026-01-24T17:47:10Z,not_required
+GR000109,2026-01-25T03:48:05Z,R110,BK000139,email,nl,temperature_cold,"De kamer is erg koud, de verwarming lijkt niet te werken.",high,2026-01-25T04:33:05Z,required
+GR000110,2026-01-25T07:58:08Z,R209,BK000150,phone,en,late_checkout,Late check-out until 13:00 possible?,medium,2026-01-25T10:58:08Z,not_required
+GR000111,2026-01-25T10:46:25Z,R407,BK000255,phone,de,early_checkin,"Wir kommen schon gegen 14:15 an, wäre ein früherer Check-in möglich?",medium,2026-01-25T13:46:25Z,not_required
+GR000112,2026-01-25T18:16:42Z,R108,BK000250,email,en,extra_towels,Need fresh towels.,low,2026-01-25T22:16:42Z,not_required

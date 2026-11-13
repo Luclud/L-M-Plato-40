@@ -1,0 +1,12 @@
+# decrypted holdout stays local until we decide to commit it
+data/holdout/
+# local outputs (final decisions*.jsonl / insights at repo root ARE committed)
+out/
+.env
+.llm_cache/
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
