@@ -1,5 +1,5 @@
 # Demo viewer. From the repo root:  docker compose up --build viewer   -> http://localhost:8501
-# data/ and out/ are mounted (data/ is in .dockerignore).
+# data/ and out/ are mounted (data/ is in .dockerignore). insights.md/.jsonl are baked in (rebuild after regenerating).
 FROM python:3.12-slim
 WORKDIR /app
 COPY requirements.txt ./
@@ -8,6 +8,8 @@ RUN pip install --no-cache-dir -r viewer/requirements.txt
 COPY plato40 plato40
 COPY eval eval
 COPY run.py validate.py ./
+COPY analysis analysis
+COPY insights.md insights.jsonl ./
 COPY viewer viewer
 COPY .streamlit .streamlit
 ENV PLATO40_DATA=data/quickstart \

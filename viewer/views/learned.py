@@ -19,7 +19,7 @@ _PATH = re.compile(r"\s*`[^`]*\.(?:md|jsonl?|csv|py)`(?:\s*§\s*\d+)?,?")
 
 
 def insights_dir() -> Path:
-    return Path(os.environ.get("PLATO40_INSIGHTS_DIR") or common.ROOT)
+    return common.insights_dir()
 
 
 def load_insights(d: Path) -> list[dict]:
@@ -75,9 +75,23 @@ st.caption("Lessons from one synthetic year of the fictional PLATO-40 hotel — 
 d = insights_dir()
 rows = load_insights(d)
 if not rows:
-    st.info("No insights generated yet. Create them with:", icon=":material/info:")
-    st.code(GENERATE, language="bash")
+    st.info("The lessons from the PLATO-40 year are not loaded in this installation yet.", icon=":material/info:")
+    if (common.DEV_DATA / "manifest.json").exists():
+        if st.button("Create the lessons now (about 10 seconds)", icon=":material/auto_awesome:", type="primary",
+                     key="gen_insights"):
+            with st.spinner("Analysing the 365-day dev year…"):
+                ok, log = common.generate_insights()
+            if ok:
+                st.rerun()
+            st.error("The lessons could not be created.", icon=":material/error:")
+            C.tech_details({"log": log})
+    else:
+        st.caption("They are computed from the dev year, which is not available here.")
+    with st.expander("Technical details", icon=":material/code:"):
+        st.code(GENERATE, language="bash")
 else:
+    st.caption(":material/calendar_month: Computed from the full 365-day dev year — the same lessons are shown "
+               "whichever dataset is selected above.")
     cols = st.columns(2)
     for col, (target, title, icon) in zip(cols, COLUMNS):
         mine = [r for r in rows if str(r.get("target", "")).upper() == target]
