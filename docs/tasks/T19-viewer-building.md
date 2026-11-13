@@ -11,6 +11,8 @@ Implement `docs/FRONTEND_PLAN.md` §5.1: the first screen shows the building "li
   (`housekeeping_state`, `presence`; missing → unknown), open incident episodes per asset at t (first ≤ t ≤ last decision),
   plant status (HP1, AHU1, WM_MAIN, PV/battery: open incident or data gap), staff availability **as known at t**
   (`staff_roster.csv`, `status_known_utc ≤ t`), "today so far" routine counts.
+- Planned cleanings: `schedule_cleaning` decisions with `scheduled_for_utc` later that local day → outlined tile with planned
+  time + resource ("cleaning 11:45 · Cleaner 3"); actual state stays the filled colour.
 - `viewer/views/building.py`: day picker + 15-min time slider (local time), 4 floors × 10 room tiles (colour by state, red dot
   for an open incident; legend), plant tiles, staff strip, "Needs attention now" cards (open incidents + pending approvals at t)
   linking to the story page (`?episode=`). Click a room → panel with that day's temperature/water chart and its incidents.

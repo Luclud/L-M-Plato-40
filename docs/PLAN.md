@@ -14,6 +14,9 @@ Robustness (start 1 Mar / 1 Jul / 60 d / 21 d): no crashes, validate PASS; comfo
 T11 re-run on 73a2a5b: insights regenerate byte-identical (5 PLATO, 6 CLARA; all say PLATO-40, evidence + uncertainty).
 
 ## Ticket board
+
+Frontend redesign: see [FRONTEND_PLAN.md](FRONTEND_PLAN.md) (T17–T25).
+
 | Ticket | Title | Lane | Prio | Depends | Status |
 |---|---|---|---|---|---|
 | [T01](tasks/T01-water-leaks.md) | S02 water leaks (loud, subtle, gap) | A | P0 | — | ✅ #1 Devin |
@@ -31,6 +34,15 @@ T11 re-run on 73a2a5b: insights regenerate byte-identical (5 PLATO, 6 CLARA; all
 | [T16](tasks/T16-turnaround-noise.md) | Turnaround: only real conflicts are incidents | B | P1 | T05 ✅ | ✅ #15, #21 — dev unmatched 137→39 |
 | [T08](tasks/T08-logistics.md) | Waste, vending, robot bin runs | B | P1 | — | ✅ #16 — 78 % in time, 16 % unnecessary |
 | — | Robustness check (trimmed dev copies) | R | P1 | — | ✅ #17 — no crashes; comfort warm-up fix #19 |
+| [T17](tasks/T17-viewer-foundation.md) | Viewer foundation: nav, labels, components, theme | C | P0 | — | ⬜ open — first |
+| [T18](tasks/T18-viewer-incidents.md) | Incidents list + incident story | C | P0 | T17 | ⬜ open |
+| [T19](tasks/T19-viewer-building.md) | Building view (floor plan at a moment) | C | P0 | T17 | ⬜ open |
+| [T20](tasks/T20-viewer-approvals.md) | Approvals grouped per incident | C | P1 | T17 | ⬜ open |
+| [T21](tasks/T21-viewer-learned-proof.md) | What we learned + Proof pages | C | P0 | T17 | ⬜ open |
+| [T22](tasks/T22-viewer-tour.md) | Guided demo tour | C | P0 | T18–T21 | ⬜ open |
+| [T24](tasks/T24-ai-incident-summaries.md) | AI incident summaries (optional) | C | P2 | T18 | ⬜ open |
+| [T25](tasks/T25-ask-the-building.md) | "Ask the building" copilot (optional) | C | P2 | T18 | ⬜ open |
+| [T23](tasks/T23-viewer-polish.md) | Viewer polish, DEMO.md, screenshots | C | P0 | T22 | ⬜ open — last |
 | [T14](tasks/T14-pitch-video.md) | Pitch, demo script, video | C | P0 | T10, T11 | humans, Sat |
 | [T15](tasks/T15-submission-repo.md) | Submission logistics, Proximata org repo | R | P0 | — | humans, now |
 

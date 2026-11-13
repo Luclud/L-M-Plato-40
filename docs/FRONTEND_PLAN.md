@@ -1,6 +1,7 @@
 # Frontend plan — from developer viewer to an operator & jury tool
 
-Status: **draft, Fri 13 Nov 21:15** — re-check after the runtime changes land (see §9). Tickets: T17–T23.
+Status: **final, Fri 13 Nov 21:55** — checked against `perf-planner` (869c062): decision output byte-identical to main, so
+fields and counts below hold. Tickets: T17–T23 (core), T24–T25 (optional AI layer).
 
 ## 1. Problem
 The T10 viewer works but is built for developers, not for an operator or a jury that has 30 seconds per screen:
@@ -38,6 +39,7 @@ The live demo (15:00–16:00) and the 3-minute video run through the built-in gu
 | **What we learned** | Level 3: PLATO and CLARA recommendations + target architecture | T21 |
 | **Proof** | Trust: validator, detection vs labels, BMS vs us, data quality, limitations, downloads | T21 |
 | **▶ Guided demo** (button, top right + on Building) | 8-step tour for the live demo / video | T22 |
+| **Ask the building** (optional) | Copilot: questions answered from the decision log, with citations | T25 |
 
 Dataset picker (Quickstart · Dev year · Holdout · Custom…) in the top bar or a small popover; file paths only under "Custom".
 Streamlit toolbar minimal (no "Deploy" button), wide layout.
@@ -60,6 +62,8 @@ Staff today (as known at 19:30): Cleaner 1 ✓ · Cleaner 2 sick (known 05:15) �
 Today so far: 14 guest replies · 1 energy plan (simulated) · 3 cleanings scheduled
 ```
 - Room tile colour from `room_telemetry.housekeeping_state` + `presence` at the selected 15-min step; grey = missing data.
+  Cleanings the pipeline has **planned** for later that day (`schedule_cleaning` with `scheduled_for_utc` > t) are shown as an
+  outlined tile with the planned time ("cleaning 11:45 · Cleaner 3") — actual state filled, plan outlined.
 - Red dot = an incident episode for that room is open at that time (first ≤ t ≤ last decision). Click tile → room panel
   (today's temperature + water chart, incidents of this room).
 - Staff strip from `staff_roster.csv` **as known at t** (`status_known_utc ≤ t`), consistent with the no-future story.
@@ -139,9 +143,26 @@ episode per scenario class. Talking points in `viewer/tour.toml` so humans can e
 | **T20** | Approvals grouped per incident | `viewer/views/approvals.py`, `tests/test_viewer_approvals.py` | T17 | yes |
 | **T21** | What we learned + Proof | `viewer/views/learned.py`, `viewer/views/proof.py`, `tests/test_viewer_learned_proof.py` | T17 | yes |
 | **T22** | Guided demo tour | `viewer/views/tour.py`, `viewer/tour.toml`, `tests/test_viewer_tour.py` | T18–T21 | after |
+| **T24** (optional) | AI incident summaries, offline + cached + number guard | `scripts/summarise_incidents.py`, `viewer/summaries.py`, `tests/test_summaries.py` | T18 | yes (with T22) |
+| **T25** (optional) | "Ask the building" copilot page | `viewer/views/ask.py`, `viewer/copilot.py`, `viewer/copilot_cache.json`, `tests/test_copilot.py` | T18 | yes (with T22) |
 | **T23** | Polish + docs: remove old pages, DEMO.md rewrite (tour = script), screenshots, README "Viewer", Docker check, perf | `docs/DEMO.md`, `docs/img/*`, README Viewer section, `viewer/*` small fixes | T22 | last |
 
-Estimated with Devin: T17 ~45 min, T18–T21 in parallel ~45–60 min, T22 ~30 min, T23 ~30 min → done in ~3 h.
+Estimated with Devin: T17 ~45 min, T18–T21 ~45–60 min each, T22 ~30 min, T23 ~30 min (+ T24/T25 ~30–45 min each).
+One Devin session runs them in order T17 → T18 → T19 → T20 → T21 → T22 → (T24 → T25) → T23; with several sessions T18–T21
+run in parallel after T17. Cut order if late: T25, T24, then the room panel in T19.
+
+## 7a. Optional AI layer (T24, T25) — explain, never decide
+Rule D6 stays: AI never detects, prioritises, sets approval/consent flags, schedules or releases. It only explains outputs that
+already exist. The holdout run stays `--no-llm`; AI runs on outputs afterwards.
+- **T24 Incident summaries:** offline script writes `out/<run>_summaries.json` (2–3 plain sentences per incident) with
+  Claude (fast model, e.g. Claude Haiku 5.5), cached by content hash; rejected if any number, time, room or resource differs
+  from the source decisions; template fallback. T18 shows them labelled "AI summary — facts from the decision log".
+- **T25 Ask the building:** copilot page with Claude tool use (e.g. Claude Sonnet 5.5) over read-only tools on the loaded run
+  (`list_incidents`, `get_incident`, `get_evidence`, `count_by_type`, `pending_approvals`); every answer cites decision ids
+  that link to the story page; "not in the decision log" when unsure. Cached answers for the tour questions so the demo
+  works offline. Without a key the page shows an explanation and the cached examples.
+- Key only in `.env` (`ANTHROPIC_API_KEY` or the existing `LLM_*` variables, git-ignored) on the demo machine / server.
+  Tests use a mock client; Devin never needs the key.
 
 ## 8. Acceptance criteria (all tickets)
 - Works on quickstart, dev and an empty decisions file; Streamlit `AppTest` smoke test per page for all three.
@@ -154,8 +175,8 @@ Estimated with Devin: T17 ~45 min, T18–T21 in parallel ~45–60 min, T22 ~30 m
 - The viewer stays read-only over pipeline outputs; it never changes `plato40/`, `run.py`, `validate.py`, `eval/`.
 - Each PR: screenshots of the changed pages in the PR description.
 
-## 9. Open points to re-check (after the runtime changes)
-- Decision fields / counts may change with the runtime work → re-check §1 numbers, field names used by components, load time.
-- Product name (`APP_NAME`) — humans decide.
-- Whether the Building view should use the real `housekeeping_state` or the pipeline's own plan (`schedule_cleaning`) for future
-  slots — proposal: real state for "now", planned cleanings as outlined tiles.
+## 9. Decisions taken / open
+- ✅ Runtime work (`perf-planner`): output byte-identical, dev run ~2× faster → no impact on the viewer design.
+- ✅ Building view shows actual state filled and planned cleanings outlined.
+- ⬜ Product name (`APP_NAME`) — humans decide; placeholder "PLATO-40 Operations" until then (not a product name).
+- ⬜ T24/T25 only if there is time after T22; the demo must work without them.
