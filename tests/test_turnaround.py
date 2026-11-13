@@ -166,3 +166,22 @@ def test_turnaround_episodes_are_conflicts(decisions):
 def test_slack_constant_is_documented():
     from plato40.detectors import s01_turnaround as m
     assert m.SLACK == pd.Timedelta(minutes=30)
+
+
+def test_quickstart_turnaround_incidents_outside_s01_labels_are_surge_weekend_conflicts(decisions):
+    """t16-quickstart: the room_turnaround episodes not covered by the 2 S01 hand labels all fall on the S05
+    event weekend (23-24 Jan: 25 arrivals + sick cleaner) and carry conflict evidence - they are real."""
+    s01 = {("R308", "2026-01-08"), ("R207", "2026-01-23")}
+    eps = {}
+    for d in _ta(decisions):
+        eps.setdefault(d["episode_id"], []).append(d)
+    other = {k: v for k, v in eps.items()
+             if not any((a, v[0]["timestamp_utc"][:10]) in s01 for a in v[0]["affected_assets"])}
+    for k, v in other.items():
+        day = v[0]["timestamp_utc"][:10]
+        if day < "2026-01-22" or day > "2026-01-24":
+            continue
+        text = " ".join(x["reason"] for x in v).lower()
+        assert any(w in text for w in ("waiting", "shortfall", "no longer has slack", "commit plan", "cannot")), k
+    outside = [k for k, v in other.items() if not ("2026-01-22" <= v[0]["timestamp_utc"][:10] <= "2026-01-24")]
+    assert len(outside) <= 2, outside
