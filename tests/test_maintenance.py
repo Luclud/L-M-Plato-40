@@ -26,7 +26,7 @@ def _vent(rows):
 
 def _truncate(data, cutoff):
     """Dataset as it would look at cutoff: no measurement, event, work order or roster news after it."""
-    roster = AsOf(data, cutoff).roster()
+    roster = AsOf(data, cutoff).roster().copy()   # as-of views are cached/shared: never modify in place
     roster.loc[roster.status_known_utc > cutoff, "status_known_utc"] = pd.NaT
     return dataclasses.replace(
         data,

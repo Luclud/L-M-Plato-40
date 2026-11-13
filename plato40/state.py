@@ -7,6 +7,7 @@ from __future__ import annotations
 from bisect import bisect_right
 from dataclasses import dataclass
 
+import numpy as np
 import pandas as pd
 
 from .asof import AsOf
@@ -36,7 +37,7 @@ class State:
         tel = data.telemetry[["timestamp_utc", "room_id", "housekeeping_state", "presence"]]
         self._hk = {}
         for room, g in tel.dropna(subset=["housekeeping_state"]).groupby("room_id"):
-            self._hk[room] = (list(g.timestamp_utc), list(g.housekeeping_state))
+            self._hk[room] = (g.timestamp_utc.tolist(), g.housekeeping_state.tolist())  # tolist: no per-item iteration
 
     # ---- occupancy ---------------------------------------------------------
     def _build_stays(self) -> None:
@@ -85,8 +86,31 @@ class State:
     def shift_at(self, resource_id: str, t: pd.Timestamp, known_at: pd.Timestamp | None = None):
         """Roster row covering t for resource (status as known at known_at, default t)."""
         r = AsOf(self.d, known_at if known_at is not None else t).roster()
-        m = r[(r.resource_id == resource_id) & (r.start_utc <= t) & (r.end_utc > t)]
-        return None if m.empty else m.iloc[0]
+        # as-of rosters have the same rows in the same order as data.roster (only 'status' differs):
+        # find the first covering row via a per-resource index instead of filtering the whole frame
+        idx = self._shift_index().get(resource_id)
+        if idx is None:
+            return None
+        pos, st, en = idx
+        tt = np.datetime64(pd.Timestamp(t).value, "ns")   # UTC instant
+        hit = ((st <= tt) & (en > tt)).nonzero()[0]
+        return None if len(hit) == 0 else r.iloc[pos[hit[0]]]
+
+    def _shift_index(self) -> dict:
+        """resource_id -> (row positions ascending, start, end) of data.roster."""
+        src = self.d.roster
+        cache = self.__dict__.get("_shift_idx")
+        if cache is None or cache[0] is not src or cache[1] != len(src):
+            rid = src.resource_id.to_numpy(dtype=object)
+            st = src.start_utc.dt.tz_convert("UTC").dt.tz_localize(None).to_numpy(dtype="datetime64[ns]")
+            en = src.end_utc.dt.tz_convert("UTC").dt.tz_localize(None).to_numpy(dtype="datetime64[ns]")
+            idx = {}
+            for res in pd.unique(rid):
+                if isinstance(res, str):
+                    pos = (rid == res).nonzero()[0]
+                    idx[res] = (pos, st[pos], en[pos])
+            cache = self._shift_idx = (src, len(src), idx)
+        return cache[2]
 
     def available(self, resource_id: str, t: pd.Timestamp, known_at: pd.Timestamp | None = None) -> tuple[bool, str]:
         """Can this resource be scheduled at time t (judged with knowledge at known_at)?"""
