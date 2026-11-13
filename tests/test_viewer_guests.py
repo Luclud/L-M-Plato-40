@@ -136,3 +136,10 @@ def test_filters_and_no_match(sets, monkeypatch, tmp_path):
     assert all("🇮🇹" in b.label for b in at.button if b.key and b.key.startswith("g_GR"))
     at.text_input(key="g_q").set_value("zzzz-no-such-text").run()
     assert any("No guest request matches" in i.value for i in at.info)
+
+
+def test_filter_that_excludes_selection_switches_thread(sets, monkeypatch, tmp_path):
+    at = _open(monkeypatch, tmp_path, sets, "quickstart", "GR000034")
+    at.multiselect(key="g_lang").set_value(["en"]).run()
+    assert not V.errors(at)
+    assert not any("Zu kalt zum Schlafen" in m.value for m in at.markdown)

@@ -190,7 +190,7 @@ def page():
                 st.session_state["_g_q"] = r.request_id
                 st.rerun()
     sel = st.session_state.get("g_sel")
-    if sel not in set(th.request_id):
+    if sel not in set(f.request_id):
         sel = f.request_id.iloc[0]
     with right:
         thread(c, th[th.request_id == sel].iloc[0], consents, path)
