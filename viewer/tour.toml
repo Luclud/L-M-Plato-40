@@ -1,0 +1,42 @@
+# Guided demo talking points: one [[step]] per tour step, in order. Edit freely (max. 2 sentences each).
+# `key` links a step to what it shows; do not change the keys.
+
+[[step]]
+key = "building"
+title = "The building at a glance"
+say = "This is the whole hotel at one 15-minute moment, using only what was known at that time. Red dots are open incidents; the cards on top say what needs attention now."
+
+[[step]]
+key = "water"
+title = "A water leak"
+say = "The room's water meter jumps while the building alarm stays quiet for hours. We flag it within the hour and request an inspection; shutting off the water needs a human's approval."
+
+[[step]]
+key = "heating"
+title = "Heat pump in a cold snap"
+say = "Heat-pump efficiency drops below what the outdoor temperature explains, so guests would get cold. We order a service visit and raise room setpoints; the comfort effect is simulated, not measured."
+
+[[step]]
+key = "turnaround"
+title = "Early check-in vs tight cleaning"
+say = "A guest arrives before the room can be cleaned in time. When a cleaner falls sick we re-plan with staff who are really available; the room is only released once clean."
+
+[[step]]
+key = "surge"
+title = "Event weekend and a sick cleaner"
+say = "Bookings show the arrival peak days ahead; when a cleaner calls in sick we re-plan as soon as we know. Extra staff needs a manager — approve it here (mock, nothing is sent)."
+
+[[step]]
+key = "filter"
+title = "Ventilation filter vs a data gap"
+say = "The filter's pressure rises slowly before the sensor data stops. The grey gap is unknown, not fixed; the technician is away, so a contractor needs approval."
+
+[[step]]
+key = "learned"
+title = "What we learned"
+say = "One year of data turns into design advice for the next PLATO building and better rules for CLARA. Benefits are estimates, never claimed savings."
+
+[[step]]
+key = "proof"
+title = "Proof"
+say = "Press Run check: the safety and contract validator must say PASS. Below it, detection against the development labels and the building alarm system compared with us."
