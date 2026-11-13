@@ -59,6 +59,9 @@ Documentation for the team and coding agents: [`AGENTS.md`](AGENTS.md) ·
 
 Streamlit viewer for operators and the jury. It is read-only over a decisions file and has top navigation:
 - **Building**: floor plan at one replay moment, using only what was known then;
+- **Housekeeping**: one local day as a timeline per cleaner, robot and the on-call housekeeper: shifts,
+  absences (with when they became known), planned vs actual cleanings, check-in deadlines and re-plans. By
+  default it shows only what was known at the selected time (`?t=`, shared with Building);
 - **Incidents**: list plus the incident story;
 - **Approvals (n)**: grouped per incident, mock Approve / Reject;
 - **What we learned**: PLATO-40 / CLARA insight cards;
@@ -87,6 +90,7 @@ The **dataset picker** (top right) switches between Quickstart, Dev (the root `d
 
 ![Building](docs/img/viewer_building.png)
 ![Room 104 water leak story](docs/img/viewer_story_r104.png)
+![Housekeeping, Thu 8 Jan](docs/img/viewer_housekeeping.png)
 More: [Incidents](docs/img/viewer_incidents.png) · [Approvals](docs/img/viewer_approvals.png) ·
 [What we learned](docs/img/viewer_learned.png) · [Proof](docs/img/viewer_proof.png) ·
 [Guided demo](docs/img/viewer_tour.png)

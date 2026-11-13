@@ -56,7 +56,7 @@ def test_learned_and_proof_without_insights_files(sets, monkeypatch, tmp_path):
     empty = tmp_path / "noins"
     empty.mkdir()
     at = _open(monkeypatch, "views/learned.py", dec, data, tmp_path, insights=empty)
-    assert any("No insights generated yet" in i.value for i in at.info)
+    assert any("not loaded in this installation yet" in i.value for i in at.info)
     assert any("analysis/insights.py" in c.value for c in at.code)
     at.switch_page("views/proof.py").run()
     assert not V.errors(at)

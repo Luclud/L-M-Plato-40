@@ -79,6 +79,17 @@ ASK_INTRO = ("Ask about this run — a room, a date, approvals or incident types
              "log, with numbered sources; the copilot cannot approve, decide or change anything.")
 ASK_NO_KEY = ("The AI copilot is off (no key configured). Suggested questions show cached examples; typed questions "
               "are looked up in the decision log without an AI model.")
+SCHEDULE_KNOWN_ONLY = "Only what was known at the selected time"
+SCHEDULE_CHANGES = "Show plan changes"
+SCHEDULE_DAY_PLAN = "The day's plan"
+SCHEDULE_OPEN_PAGE = "Open the full day on Housekeeping"
+SCHEDULE_TURNOVERS = "Today's turnovers"
+SCHEDULE_EMPTY = "No shifts or cleaning data for this day."
+SCHEDULE_LEGEND = ("Light bar = shift · red hatched = absence (▼ = when it became known) · filled = actual cleaning "
+                   "(green) / robot run (blue) / on-call (brown) · outlined = planned · red dashed line = re-plan · "
+                   "green line = selected time")
+SCHEDULE_MARKS = {"checkin": "Check-in time", "early_checkin": "Early check-in requested", "waiting": "Guest waiting",
+                  "released": "Room released", "checkout": "Checked out"}
 LANG_FLAGS = {"de": "🇩🇪", "en": "🇬🇧", "it": "🇮🇹", "fr": "🇫🇷", "es": "🇪🇸", "nl": "🇳🇱", "pl": "🇵🇱", "cs": "🇨🇿"}
 
 _PATTERNS = [
