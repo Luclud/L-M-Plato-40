@@ -6,7 +6,8 @@
 ## Status (Fri 13 Nov, 19:05)
 - ✅ Backbone, data-quality agent, eval harness, Docker, docs
 - ✅ Merged: T01, T02, T03, T07, T10, T11, T12, T13 (Devin) · T04, T05, T09 (teammate, Claude Code) · #12 viewer fix
-- ⬜ Open: **T06** (last missing scenario), **T16** turnaround noise, T08 logistics; humans: T14, T15
+- 🔍 In review (Devin, Fri evening): T06 #14, T16 #15, T08 #16, robustness check #17; T11 re-run: no change needed
+  (regenerates byte-identical from dev; findings all say PLATO-40 + uncertainty). Humans: T14, T15
 
 main @ dba0be4: quickstart **6/7** (only S05 missing), dev **33/40** (all 7 misses are S05 surges), validate PASS (0 violations),
 291 tests, dev run ~24 s. Validator warnings "later turned out unavailable" are expected: both agents re-plan once the
@@ -23,14 +24,15 @@ Unmatched episodes on dev: 137 `room_turnaround` (feasible early check-ins, see 
 | [T05](tasks/T05-turnaround-planner.md) | S01 turnaround + shared housekeeping planner | B | P0 | — | ✅ #10 teammate |
 | [T09](tasks/T09-messaging.md) | Multilingual messages, time parsing, approval notes | B | P0 | — | ✅ #7 teammate |
 | [T10](tasks/T10-viewer.md) | Streamlit demo viewer | C | P0 | — | ✅ #5, #12 Devin |
-| [T11](tasks/T11-insights.md) | Level 3 insights + target architecture | C | P0 | — | ✅ #2 Devin (re-run with final outputs) |
+| [T11](tasks/T11-insights.md) | Level 3 insights + target architecture | C | P0 | — | ✅ #2 Devin (re-run Fri: unchanged) |
 | [T04](tasks/T04-guest-service.md) | Guest service agent | B | P1 | T09 | ✅ #11 teammate |
 | [T07](tasks/T07-energy.md) | Energy / battery (simulated) | A | P1 | — | ✅ #9 Devin |
 | [T12](tasks/T12-bms-compare.md) | BMS vs ours + look-alikes | C | P1 | T01–T03 | ✅ #8 Devin |
 | [T13](tasks/T13-release-holdout.md) | Release check + holdout runbook | R | P0 | — | ✅ #6 Devin (re-run Sat 10:30) |
-| [T06](tasks/T06-event-weekend.md) | S05 event weekend | B | **P0** | T05 ✅ | ⬜ **open — claim before starting** |
-| [T16](tasks/T16-turnaround-noise.md) | Turnaround: only real conflicts are incidents | B | P1 | T05 ✅ | ⬜ open — claim before starting |
-| [T08](tasks/T08-logistics.md) | Waste, vending, robot bin runs | B | P1 | — | ⬜ open (first to cut) |
+| [T06](tasks/T06-event-weekend.md) | S05 event weekend | B | **P0** | T05 ✅ | 🔍 #14 Devin — qs 7/7, dev 39/40 |
+| [T16](tasks/T16-turnaround-noise.md) | Turnaround: only real conflicts are incidents | B | P1 | T05 ✅ | 🔍 #15 Devin — dev unmatched 137→39 |
+| [T08](tasks/T08-logistics.md) | Waste, vending, robot bin runs | B | P1 | — | 🔍 #16 Devin — 78 % in time, 16 % unnecessary |
+| — | Robustness check (trimmed dev copies) | R | P1 | — | 🔍 #17 Devin — no crashes; comfort warm-up risk |
 | [T14](tasks/T14-pitch-video.md) | Pitch, demo script, video | C | P0 | T10, T11 | humans, Sat |
 | [T15](tasks/T15-submission-repo.md) | Submission logistics, Proximata org repo | R | P0 | — | humans, now |
 
