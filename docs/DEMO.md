@@ -1,9 +1,13 @@
-# Demo script — PLATO-40 viewer (T10)
+# Demo script: PLATO-40 viewer
 
-Live demo (track judging) and the 3-minute video. Story per incident:
-**evidence → risk → decision → autonomy → verification.** Everything is an offline replay of the
-fictional PLATO-40 dataset; guest messages are *proposed — not delivered*; effects are *SIMULATED*;
-Approve/Reject is a mock that only writes `out/approvals.json`.
+The **Guided demo** page is the live demo and the script for the 3-minute video. It has 8 steps on the real pages,
+with Back / Next and one or two sentences to say per step. The talking points are in
+[`viewer/tour.toml`](../viewer/tour.toml), so you can edit them without touching code. Everything is an offline
+replay of the fictional PLATO-40 dataset:
+- guest messages are **proposed, never sent**;
+- effects are **Simulated**;
+- Approve / Reject is a **mock** that only writes `out/approvals.json`;
+- "guest consent needed" means needed, **not granted**.
 
 ## Start
 
@@ -11,78 +15,55 @@ Approve/Reject is a mock that only writes `out/approvals.json`.
 pip install -r viewer/requirements.txt
 python run.py data/quickstart --out out/qs.jsonl
 streamlit run viewer/app.py -- --decisions out/qs.jsonl --data data/quickstart     # http://localhost:8501
-# dev year:   python run.py data/dev --out out/dev.jsonl
-#             streamlit run viewer/app.py -- --decisions out/dev.jsonl --data data/dev
-# server:     docker compose up --build viewer      (generates out/qs.jsonl if missing)
+# server:  docker compose up --build viewer      (runs the pipeline first if out/qs.jsonl is missing)
 ```
 
-Until the scenario agents (T01–T06) land, the pipeline output contains only data-quality episodes, so the
-hero tabs show the data and the labelled window but no episode. To rehearse the click paths, use the
-**illustrative** sample (hand-placed on the quickstart incident map, every reason starts with
-`ILLUSTRATIVE`, agent `viewer_sample`, flags from the real policy, passes `validate.py`):
+The dataset picker (top right) switches between Quickstart, Dev (the root `decisions.jsonl` or `out/dev.jsonl`)
+and **Custom…**, which takes any decisions file plus data folder, e.g. the holdout. Optional extras:
+- `python scripts/summarise_incidents.py out/qs.jsonl --data data/quickstart` adds incident summaries
+  (template summaries without a key).
+- **Ask the building** answers questions with cached and offline answers when no `LLM_API_KEY` is set.
 
-```bash
-python viewer/sample_decisions.py      # regenerates viewer/sample/quickstart_illustrative.jsonl
-streamlit run viewer/app.py -- --decisions viewer/sample/quickstart_illustrative.jsonl --data data/quickstart
-```
+**Before the demo:** open the viewer once. The first load warms the cache: dev takes about 3–4 s, after that
+0.1–0.2 s, and every page switch is under 1 s. Then open **Guided demo** and leave it on step 1.
 
-Never present the sample as pipeline output.
+## The tour (≈ 20 s per step)
 
-Before the demo: open the viewer once (first load warms the cache: quickstart ~1–2 s, dev ~5 s), then
-click through Overview so `validate.py`/`evaluate.py` results are cached.
+| # | Step | Page shown | What to point at |
+|---|---|---|---|
+| 1 | The building at a glance | Building at the first incident | Floor plan at one 15-min moment, using only what was known then: red dot = open incident, "Needs attention now" card, plant and staff as known |
+| 2 | A water leak | Room 104 story | Water-rate chart with numbered red markers (what we did, and when) and the yellow incident period; inspection is autonomous, water shut-off needs approval + guest consent |
+| 3 | Heat pump in a cold snap | Heating story | Efficiency below what the weather explains; service ordered; comfort effect **Simulated** |
+| 4 | Early check-in vs tight cleaning | Turnaround story | Re-plan with staff who are really available; the room is released only when clean |
+| 5 | Event weekend and a sick cleaner | Busy-weekend story | Arrival peak visible days ahead; re-plan when the sick call becomes known; extra staff → **Approvals** (mock) |
+| 6 | Ventilation filter vs a data gap | Filter story | Pressure trend before the **grey gap = unknown, not fixed**; contractor needs approval because the technician is away |
+| 7 | What we learned | Top insight cards | PLATO-40 design and CLARA operations lessons; benefits are estimates |
+| 8 | Proof | Proof | Press **Run check** → `validate.py: PASS`; detection vs labels (dev aid) and BMS alarms vs us |
 
-## Opening (≤ 20 s) — Overview
+Deep link to any step: `http://localhost:8501/tour?tour=N`. On dev or holdout runs, which have no hand labels,
+each step shows the most severe episode of that scenario.
 
-Sidebar **Screen → Overview**. Point at: dataset + period, decisions vs episodes (one episode per
-incident, no alert spam), *Need human approval* / *Guest consent needed (needed ≠ granted)*, the green
-`validate.py: PASS` box, and the *Detection vs labels* table.
+## Fallback click path (if the tour misbehaves)
 
-## Hero 1 — Burst hose (S02 loud), ≤ 30 s
+You can reach every hero incident in ≤ 3 clicks from the start screen:
 
-1. Sidebar **Screen → Hero scenarios**, tab **Burst hose (S02 loud)** (first tab, already open).
-2. Chart: room water rate jumps to ~27 L/15 min; yellow band = labelled window; red dotted lines = our
-   decisions (first one ~1 h after onset — BMS night-flow alarm only hours later).
-3. Scroll to the incident card: `flag_anomaly` (autonomous) → `request_inspection` (approval; consent if
-   occupied) → `water_shutoff` (APPROVAL + CONSENT badge, `SIMULATED` avoided volume) + guest message
-   box labelled **PROPOSED — not delivered**.
-4. Say: "needs approval, consent is *needed*, not granted — nothing is executed."
+1. **Building**: click the red-dot room, or the **Open** button in "Needs attention now" → the incident story.
+2. **Incidents** → the filter chips (Water leak, Heating & comfort, Room turnaround, Busy weekend,
+   Ventilation filter) → click a card → the story: what we saw (chart), why we think so, what we did, what happens
+   next. "Technical details" at the bottom shows the raw decisions.
+3. **Approvals (n)**: grouped per incident, with mock Approve / Reject. The counter in the navigation updates.
+4. **What we learned**: insight cards with evidence and uncertainty.
+5. **Proof**: **Run check** (validator), detection table, BMS vs us, data quality, downloads (decisions and
+   insights).
+6. **Ask the building**: a suggested question, e.g. "What happened in Room 104?", gives an answer with
+   numbered sources that link to the story.
 
-## Hero 2 — AHU filter cascade (S04), ≤ 30 s
+**30-second question:** "What happened in Room 104 and what did the system do?" Answer it with **Incidents →
+Water leak → Room 104**. The story headline says it: a loud leak in vacant Room 104, flagged 45 min after it
+started, inspection requested, water shut-off waiting for approval and guest consent.
 
-1. Tab **AHU filter cascade (S04)**.
-2. Filter Δp chart: rising trend 92 → 165 Pa, then the **grey band = data gap (unknown, not repaired)**,
-   then 256 Pa. Airflow drop in the second chart.
-3. Incident card: early `flag_anomaly` before the gap, episode kept open through the gap, `order_service`
-   via approval because the technician is on vacation (roster `status_known_utc`, not future data).
+## Honesty lines to say out loud
 
-## Hero 3 — Event weekend (S05), ≤ 30 s
-
-1. Tab **Event weekend (S05)**.
-2. Bar chart: confirmed arrivals per local day — the peak is visible days ahead (bookings by `created_utc`).
-3. Incident card: capacity plan before the weekend → re-plan when the cleaner calls in sick → robots for
-   floors (autonomous), on-call / extra staff via `request_human_approval`; guest messages PROPOSED;
-   `SIMULATED` time freed.
-4. Optional: sidebar **Approval inbox** → click **Approve** on the staffing request → banner shows it was
-   written to `out/approvals.json` (mock executor).
-
-## Hero 4 — Subtle toilet leak (S02 subtle), ≤ 30 s
-
-1. Tab **Subtle toilet leak (S02 subtle)**.
-2. Room water chart: ~1 L/15 min, mostly at night; our first decision lands before the guest complaint.
-3. Incident card: `flag_anomaly` → `request_inspection` with consent flag; mention the open question
-   (main − Σ rooms is *not* conclusive here, see `docs/DATA.md`).
-
-## Other screens (if asked)
-
-- **Timeline** — every episode as a bar (colour = issue type). Click a bar (or pick it in the selector)
-  → **Incident card**.
-- **Incident card** — any episode: decisions in order with UTC + Europe/Vienna time, autonomy badge,
-  evidence + chart of the referenced series (data gaps shaded), expected outcome, verification plan,
-  resource, guest message (proposed), simulated effects (SIMULATED).
-- **Approval inbox** — all `requires_human_approval` decisions, consent flags, approval note, mock
-  Approve/Reject.
-- **Data quality & look-alikes** — cleaning log (`<out>_dq.json`), gateway outages (rooms behind an
-  outage = unknown, not normal), ruled-out look-alikes / BMS comparison files if exported next to the
-  decisions file, BMS alarms in the dataset.
-
-On dev/holdout (no hand labels) the hero screen shows the four most severe episodes instead.
+- "Nothing is sent or executed: messages are proposals, approvals are mock, effects are simulated."
+- "Grey means we had no data: unknown, never treated as normal."
+- "Every decision only uses data that was known at that moment; the Building view replays exactly that."

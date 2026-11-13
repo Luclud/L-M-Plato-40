@@ -8,7 +8,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "viewer" / "app.py"
 PAGES = ["views/building.py", "views/incidents.py", "views/approvals.py", "views/learned.py", "views/proof.py",
-         "views/tour.py", "views/ask.py", "views/classic.py"]
+         "views/tour.py", "views/ask.py"]
 
 
 def quickstart_decisions(tmp_dir: Path) -> Path:

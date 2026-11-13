@@ -32,7 +32,6 @@ pages = {
     ],
     "Proof": [
         st.Page("views/proof.py", title="Proof", icon=":material/verified:"),
-        st.Page(common.CLASSIC_PAGE, title="Classic views", icon=":material/history:"),
     ],
 }
 st.navigation(pages, position="top").run()

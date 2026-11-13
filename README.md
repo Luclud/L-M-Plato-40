@@ -51,24 +51,39 @@ Documentation for the team and coding agents: [`AGENTS.md`](AGENTS.md) ·
 
 ## Viewer
 
-Streamlit demo viewer for the live demo: evidence → risk → decision → autonomy → verification
-(overview + `validate.py`/`evaluate.py` results, timeline, incident cards with evidence charts, mock approval
-inbox, data quality & look-alikes, four quickstart hero incidents). Click paths: [`docs/DEMO.md`](docs/DEMO.md).
+Streamlit viewer for operators and the jury. It is read-only over a decisions file and has top navigation:
+- **Building**: floor plan at one replay moment, using only what was known then;
+- **Incidents**: list plus the incident story;
+- **Approvals (n)**: grouped per incident, mock Approve / Reject;
+- **What we learned**: PLATO-40 / CLARA insight cards;
+- **Guided demo**: the 8-step tour, which is the live demo;
+- **Ask the building**: read-only copilot with cited answers;
+- **Proof**: validator on click, detection vs labels, BMS vs us, data quality, downloads.
+
+Demo script and fallback click path: [`docs/DEMO.md`](docs/DEMO.md).
 
 ```bash
 pip install -r viewer/requirements.txt
 python run.py data/quickstart --out out/qs.jsonl
 streamlit run viewer/app.py -- --decisions out/qs.jsonl --data data/quickstart    # http://localhost:8501
-docker compose up --build viewer                                                  # same, on a server (port 8501)
+docker compose up --build viewer      # same on a server (port 8501); runs the pipeline if out/qs.jsonl is missing
 ```
 
-Read-only over a decisions file. Guest messages are shown as **PROPOSED — not delivered**, simulated effects
-as **SIMULATED**, data gaps shaded as unknown; Approve/Reject only writes `out/approvals.json` (mock executor).
-`viewer/sample/quickstart_illustrative.jsonl` (`python viewer/sample_decisions.py`) is an *illustrative*
-hand-placed sample for rehearsing the hero screens — not pipeline output.
+The **dataset picker** (top right) switches between Quickstart, Dev (the root `decisions.jsonl` or
+`out/dev.jsonl`) and **Custom…**, which takes any decisions file plus data folder, e.g. the holdout output.
+- Guest messages show as **Proposed message — not sent**, simulated effects as **Simulated**, and data gaps
+  as grey (unknown).
+- Approve / Reject only writes `out/approvals.json` (mock executor).
+- Optional, both work without a key: incident summaries (`python scripts/summarise_incidents.py <decisions>
+  --data <data>`) and the copilot. With `LLM_*` set in `.env` (see `.env.example`) they use an LLM, guarded and
+  cited.
+- Wording lives in `viewer/labels.py`, tour talking points in `viewer/tour.toml`.
 
-![Hero scenario: burst hose](docs/img/viewer_hero_burst.png)
-![Overview on dev](docs/img/viewer_overview_dev.png)
+![Building](docs/img/viewer_building.png)
+![Room 104 water leak story](docs/img/viewer_story_r104.png)
+More: [Incidents](docs/img/viewer_incidents.png) · [Approvals](docs/img/viewer_approvals.png) ·
+[What we learned](docs/img/viewer_learned.png) · [Proof](docs/img/viewer_proof.png) ·
+[Guided demo](docs/img/viewer_tour.png)
 
 ## Holdout (Saturday ~11:00)
 

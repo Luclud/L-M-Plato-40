@@ -387,8 +387,10 @@ def figure(chart: Chart, markers: list[tuple[pd.Timestamp, str]] | None = None, 
     numbered markers on the series at decision times (hover = what was done + local time)."""
     import plotly.graph_objects as go
 
+    from viewer.views.incident import humanize  # asset codes -> friendly names in titles and legends
+
     fig = go.Figure()
-    series = [(n, s) for n, s in chart.series.items() if s is not None and len(s)]
+    series = [(humanize(n) or n, s) for n, s in chart.series.items() if s is not None and len(s)]
     for name, s in series:
         if chart.kind == "bar":
             fig.add_bar(x=_local(s.index), y=s.values, name=name)
@@ -414,7 +416,7 @@ def figure(chart: Chart, markers: list[tuple[pd.Timestamp, str]] | None = None, 
                         textfont=dict(color="white", size=10), hovertext=hovers, hoverinfo="text",
                         marker=dict(size=18, color="#c62828", line=dict(color="white", width=1)),
                         name="what we did", showlegend=True)
-    fig.update_layout(title=dict(text=chart.title, font=dict(size=13)), height=height,
+    fig.update_layout(title=dict(text=humanize(chart.title) or chart.title, font=dict(size=13)), height=height,
                       margin=dict(l=10, r=10, t=35, b=10), yaxis_title=chart.unit,
                       legend=dict(orientation="h", y=-0.2), hovermode="closest",
                       xaxis=dict(title="local time (Europe/Vienna)", hoverformat="%a %-d %b, %H:%M"))

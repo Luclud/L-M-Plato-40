@@ -9,6 +9,7 @@ COPY plato40 plato40
 COPY eval eval
 COPY run.py validate.py ./
 COPY viewer viewer
+COPY .streamlit .streamlit
 ENV PLATO40_DATA=data/quickstart \
     PLATO40_DECISIONS=out/qs.jsonl \
     PLATO40_APPROVALS=out/approvals.json

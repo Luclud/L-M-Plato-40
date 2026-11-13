@@ -133,4 +133,3 @@ for col, name in ((d2, "insights.md"), (d3, "insights.jsonl")):
     else:
         col.caption(f"{name}: not generated yet")
 
-st.page_link(common.CLASSIC_PAGE, label="Classic views (developer screens)", icon=":material/history:")

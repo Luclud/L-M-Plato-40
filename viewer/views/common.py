@@ -20,7 +20,6 @@ from viewer import labels as L  # noqa: E402
 
 PROFILE_NAMES = {"quickstart": "Quickstart", "dev": "Dev year", "holdout": "Holdout"}
 CUSTOM = "Custom…"
-CLASSIC_PAGE = "views/classic.py"
 
 
 def args():
