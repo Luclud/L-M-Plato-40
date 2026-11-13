@@ -71,6 +71,13 @@ SIMULATED = "Simulated"
 MOCK = "Mock approval — nothing is executed"
 CONSENT_NEEDED = "Guest consent needed — not granted"
 AI_SUMMARY = "AI summary — facts from the decision log"
+AI_ANSWER = "AI answer from the decision log — check the cited decisions"
+OFFLINE_ANSWER = "Looked up in the decision log without an AI model — check the cited decisions"
+CACHED_ANSWER = "Cached example answer"
+ASK_INTRO = ("Ask about this run — a room, a date, approvals or incident types. Answers come only from the decision "
+             "log, with numbered sources; the copilot cannot approve, decide or change anything.")
+ASK_NO_KEY = ("The AI copilot is off (no key configured). Suggested questions show cached examples; typed questions "
+              "are looked up in the decision log without an AI model.")
 LANG_FLAGS = {"de": "🇩🇪", "en": "🇬🇧", "it": "🇮🇹", "fr": "🇫🇷", "es": "🇪🇸", "nl": "🇳🇱", "pl": "🇵🇱", "cs": "🇨🇿"}
 
 _PATTERNS = [
