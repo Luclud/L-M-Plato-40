@@ -36,7 +36,17 @@ BADGES = {  # autonomy -> (label, colour)
 # ---------------------------------------------------------------------------- decisions
 def load_decisions(path: str | Path) -> pd.DataFrame:
     """decisions.jsonl -> DataFrame with parsed `t` and filled `episode`/`autonomy`."""
-    rows = [json.loads(line) for line in Path(path).read_text(encoding="utf-8").splitlines() if line.strip()]
+    rows = []
+    for n, line in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"{Path(path).name}: line {n} is not valid JSON ({e.msg})") from None
+        if not isinstance(row, dict):
+            raise ValueError(f"{Path(path).name}: line {n} is not a JSON object")
+        rows.append(row)
     df = pd.DataFrame(rows)
     if df.empty:
         df = pd.DataFrame(columns=["event_id", "timestamp_utc", "affected_assets", "issue_type", "action",

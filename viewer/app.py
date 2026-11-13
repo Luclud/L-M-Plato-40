@@ -396,7 +396,12 @@ def main():
     mtime = dpath.stat().st_mtime
     bg = checks(str(dpath), str(ddir), mtime)
     data, store = load_data(str(ddir))
-    ctx = {"df": load_decisions(str(dpath), mtime), "data": data, "store": store, "decisions": dpath,
+    try:
+        df = load_decisions(str(dpath), mtime)
+    except ValueError as e:
+        st.error(f"Cannot read decisions file `{dpath}`: {e}")
+        st.stop()
+    ctx = {"df": df, "data": data, "store": store, "decisions": dpath,
            "data_dir": ddir, "mtime": mtime, "checks": bg, "approvals_path": _abs(approvals_path)}
     ctx["approvals"] = core.load_approvals(ctx["approvals_path"])
     st.title(page)

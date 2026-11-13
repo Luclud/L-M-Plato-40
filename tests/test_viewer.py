@@ -53,6 +53,16 @@ def test_empty_decisions_file(tmp_path):
     assert df.empty and core.episodes(df).empty and core.summary(df)["episodes"] == 0
 
 
+def test_malformed_decisions_line_reports_line_number(tmp_path):
+    p = tmp_path / "bad.jsonl"
+    p.write_text('{"event_id": "D1"}\n{not json}\n')
+    with pytest.raises(ValueError, match="line 2"):
+        core.load_decisions(p)
+    p.write_text('[1, 2]\n')
+    with pytest.raises(ValueError, match="line 1"):
+        core.load_decisions(p)
+
+
 def test_labels_simulated_and_proposed():
     assert core.simulated_label("~45 min saved").startswith("SIMULATED")
     assert core.simulated_label("SIMULATED: x") == "SIMULATED: x"
