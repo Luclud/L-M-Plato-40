@@ -1,0 +1,60 @@
+# T30 "Next building" board: which insight is pinned to which part of the PLATO-40 (fictional) drawing.
+# Edit freely: `element` must be one of the drawing elements below; `incidents` = issue types whose incidents
+# are linked from the card (optional). Insights are read from insights.jsonl; no numbers live here.
+
+caption = "PLATO-40 (fictional) — schematic section, not to scale. Pins = lessons from one synthetic year."
+
+[elements]   # element id -> plain name shown on the drawing / in cards
+car_park = "Car park under the building"
+floor1_slab = "Floor-1 slab over the car park"
+south_upper = "South façade, upper floors"
+roof_plant = "Roof plant: ventilation unit"
+roof_access = "Access to the roof plant"
+risers = "Vertical risers (water, heat)"
+technical_room = "Technical room · main water meter"
+gateways = "Sensor gateway on each floor"
+heat_pump = "Heat pump"
+rooms = "Guest rooms"
+housekeeping = "Housekeeping & robots"
+supplies = "Vending machine & waste"
+
+[pins."PLATO-P1"]
+element = "floor1_slab"
+incidents = ["heating_comfort"]
+
+[pins."PLATO-P2"]
+element = "south_upper"
+
+[pins."PLATO-P3"]
+element = "roof_access"
+incidents = ["ventilation_maintenance"]
+
+[pins."PLATO-P4"]
+element = "risers"
+incidents = ["water_leak"]
+
+[pins."PLATO-P5"]
+element = "gateways"
+incidents = ["data_quality"]
+
+[pins."CLARA-C1"]
+element = "rooms"
+
+[pins."CLARA-C2"]
+element = "technical_room"
+
+[pins."CLARA-C3"]
+element = "heat_pump"
+incidents = ["heating_comfort"]
+
+[pins."CLARA-C4"]
+element = "roof_plant"
+incidents = ["ventilation_maintenance"]
+
+[pins."CLARA-C5"]
+element = "housekeeping"
+incidents = ["room_turnaround", "occupancy_surge"]
+
+[pins."CLARA-C6"]
+element = "supplies"
+incidents = ["logistics"]

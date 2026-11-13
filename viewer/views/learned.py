@@ -70,6 +70,7 @@ def card(r: dict):
 
 
 st.subheader("What we learned")
+st.page_link("views/design.py", label="See the lessons on the building →", icon=":material/architecture:")
 st.caption("Lessons from one synthetic year of the fictional PLATO-40 hotel — for the next building and for running "
            "this one better. Not facts about real PLATO buildings or CLARA installations.")
 d = insights_dir()
