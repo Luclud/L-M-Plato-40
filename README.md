@@ -51,6 +51,13 @@ Documentation for the team and coding agents: [`AGENTS.md`](AGENTS.md) ·
 
 ## Holdout (Saturday ~11:00)
 
+Full runbook: [`docs/RELEASE.md`](docs/RELEASE.md). Release check first (fresh clone → venv → tests →
+dev run → validate → eval → root deliverables; exits non-zero on any failure, < 5 min):
+
+```bash
+scripts/release_check.sh --copy-back          # Windows: powershell -ExecutionPolicy Bypass -File scripts\release_check.ps1 -CopyBack
+```
+
 ```bash
 git tag pre-holdout && git push origin pre-holdout          # BEFORE the release
 7z x -p'<password>' data/raw/PLATO40_v2_holdout_encrypted.7z -odata/holdout
@@ -60,7 +67,11 @@ git add decisions_holdout.jsonl && git commit -m "Holdout run" && git push
 ```
 
 ### Changes after pre-holdout
-_None yet. Any change after the tag must be justified here._
+_None yet. Any change after the tag must be justified here (separate commit each; re-run the holdout afterwards):_
+
+| Commit | What changed | Why it was unavoidable | Effect on `decisions_holdout.jsonl` |
+|---|---|---|---|
+| — | — | — | — |
 
 ## Architecture
 
