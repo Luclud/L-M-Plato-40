@@ -62,6 +62,15 @@ def prefix_of(df: pd.DataFrame) -> tuple[pd.DataFrame, int] | None:
     return (hit[1], hit[2]) if hit is not None and hit[0] is df else None
 
 
+_ROSTER_VIEW: dict = {}
+
+
+def roster_source_of(df: pd.DataFrame) -> pd.DataFrame | None:
+    """The source roster if ``df`` is (exactly) a frame returned by AsOf.roster(), else None."""
+    hit = _ROSTER_VIEW.get(id(df))
+    return hit[1] if hit is not None and hit[0] is df else None
+
+
 class AsOf:
     def __init__(self, data: Data, t: pd.Timestamp):
         self.d = data
@@ -93,8 +102,10 @@ class AsOf:
             r = src.copy()
             unknown = r.status_known_utc.notna() & (r.status_known_utc > self.t)
             r.loc[unknown, "status"] = "scheduled"
-            r.attrs["asof_source"] = (id(src), len(src))   # same rows/order as src: lets planners share prep
             memo[key] = r
+            # same rows/order as src (only 'status' differs): lets planners share prep. Identity registry, not
+            # attrs: pandas copies attrs onto derived frames (filters, copies), which must not look like views.
+            _ROSTER_VIEW[id(r)] = (r, src)
         return r
 
     def work_orders(self) -> pd.DataFrame:
