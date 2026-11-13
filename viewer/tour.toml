@@ -4,7 +4,7 @@
 [[step]]
 key = "building"
 title = "The building at a glance"
-say = "This is the whole hotel at one 15-minute moment, using only what was known at that time. Red dots are open incidents; the cards on top say what needs attention now."
+say = "This is Steward running the fictional PLATO-40 hotel at one 15-minute moment, using only what was known at that time. Red dots are open incidents; the cards on top say what needs attention now."
 
 [[step]]
 key = "water"

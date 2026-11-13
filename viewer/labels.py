@@ -6,7 +6,8 @@ from __future__ import annotations
 
 import re
 
-APP_NAME = "PLATO-40 Operations"  # placeholder; humans choose the product name (not PLATO / CLARA)
+APP_NAME = "Steward"  # product name (team decision Fri 13 Nov); never PLATO / CLARA
+APP_TAGLINE = "Runs the building, answers to people"
 TZ = "Europe/Vienna"
 
 ISSUE_TYPES = {
