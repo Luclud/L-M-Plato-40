@@ -96,7 +96,9 @@ def test_oncall_only_for_waiting_guests_in_window(decisions):
 def test_lookalike_clean_room_is_not_a_conflict(decisions):
     """Late check-out / vacant-clean early check-in answers are guest service, not turnaround episodes."""
     gs = [d for d in decisions if d["issue_type"] == "guest_request"]
-    assert gs and all(d["action"] == "notify_guest" for d in gs)
+    assert gs and all(d["action"] in {"notify_guest", "schedule_cleaning", "dispatch_robot", "release_room"} for d in gs)
+    assert not any(d["requires_human_approval"] for d in gs)
+    assert any("no turnover needed" in d["reason"] or "Late check-out" in d["reason"] for d in gs)
 
 
 def test_volume_per_episode_is_low(decisions):
@@ -123,3 +125,44 @@ def test_no_future_data(qs, decisions):
     strip = lambda ds: [{k: v for k, v in d.items() if k not in ("event_id", "episode_id", "dependencies")}
                         for d in ds if T(d["timestamp_utc"]) <= cut]
     assert strip(_run(trunc)) == strip(decisions)
+
+
+# ---- T16: only real conflicts become room_turnaround incidents -------------------------------------
+def test_every_early_checkin_request_gets_exactly_one_answer(qs, decisions):
+    reqs = qs.guest_requests[qs.guest_requests.request_type == "early_checkin"]
+    for r in reqs.itertuples():
+        answers = [d for d in decisions if d["action"] == "notify_guest" and r.request_id in d.get("guest_request_ids", [])]
+        assert len(answers) == 1, (r.request_id, [a["event_id"] for a in answers])
+
+
+def test_feasible_early_checkin_is_guest_service(qs_state, decisions):
+    gs = [d for d in decisions if d["issue_type"] == "guest_request" and d["action"] == "schedule_cleaning"]
+    assert gs, "no feasible early check-in handled as guest service"
+    for d in gs:
+        assert "feasible" in d["reason"] or "Commit plan" in d["reason"]
+        assert d["requires_human_approval"] is False
+        ok, why = qs_state.available(d["resource_id"], T(d["scheduled_for_utc"]), known_at=T(d["timestamp_utc"]))
+        assert ok, why
+    # a guest episode never carries incident-level actions
+    eps = {d["episode_id"] for d in gs}
+    for d in decisions:
+        if d.get("episode_id") in eps:
+            assert d["issue_type"] == "guest_request"
+            assert d["action"] in {"schedule_cleaning", "notify_guest", "dispatch_robot", "release_room"}
+
+
+def test_turnaround_episodes_are_conflicts(decisions):
+    """Each room_turnaround episode carries conflict evidence (no slack, shortfall, waiting guest, slipped plan)."""
+    eps = {}
+    for d in _ta(decisions):
+        eps.setdefault(d["episode_id"], []).append(d["reason"])
+    assert len(eps) <= 15
+    words = ("conflict", "shortfall", "waiting", "re-plan", "sick", "no cleaner", "cannot", "slack", "still in")
+    for ep, reasons in eps.items():
+        text = " ".join(reasons).lower()
+        assert any(w in text for w in words), (ep, reasons[0])
+
+
+def test_slack_constant_is_documented():
+    from plato40.detectors import s01_turnaround as m
+    assert m.SLACK == pd.Timedelta(minutes=30)
