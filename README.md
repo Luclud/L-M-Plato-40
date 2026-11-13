@@ -23,7 +23,7 @@ python validate.py decisions.jsonl <data_dir>      # contract + safety check
 `<data_dir>` is a dataset folder containing `manifest.json` (or its parent). The datasets are in the repo:
 
 ```bash
-python run.py data/dev --out decisions.jsonl            # deliverable (365 days, ~10 s)
+python run.py data/dev --out decisions.jsonl            # deliverable (365 days, ~30 s)
 python run.py data/quickstart --out out/qs.jsonl        # development (21 days, ~1 s)
 ```
 
