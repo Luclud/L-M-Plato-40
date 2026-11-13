@@ -1,0 +1,15 @@
+services:
+  viewer:
+    build:
+      context: .
+      dockerfile: viewer/Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      PLATO40_DATA: ${PLATO40_DATA:-data/quickstart}
+      PLATO40_DECISIONS: ${PLATO40_DECISIONS:-out/qs.jsonl}
+      PLATO40_APPROVALS: out/approvals.json
+    volumes:
+      - ./data:/app/data:ro
+      - ./out:/app/out   # decisions to show + mock approvals.json
+    restart: unless-stopped

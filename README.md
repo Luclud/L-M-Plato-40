@@ -49,6 +49,27 @@ Documentation for the team and coding agents: [`AGENTS.md`](AGENTS.md) ·
 [task brief](docs/TASK.md) · [data guide](docs/DATA.md) · [architecture](docs/ARCHITECTURE.md) ·
 [plan & ticket board](docs/PLAN.md) · [decisions](docs/DECISIONS.md) · [tickets](docs/tasks/) · [Devin guide](docs/DEVIN.md).
 
+## Viewer
+
+Streamlit demo viewer for the live demo: evidence → risk → decision → autonomy → verification
+(overview + `validate.py`/`evaluate.py` results, timeline, incident cards with evidence charts, mock approval
+inbox, data quality & look-alikes, four quickstart hero incidents). Click paths: [`docs/DEMO.md`](docs/DEMO.md).
+
+```bash
+pip install -r viewer/requirements.txt
+python run.py data/quickstart --out out/qs.jsonl
+streamlit run viewer/app.py -- --decisions out/qs.jsonl --data data/quickstart    # http://localhost:8501
+docker compose up --build viewer                                                  # same, on a server (port 8501)
+```
+
+Read-only over a decisions file. Guest messages are shown as **PROPOSED — not delivered**, simulated effects
+as **SIMULATED**, data gaps shaded as unknown; Approve/Reject only writes `out/approvals.json` (mock executor).
+`viewer/sample/quickstart_illustrative.jsonl` (`python viewer/sample_decisions.py`) is an *illustrative*
+hand-placed sample for rehearsing the hero screens — not pipeline output.
+
+![Hero scenario: burst hose](docs/img/viewer_hero_burst.png)
+![Overview on dev](docs/img/viewer_overview_dev.png)
+
 ## Holdout (Saturday ~11:00)
 
 Full runbook: [`docs/RELEASE.md`](docs/RELEASE.md). Release check first (fresh clone → venv → tests →
