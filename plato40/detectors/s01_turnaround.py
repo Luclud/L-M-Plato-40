@@ -246,7 +246,7 @@ class TurnaroundAgent(TriggerDetector):
 
     def _booking(self, asof, booking_id):
         b = asof.bookings()
-        pre = prefix_of(b)
+        pre = prefix_of(b) if isinstance(booking_id, str) else None   # non-str ids: plain pandas match
         if pre is not None:
             # b == src.iloc[:n]: first row of booking_id in b == its first row in src if that is within n
             src, n = pre

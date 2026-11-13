@@ -140,3 +140,42 @@ def test_resource_windows_matches_bruteforce(qs):
                 if rid in want and a < hi and b > lo:
                     want[rid].append((max(a, lo), min(b, hi)))
             assert hk.resource_windows(r, resources, lo, hi) == want
+
+
+def _windows_bruteforce(r, resources, lo, hi):
+    want = {x: [] for x in resources}
+    s = r[r.status == "scheduled"].sort_values("start_utc", kind="stable")
+    for rid, a, b in zip(s.resource_id, s.start_utc, s.end_utc):
+        if rid in want and a < hi and b > lo:
+            want[rid].append((max(a, lo), min(b, hi)))
+    return want
+
+
+def test_frames_derived_from_cached_roster_are_not_treated_as_views(qs):
+    """Copies/filters of AsOf.roster() inherit pandas attrs; caches must not mistake them for the view."""
+    resources = sorted(qs.resources)
+    t = qs.start + pd.Timedelta(days=3)
+    r = AsOf(qs, t).roster()
+    hk.resource_windows(r, resources, t, t + pd.Timedelta(days=2))   # warm the caches for the real view
+    # copy with one shift made much longer than any other
+    c = r.copy()
+    i = c.index[len(c) // 2]
+    c.loc[i, "end_utc"] = c.loc[i, "start_utc"] + pd.Timedelta(days=3)
+    lo = c.loc[i, "start_utc"] + pd.Timedelta(days=2)
+    hi = lo + pd.Timedelta(hours=1)
+    assert hk.resource_windows(c, resources, lo, hi) == _windows_bruteforce(c, resources, lo, hi)
+    # subset keeping the first and last row (same first/last start as the view)
+    sub = r[(r.index == r.index[0]) | (r.index == r.index[-1]) | (r.index % 3 == 0)]
+    lo, hi = t, t + pd.Timedelta(days=2)
+    assert hk.resource_windows(sub, resources, lo, hi) == _windows_bruteforce(sub, resources, lo, hi)
+
+
+def test_learn_durations_ignores_records_without_end(qs):
+    rec = hk.cleaning_records(qs.events)
+    t = qs.end
+    bad = rec.copy()
+    bad.loc[bad.index[:3], "end"] = pd.NaT
+    bad.loc[bad.index[:3], "minutes"] = float("nan")
+    got = hk.learn_durations(bad, qs.rooms, t, min_samples=1)
+    ref = hk.learn_durations(rec.iloc[3:].reset_index(drop=True), qs.rooms, t, min_samples=1)
+    assert got.samples == int((bad.end <= t).sum()) and got.pooled == ref.pooled and got.by_area == ref.by_area

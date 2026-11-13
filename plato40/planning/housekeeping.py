@@ -40,7 +40,7 @@ from typing import Iterable, Mapping
 import numpy as np
 import pandas as pd
 
-from ..asof import prefix_of
+from ..asof import prefix_of, roster_source_of
 from ..clock import at_local, local
 
 STEP = pd.Timedelta(minutes=15)
@@ -243,7 +243,7 @@ def _learn_durations(records: pd.DataFrame, rooms: list[dict], t: pd.Timestamp, 
     if len(records):
         # numpy over arrays prepared once per records frame (same medians as the pandas groupby)
         end, flags, minutes, area = _record_arrays(records, area_of)
-        done = end <= _ns(t)
+        done = (end <= _ns(t)) & (end != np.iinfo(np.int64).min)   # NaT end = not completed (as pandas)
         n_rec = int(done.sum())
         for flag in (False, True):
             sel = done & (flags == flag)
@@ -320,14 +320,16 @@ def _shift_bounds(shifts: list, roster: pd.DataFrame) -> tuple[list, pd.Timedelt
     hit = _BOUNDS_MEMO.get(id(shifts))
     if hit is not None and hit[0] is shifts:
         return hit[1], hit[2]
-    src = roster.attrs.get("asof_source")
-    mkey = ("maxdur", src) if src is not None else None
-    maxdur = _BOUNDS_MEMO.get(mkey) if mkey is not None else None
-    if maxdur is None:
+    src = roster_source_of(roster)
+    mkey = ("maxdur", id(src)) if src is not None else None
+    m = _BOUNDS_MEMO.get(mkey) if mkey is not None else None
+    if m is not None and m[0] is src:
+        maxdur = m[1]
+    else:
         d = (roster.end_utc - roster.start_utc).max()
         maxdur = None if pd.isna(d) else max(d, pd.Timedelta(0))
-        if mkey is not None and maxdur is not None:
-            _BOUNDS_MEMO[mkey] = maxdur
+        if mkey is not None:
+            _BOUNDS_MEMO[mkey] = (src, maxdur)   # keep src referenced: its id cannot be reused
     starts = [st for _, st, _ in shifts]
     if len(_BOUNDS_MEMO) > 2048:
         _BOUNDS_MEMO.clear()
@@ -341,7 +343,7 @@ def _scheduled_shifts(roster: pd.DataFrame) -> list[tuple[str, pd.Timestamp, pd.
     hit = _SHIFTS_MEMO.get(id(roster))
     if hit is not None and hit[0] is roster:
         return hit[1]
-    src = roster.attrs.get("asof_source")
+    src = roster_source_of(roster)
     if src is not None:
         # every as-of view of one roster has the same rows in the same order; only 'status' differs
         order, rows = _roster_rows(roster, src)
@@ -359,15 +361,15 @@ def _scheduled_shifts(roster: pd.DataFrame) -> list[tuple[str, pd.Timestamp, pd.
 _ROSTER_ROWS: dict = {}
 
 
-def _roster_rows(roster: pd.DataFrame, src: tuple) -> tuple:
-    """Start-sorted (resource_id, start, end) rows shared by all as-of views of one source roster."""
-    key = (src, roster.start_utc.iloc[0] if len(roster) else None, roster.start_utc.iloc[-1] if len(roster) else None)
-    hit = _ROSTER_ROWS.get(key)
-    if hit is None:
-        order = roster.start_utc.reset_index(drop=True).sort_values(kind="stable").index.to_numpy()
-        rid, st, en = roster.resource_id.tolist(), roster.start_utc.tolist(), roster.end_utc.tolist()
-        hit = _ROSTER_ROWS[key] = (order, [(rid[i], st[i], en[i]) for i in order])
-    return hit
+def _roster_rows(roster: pd.DataFrame, src: pd.DataFrame) -> tuple:
+    """Start-sorted (resource_id, start, end) rows shared by all as-of views of one source roster
+    (built from ``src`` itself; the source is kept referenced so its id cannot be reused)."""
+    hit = _ROSTER_ROWS.get(id(src))
+    if hit is None or hit[0] is not src or hit[1] != len(src):
+        order = src.start_utc.reset_index(drop=True).sort_values(kind="stable").index.to_numpy()
+        rid, st, en = src.resource_id.tolist(), src.start_utc.tolist(), src.end_utc.tolist()
+        hit = _ROSTER_ROWS[id(src)] = (src, len(src), order, [(rid[i], st[i], en[i]) for i in order])
+    return hit[2], hit[3]
 
 
 def oncall_slot(t: pd.Timestamp, minutes: int, busy_until: pd.Timestamp | None = None,
