@@ -18,7 +18,7 @@ WATER_CODES = ("WATER_NIGHT_FLOW",)
 
 
 def insights_dir() -> Path:
-    return Path(os.environ.get("PLATO40_INSIGHTS_DIR") or common.ROOT)
+    return common.insights_dir()
 
 
 def bms_sentence(c: dict) -> tuple[str, pd.DataFrame | None]:

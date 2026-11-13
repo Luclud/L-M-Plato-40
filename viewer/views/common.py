@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -17,6 +18,30 @@ if str(ROOT) not in sys.path:
 from plato40 import io  # noqa: E402
 from viewer import core  # noqa: E402
 from viewer import labels as L  # noqa: E402
+
+GENERATED_INSIGHTS = ROOT / "out" / "insights"   # written by the "Generate insights" button (out/ is writable)
+DEV_DATA = ROOT / "data" / "dev"
+
+
+def insights_dir() -> Path:
+    """Where the Level 3 insights live: $PLATO40_INSIGHTS_DIR, else the committed repo-root files, else the ones
+    generated from the viewer into out/insights/."""
+    env = os.environ.get("PLATO40_INSIGHTS_DIR")
+    if env:
+        return Path(env)
+    if (ROOT / "insights.jsonl").exists():
+        return ROOT
+    return GENERATED_INSIGHTS
+
+
+def generate_insights(data_dir: Path = DEV_DATA, out_dir: Path = GENERATED_INSIGHTS) -> tuple[bool, str]:
+    """Run analysis/insights.py on the dev year (deterministic, ~10 s). Returns (ok, log tail)."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    cmd = [sys.executable, str(ROOT / "analysis" / "insights.py"), str(data_dir),
+           "--out", str(out_dir / "insights.md"), "--jsonl", str(out_dir / "insights.jsonl")]
+    r = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
+    return r.returncode == 0, (r.stdout + r.stderr)[-3000:]
+
 
 PROFILE_NAMES = {"quickstart": "Quickstart", "dev": "Dev year", "holdout": "Holdout"}
 CUSTOM = "Custom…"
