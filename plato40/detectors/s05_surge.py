@@ -99,6 +99,7 @@ class Episode:
     last: _dt.date
     days: set = field(default_factory=set)
     robot_days: set = field(default_factory=set)
+    robot_by_day: dict = field(default_factory=dict)  # day -> robot booked for the floor pre-clean
     asked: dict = field(default_factory=dict)      # day -> extra-staff shortfall already requested
     lost: set = field(default_factory=set)         # shift_ids already handled
 
@@ -123,7 +124,7 @@ class SurgeAgent(TriggerDetector):
                 yield ts, "daily", day
             day = day + ONE_DAY
         r = data.roster
-        ch = r[(r.role == "cleaner") & (r.status != "scheduled") & r.status_known_utc.notna()
+        ch = r[r.role.isin(["cleaner", "robot"]) & (r.status != "scheduled") & r.status_known_utc.notna()
                & (r.status_known_utc >= data.start) & (r.status_known_utc < data.end)]
         for row in ch.itertuples(index=False):
             yield row.status_known_utc, "roster", row
@@ -205,6 +206,7 @@ class SurgeAgent(TriggerDetector):
         if not free:
             return None
         ep.robot_days.add(v.day)
+        ep.robot_by_day[v.day] = free[0]
         return self._add(
             ctx, ep, "dispatch_robot", "medium",
             f"Surge day {v.day}: robot floor pre-cleaning of rooms as soon as they are vacated by check-out "
@@ -238,8 +240,37 @@ class SurgeAgent(TriggerDetector):
             if d is None and new:
                 self.eps.pop(ep.key, None)
 
+    def _robot_lost(self, ctx, row):
+        """A robot booked for a surge day became unavailable (known now): re-plan in the same episode."""
+        sday = local_day(row.start_utc)
+        for ep in list(self.eps.values()):
+            if not ctx.log.is_open(ep.key) or ep.robot_by_day.get(sday) != row.resource_id:
+                continue
+            ep.robot_days.discard(sday)
+            ep.robot_by_day.pop(sday, None)
+            v = self._view(ctx, sday)
+            ev = [f"staff_roster.csv:{row.resource_id}:{iso(row.status_known_utc)}:{row.shift_id} {row.status}"]
+            d = self._robots(ctx, ep, v)
+            if d is not None:
+                d.reason = (f"Re-plan: {row.resource_id} {row.status} on {sday} (known {local_hm(row.status_known_utc)} "
+                            f"local) -> floor pre-clean moved to {d.resource_id}. ") + d.reason
+                d.evidence = ev + d.evidence
+                continue
+            self._add(
+                ctx, ep, "defer_action", "high",
+                f"Re-plan: {row.resource_id} {row.status} on {sday} (known {local_hm(row.status_known_utc)} local) and no "
+                f"other robot on shift -> robot floor pre-clean cancelled; cleaners need the full human time per room "
+                f"(~{self._view(ctx, sday).minutes} min with robot, more without). {self._summary(v)}",
+                ["BUILDING", row.resource_id], evidence=ev + self._evidence(ctx, v),
+                expected_outcome="Plan no longer relies on an unavailable robot; extra-staff request stays open",
+                verification_plan=f"no dispatch_robot for {row.resource_id} on {sday}; arrivals clean by 15:00 local",
+                confidence=0.6)
+
     def _roster(self, ctx, row):
         if row.end_utc <= ctx.t:
+            return
+        if row.role == "robot":
+            self._robot_lost(ctx, row)
             return
         sday = local_day(row.start_utc)
         if not (local_day(ctx.t) <= sday <= local_day(ctx.t) + ONE_DAY):

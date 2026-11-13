@@ -102,3 +102,22 @@ def test_threshold_helpers():
     assert busy_threshold(pd.Series([10] * 50 + [30] * 10), 40) == 30
     assert window_capacity_rooms(2, 45) == pytest.approx(2 * 240 / 45)
     assert window_capacity_rooms(0, 45) == 0
+
+
+def test_robot_out_of_service_replans_in_same_episode(qs):
+    base = _su(_run(qs))
+    rob = [d for d in base if d["action"] == "dispatch_robot" and d["scheduled_for_utc"].startswith("2026-01-23")]
+    assert rob
+    robot, known = rob[0]["resource_id"], T("2026-01-22T15:00Z")
+    r = qs.roster.copy()
+    m = (r.resource_id == robot) & (r.start_utc.dt.tz_convert("Europe/Vienna").dt.date == T("2026-01-23").date())
+    assert m.sum() == 1
+    r.loc[m, "status"], r.loc[m, "status_known_utc"] = "out_of_service", known
+    ds = _su(_run(dataclasses.replace(qs, roster=r)))
+    follow = [d for d in ds if robot in d["reason"] and "Re-plan" in d["reason"]]
+    assert follow and min(T(d["timestamp_utc"]) for d in follow) == known
+    assert {d["episode_id"] for d in follow} == {rob[0]["episode_id"]}
+    assert not [d for d in ds if T(d["timestamp_utc"]) < known and "Re-plan" in d["reason"]]
+    for d in ds:   # nothing after the status is known relies on the unavailable robot that day
+        if d["action"] == "dispatch_robot" and T(d["timestamp_utc"]) >= known:
+            assert not (d["resource_id"] == robot and d["scheduled_for_utc"].startswith("2026-01-23"))
