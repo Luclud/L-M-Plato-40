@@ -7,10 +7,11 @@ from .s02_water import WaterAgent
 from .s03_comfort import ComfortAgent
 from .s04_maintenance import MaintenanceAgent
 from .s05_surge import SurgeAgent
+from .guest_service import GuestServiceAgent
 
 REGISTRY = {cls.name: cls for cls in (
     DataQualityAgent, TurnaroundAgent, WaterAgent, ComfortAgent,
-    MaintenanceAgent, SurgeAgent, EnergyAgent, LogisticsAgent,
+    MaintenanceAgent, SurgeAgent, EnergyAgent, LogisticsAgent, GuestServiceAgent,
 )}
 
 

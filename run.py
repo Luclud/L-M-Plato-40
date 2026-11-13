@@ -16,7 +16,7 @@ import time
 from dataclasses import asdict
 from pathlib import Path
 
-from plato40 import __version__, engine, io
+from plato40 import __version__, engine, io, llm
 from plato40.detectors import REGISTRY, build
 
 
@@ -28,6 +28,10 @@ def main(argv=None) -> int:
     p.add_argument("--detectors", default="", help=f"comma list, default all: {','.join(REGISTRY)}")
     p.add_argument("--no-llm", action="store_true", help="force template wording (no LLM calls)")
     a = p.parse_args(argv)
+
+    if a.no_llm:
+        llm.set_enabled(False)
+    print(f"[llm] {'enabled (wording only, template fallback)' if llm.enabled() else 'off - template wording'}")
 
     t0 = time.perf_counter()
     data = io.load(a.data_dir)
