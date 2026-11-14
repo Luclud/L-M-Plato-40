@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import hashlib
 import json
 import os
 import subprocess
@@ -32,19 +33,46 @@ GENERATED_INSIGHTS = ROOT / "out" / "insights"   # written by the "Generate insi
 DEV_DATA = ROOT / "data" / "dev"
 
 
-def insights_dir() -> Path:
-    """Where the Level 3 insights live: $PLATO40_INSIGHTS_DIR, else the committed repo-root files, else the ones
-    generated from the viewer into out/insights/."""
+def _current_data_dir() -> Path | None:
+    try:
+        return Path(st.session_state["ctx"]["data_dir"])
+    except (KeyError, TypeError):
+        return None
+
+
+def dataset_insights_dir(data_dir: Path) -> Path:
+    """Where the Level 3 insights of one dataset live: the committed repo-root files for the dev year, else
+    out/insights/<name>-<hash of path + manifest>/ (written once by generate_insights)."""
+    d = Path(data_dir).resolve()
+    if d == DEV_DATA.resolve() and (ROOT / "insights.jsonl").exists():
+        return ROOT
+    m = d / "manifest.json"
+    stamp = f"{d}|{m.stat().st_mtime if m.exists() else 0}"
+    return GENERATED_INSIGHTS / f"{d.name}-{hashlib.sha1(stamp.encode()).hexdigest()[:8]}"
+
+
+def insights_dir(data_dir: Path | None = None) -> Path:
+    """Insights for the selected dataset ($PLATO40_INSIGHTS_DIR wins). Falls back to the dev-year files while a
+    dataset's own insights have not been generated yet."""
     env = os.environ.get("PLATO40_INSIGHTS_DIR")
     if env:
         return Path(env)
-    if (ROOT / "insights.jsonl").exists():
-        return ROOT
-    return GENERATED_INSIGHTS
+    data_dir = data_dir or _current_data_dir()
+    if data_dir is not None:
+        d = dataset_insights_dir(data_dir)
+        if (d / "insights.jsonl").exists():
+            return d
+    return ROOT if (ROOT / "insights.jsonl").exists() else GENERATED_INSIGHTS
 
 
-def generate_insights(data_dir: Path = DEV_DATA, out_dir: Path = GENERATED_INSIGHTS) -> tuple[bool, str]:
-    """Run analysis/insights.py on the dev year (deterministic, ~10 s). Returns (ok, log tail)."""
+def insights_ready(data_dir: Path) -> bool:
+    return (dataset_insights_dir(data_dir) / "insights.jsonl").exists()
+
+
+def generate_insights(data_dir: Path = DEV_DATA, out_dir: Path | None = None) -> tuple[bool, str]:
+    """Run analysis/insights.py (unchanged, deterministic, ~1-10 s) on one dataset into its own folder.
+    Returns (ok, log tail)."""
+    out_dir = out_dir or dataset_insights_dir(data_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     cmd = [sys.executable, str(ROOT / "analysis" / "insights.py"), str(data_dir),
            "--out", str(out_dir / "insights.md"), "--jsonl", str(out_dir / "insights.jsonl")]
