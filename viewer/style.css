@@ -126,3 +126,25 @@ code, kbd, .mono { font-variant-numeric: tabular-nums; }
 /* --- button rows: containers keyed btnrow_* lay their buttons out side by side with a small gap --- */
 [class*="st-key-btnrow_"] { flex-direction: row; flex-wrap: wrap; align-items: center; gap: .5rem; }
 [class*="st-key-btnrow_"] [data-testid="stElementContainer"] { width: auto !important; flex: 0 0 auto; }
+
+/* --- Ask the building (ask.py) --- */
+.ask-hero { display: flex; flex-direction: column; align-items: center; gap: .6rem; margin: 2.2rem 0 1.4rem; }
+.ask-hero img { width: 4.5rem; height: 4.5rem; border-radius: 50%; object-fit: contain; padding: .35rem; background: var(--surface);
+  border: 1px solid var(--line); box-shadow: 0 4px 14px rgba(29, 36, 33, .06); }
+.ask-hero-title { font: 600 1.45rem/1.2 "Space Grotesk", sans-serif; letter-spacing: -.02em; color: var(--ink); }
+.st-key-ask_sugg { max-width: 860px; margin: 0 auto; width: 100%; }
+.st-key-ask_sugg [data-testid="stHorizontalBlock"] { column-gap: .75rem; }
+.st-key-ask_sugg button { justify-content: flex-start; text-align: left; min-height: 3.4rem; padding: .7rem 1rem;
+  border-radius: .75rem; border-color: var(--line); box-shadow: 0 1px 2px rgba(29, 36, 33, .04); }
+.st-key-ask_sugg button > div, .st-key-ask_sugg button p { justify-content: flex-start; text-align: left;
+  white-space: normal; }
+.st-key-ask_sugg button [data-testid="stIconMaterial"] { color: var(--accent); }
+.st-key-right_ask_more { max-width: 860px; margin: .2rem auto 0; width: 100%; }
+/* chat input lines up with the page content instead of spanning the whole window */
+[data-testid="stBottomBlockContainer"] { max-width: 1320px; margin: 0 auto; }
+/* answers sit on a white card, questions stay plain */
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarCustom"]),
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarAssistant"]) {
+  background: var(--surface); border: 1px solid var(--line); border-radius: .9rem; padding: 1rem 1.1rem;
+  box-shadow: 0 1px 2px rgba(29, 36, 33, .04), 0 4px 14px rgba(29, 36, 33, .04); }
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) { background: transparent; }

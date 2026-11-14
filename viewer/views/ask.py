@@ -2,6 +2,7 @@
 (read-only tools), with numbered sources and charts of every measurement looked up."""
 from __future__ import annotations
 
+import base64
 from pathlib import Path
 
 import pandas as pd
@@ -12,6 +13,11 @@ from viewer import labels as L
 from viewer.views import common
 
 BOT_AVATAR = str(Path(__file__).resolve().parents[1] / "assets" / "bot_avatar.png")
+
+
+@st.cache_resource
+def avatar_uri() -> str:
+    return "data:image/png;base64," + base64.b64encode(Path(BOT_AVATAR).read_bytes()).decode()
 
 LABELS = {"llm": L.AI_ANSWER, "cached:llm": f"{L.AI_ANSWER} · {L.CACHED_ANSWER}",
           "offline": L.OFFLINE_ANSWER, "cached:offline": f"{L.OFFLINE_ANSWER} · {L.CACHED_ANSWER}"}
@@ -73,26 +79,45 @@ if df.empty:
 
 tw = get_twin(str(c["data_dir"]), c["data"])
 now = moment(c, tw)
-with st.expander("What can I ask?", icon=":material/help:"):
-    st.markdown("- **A room:** “How is Room 104 right now?” · “What happened in Room 305?”\n"
-                "- **The building:** “What is going on right now?” · “Which rooms need cleaning?”\n"
-                "- **Measurements, with a chart:** “Show the heat pump today” · “Show water use in Room 305 on "
-                "12 Jan” · “Show the ventilation filter”\n"
-                "- **People and guests:** “Who is working on 24 Jan?” · “Who arrives tomorrow?” · “Which guest "
-                "requests came from Room 210?”\n"
-                "- **Decisions:** “Which incidents still need approval?” · “Why was a technician sent on 15 Jan?”\n\n"
-                "Read-only: the copilot cannot approve, decide or change anything.")
+EXAMPLES = {
+    "A room": ["How is Room 104 right now?", "What happened in Room 305?"],
+    "The building": ["What is going on right now?", "Which rooms need cleaning?"],
+    "Measurements": ["Show the heat pump today", "Show water use in Room 305 on 12 Jan"],
+    "People and guests": ["Who is working on 24 Jan?", "Which guest requests came from Room 210?"],
+    "Decisions": ["Which incidents still need approval?", "Why was a technician sent on 15 Jan?"],
+}
+SUGGEST_ICONS = [":material/meeting_room:", ":material/how_to_reg:", ":material/cleaning_services:",
+                 ":material/bar_chart:"]
 
 history = st.session_state.setdefault(f"ask:{c['decisions']}", [])
 question = None
-sugg = suggestions(str(c["decisions"]), c["mtime"], df)
-for i, (col, s) in enumerate(zip(st.columns(len(sugg)), sugg)):
-    if col.button(s, key=f"ask_suggest_{i}", use_container_width=True):
-        question = s
+hero = st.empty()   # welcome + suggestions; cleared as soon as the first question is asked
+if not history:
+    with hero.container(key="ask_hero"):
+        st.markdown(f"<div class='ask-hero'><img src='{avatar_uri()}' alt=''>"
+                    "<div class='ask-hero-title'>What would you like to know?</div></div>", unsafe_allow_html=True)
+        sugg = suggestions(str(c["decisions"]), c["mtime"], df)
+        with st.container(key="ask_sugg"):
+            for row in range(0, len(sugg), 2):
+                cols = st.columns(2, gap="small")
+                for i, (col, s) in enumerate(zip(cols, sugg[row:row + 2]), start=row):
+                    if col.button(s, key=f"ask_suggest_{i}", icon=SUGGEST_ICONS[i % len(SUGGEST_ICONS)],
+                                  width="stretch"):
+                        question = s
+        with st.container(key="right_ask_more"):
+            with st.popover("More examples", icon=":material/help:"):
+                for topic, qs in EXAMPLES.items():
+                    st.markdown(f"**{topic}**  \n" + "  \n".join(f"“{q}”" for q in qs))
+                st.caption("Read-only: the copilot cannot approve, decide or change anything.")
 question = st.chat_input("Ask about a room, the building now, staff, arrivals, measurements or an incident …") \
     or question
-if history and st.button("Clear conversation", icon=":material/delete_sweep:", type="tertiary"):
-    history.clear()
+if question:
+    hero.empty()
+if history:
+    with st.container(key="right_ask_clear"):
+        if st.button("Clear conversation", icon=":material/delete_sweep:", type="tertiary"):
+            history.clear()
+            st.rerun()
 
 for turn in history:
     show(turn)
