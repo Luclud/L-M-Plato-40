@@ -92,7 +92,7 @@ scenes:
       - wait_for_text: "For CLARA next year"
       - highlight_text: "For CLARA next year"
       - pause: 8
-      - highlight_text: "car park"
+      - highlight_text: "For the next PLATO building"
     voiceover: >-
       After a year, Steward turns operations into lessons. For CLARA: pre-heat before forecast cold snaps,
       and change filters by condition, not by calendar. For the next PLATO building: in PLATO-40,
