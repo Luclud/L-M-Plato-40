@@ -86,9 +86,11 @@ def test_voice_scene_starts_each_sentence_at_its_subtitle_cue(tmp_path):
             return p
 
     dst = tmp_path / "s_vo.wav"
-    times = mv.voice_scene(FakeTTS(), ["a", "b", "c"], dst, tmp_path, starts=[0.0, 5.0, 6.0])
+    times = mv.voice_scene(FakeTTS(), ["a", "b", "c"], dst, tmp_path, starts=[0.0, 5.0, 6.0], seconds=12)
     assert [round(a, 2) for _, a, _ in times] == [0.0, 5.0, 7.2]   # cue 6 is still busy -> right after "b"
     assert abs(mv.wav_seconds(dst) - 9.2) < 0.01
+    tight = mv.voice_scene(FakeTTS(), ["a", "b", "c"], dst, tmp_path, starts=[0.0, 5.0, 6.0], seconds=8)
+    assert [round(a, 2) for _, a, _ in tight] == [0.0, 3.3, 5.5]   # only 1.1 s of slack to wait for "b"
     assert [round(a, 2) for _, a, _ in mv.voice_scene(FakeTTS(), ["a", "b"], dst, tmp_path)] == [0.0, 2.2]
 
 

@@ -57,7 +57,8 @@ in `out/video/<cut>_work/`), `--storyboard <path>`.
   Audio generated with ElevenLabs is subject to the ElevenLabs terms of the account used (commercial use needs a paid
   plan).
 - Scenes with storyboard `subtitles`: each spoken line starts at its `at` cue (or right after the previous line if
-  that is still speaking), so the voice stays on the action it describes; the captions follow the voice.
+  that is still speaking), so the voice stays on the action it describes, as long as the scene keeps its storyboard
+  length; the captions follow the voice. `VOICE_TEMPO` (e.g. `1.1`) speeds up synthetic speech.
 - The spoken text is the storyboard text after placeholder substitution: `[HOLDOUT]` is replaced by `--holdout`
   verbatim; if it is empty, the whole sentence containing it is dropped. Nothing is added or rephrased.
 

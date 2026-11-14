@@ -43,6 +43,7 @@ SPEECH_RATE = 0.9  # Piper length_scale (<1 = faster); keeps the short cut near 
 MAX_SUBMISSION_S = 180.0
 CAPTION_WIDTH, CAPTION_LINES = 42, 2
 PIPER_VOICE = "en_US-ljspeech-high"
+VOICE_TEMPO = float(os.environ.get("VOICE_TEMPO", 1.0))  # >1 speeds up synthetic speech (ffmpeg atempo)
 ELEVEN_VOICE = os.environ.get("ELEVENLABS_VOICE_ID", "JBFqnCBsd6RMkjVDRZzb")  # George, pre-made
 ELEVEN_MODEL = os.environ.get("ELEVENLABS_MODEL", "eleven_multilingual_v2")       # has style + speed
 ELEVEN_SETTINGS = {"stability": 0.35, "similarity_boost": 0.75, "style": 0.45, "speed": 1.08,
@@ -166,8 +167,9 @@ def wav_seconds(path: Path) -> float:
         return w.getnframes() / w.getframerate()
 
 
-def to_std_wav(src: Path, dst: Path) -> Path:
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(src), "-ar", str(RATE), "-ac", "1",
+def to_std_wav(src: Path, dst: Path, tempo: float = 1.0) -> Path:
+    speed = ["-af", f"atempo={tempo}"] if tempo != 1.0 else []
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(src), *speed, "-ar", str(RATE), "-ac", "1",
                     "-sample_fmt", "s16", str(dst)], check=True)
     return dst
 
@@ -247,18 +249,25 @@ class ElevenLabsTTS:
     scene = None
 
 
-def voice_scene(self, sentences: list[str], dst: Path, tmp: Path,
-                starts: list[float] | None = None) -> list[tuple[str, float, float]]:
+def voice_scene(self, sentences: list[str], dst: Path, tmp: Path, starts: list[float] | None = None,
+                seconds: float = 0.0) -> list[tuple[str, float, float]]:
     """One clip per sentence, joined with short gaps -> exact sentence timings for the captions.
-    `starts` (storyboard subtitle `at`): a sentence never starts before its cue, so it stays on its action."""
-    parts, times, t = [], [], 0.0
+    `starts` (storyboard subtitle `at`): a sentence waits for its cue, so it stays on its action, but only as long
+    as the scene still ends within `seconds` (the waits never make a scene longer than its speech needs)."""
+    clips = []
     for i, s in enumerate(sentences):
-        if starts and starts[i] > t:
-            parts.append((None, starts[i] - t))
-            t = starts[i]
         context = (" ".join(sentences[:i]), " ".join(sentences[i + 1:]))
-        std = to_std_wav(self.sentence(s, tmp / f"{dst.stem}_{i}", context), tmp / f"{dst.stem}_{i}_48k.wav")
-        d = wav_seconds(std)
+        std = to_std_wav(self.sentence(s, tmp / f"{dst.stem}_{i}", context), tmp / f"{dst.stem}_{i}_48k.wav",
+                         VOICE_TEMPO)
+        clips.append((std, wav_seconds(std)))
+    speech = sum(d for _, d in clips) + GAP_S * (len(clips) - 1)
+    slack = max(0.0, seconds - TAIL_S - speech)
+    parts, times, t = [], [], 0.0
+    for i, (s, (std, d)) in enumerate(zip(sentences, clips)):
+        wait = min(max(0.0, starts[i] - t), slack) if starts else 0.0
+        if wait > 0:
+            parts.append((None, wait))
+            t, slack = t + wait, slack - wait
         parts += [(std, d), (None, GAP_S)]
         times.append((s, t, t + d))
         t += d + GAP_S
@@ -886,7 +895,8 @@ def main(argv=None) -> int:
             times = proportional_times(sentences, 0.0, wav_seconds(wav))
         elif mode == "tts":
             wav = work / f"{sid}_vo.wav"
-            times = piper.scene(sentences, wav, work, [float(x["at"]) for x in subs] if subs else None)
+            times = piper.scene(sentences, wav, work, [float(x["at"]) for x in subs] if subs else None,
+                                float(sc["seconds"]))
         voice_s = wav_seconds(wav) if wav else 0.0
         seconds = max(float(sc["seconds"]), voice_s + TAIL_S if wav else 0.0)
         if subs and not wav:
