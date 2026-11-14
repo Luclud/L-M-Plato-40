@@ -20,7 +20,7 @@ from plato40 import llm
 ROOT = Path(__file__).resolve().parents[1]
 STORE = ROOT / "out" / "insights_ai.json"
 SHIPPED = Path(__file__).resolve().parent / "insights_ai.json"
-FIELDS = ("topic", "finding", "recommendation", "expected_benefit")
+FIELDS = ("topic", "status", "finding", "recommendation", "expected_benefit")
 
 SYSTEM = (
     "You rewrite one finding from a year of operating data of PLATO-40, a fictional 40-room self-check-in hotel, for "
@@ -30,7 +30,10 @@ SYSTEM = (
     "and never write a count or 'X of Y' that the insight does not state. Range edges such as '-40..-5 °C' or "
     "'10..40 °C' are bin labels: describe them in words ('the coldest days', 'mild days'), never quote the edges. "
     "The headline contains no numbers. Do not claim savings or real-world results; the data is synthetic. "
-    "Say 'PLATO-40' when you name the building. Reply with JSON only: "
+    "Say 'PLATO-40' when you name the building. The status says how far the data supports the insight: if it is "
+    "'rejected', say plainly that this dataset does not support it; if 'insufficient data', say it could not be "
+    "tested on this dataset; if 'qualified', say the evidence is partial. Never present those as findings. "
+    "Reply with JSON only: "
     '{"headline": "<at most 9 words, no numbers>", "finding": "<1-2 sentences: what the data shows>", '
     '"recommendation": "<1-2 sentences: what to do>"}'
 )
@@ -53,8 +56,10 @@ def source_text(r: dict) -> str:
     return "\n".join(f"{k}: {r.get(k)}" for k in FIELDS if r.get(k))
 
 
-def key_for(r: dict, model: str) -> str:
-    return hashlib.sha256(json.dumps([source_text(r), model, SYSTEM], ensure_ascii=False).encode()).hexdigest()[:16]
+def key_for(r: dict) -> str:
+    """Store key: insight id + hash of everything the model sees, so several datasets' cards live side by side."""
+    h = hashlib.sha256(json.dumps([source_text(r), SYSTEM], ensure_ascii=False).encode()).hexdigest()[:16]
+    return f"{r.get('insight_id')}|{h}"
 
 
 def extra_numbers(text: dict, r: dict) -> set[str] | None:
@@ -98,16 +103,23 @@ def load() -> dict:
     return {**_read(SHIPPED), **_read(STORE)}
 
 
+NO_AI = {"rejected"}   # the AI tends to restate a rejected hypothesis as fact: keep the analysis text + badge
+
+
+def wanted(r: dict) -> bool:
+    return str(r.get("status") or "").lower() not in NO_AI
+
+
 def entry(r: dict, store: dict) -> dict | None:
     """The stored AI wording for this insight if it still matches the insight's current text."""
-    e = store.get(str(r.get("insight_id")))
-    if not isinstance(e, dict) or e.get("source_hash") != key_for(r, e.get("model", "")):
+    if not wanted(r):
         return None
-    return e if check(e, r) else None
+    e = store.get(key_for(r))
+    return e if isinstance(e, dict) and check(e, r) else None
 
 
 def missing(rows: list[dict], store: dict) -> list[dict]:
-    return [r for r in rows if entry(r, store) is None]
+    return [r for r in rows if wanted(r) and entry(r, store) is None]
 
 
 def generate(rows: list[dict], complete: Callable[[str, str, int], str | None] | None = None,
@@ -133,9 +145,8 @@ def generate(rows: list[dict], complete: Callable[[str, str, int], str | None] |
         if text is None or not check(text, r):
             rejected += 1
             continue
-        store[str(r["insight_id"])] = {"headline": text["headline"].strip(), "finding": text["finding"].strip(),
-                                        "recommendation": text["recommendation"].strip(), "model": model,
-                                        "source_hash": key_for(r, model)}
+        store[key_for(r)] = {"headline": text["headline"].strip(), "finding": text["finding"].strip(),
+                              "recommendation": text["recommendation"].strip(), "model": model}
         written += 1
         try:
             STORE.parent.mkdir(parents=True, exist_ok=True)

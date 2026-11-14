@@ -1,5 +1,6 @@
 """T21 What we learned + Proof pages."""
 import json
+from pathlib import Path
 import re
 import shutil
 
@@ -36,7 +37,9 @@ def _text(at):
 def test_learned_has_11_cards_in_two_columns(sets, name, monkeypatch, tmp_path):
     dec, data = sets[name]
     at = _open(monkeypatch, "views/learned.py", dec, data, tmp_path)
-    rows = [json.loads(x) for x in (V.ROOT / "insights.jsonl").read_text().splitlines() if x.strip()]
+    from viewer.views import common          # the page shows the selected dataset's own lessons (dev: repo root)
+    d = common.insights_dir(Path(data))
+    rows = [json.loads(x) for x in (d / "insights.jsonl").read_text().splitlines() if x.strip()]
     topics = {r["topic"] for r in rows}
     cards = [m.value for m in at.markdown if m.value.startswith("**") and m.value[2:].split("**")[0] in topics]
     assert len(cards) == len(rows) == 11

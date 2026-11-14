@@ -23,6 +23,29 @@ def insights_dir() -> Path:
     return common.insights_dir()
 
 
+# How far a dataset supports an insight (analysis/insights.py "status"); confirmed needs no badge.
+STATUS_BADGE = {"qualified": ":orange-badge[partly supported]", "rejected": ":gray-badge[not supported by this data]",
+                "insufficient data": ":gray-badge[not testable on this data]"}
+WEAK = {"rejected", "insufficient data"}
+
+
+def dataset_line(data_dir: Path) -> str:
+    """'Quickstart (21 days)' from the dataset's manifest."""
+    try:
+        m = json.loads((data_dir / "manifest.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        m = {}
+    name = common.PROFILE_NAMES.get(str(m.get("profile")), m.get("profile") or data_dir.name)
+    days = m.get("days") or m.get("n_days")
+    if not days:
+        try:
+            import pandas as pd
+            days = (pd.Timestamp(m["end_utc"]) - pd.Timestamp(m["start_utc"])).days
+        except Exception:  # noqa: BLE001 - manifest without a time range
+            days = None
+    return f"{name} ({days} days)" if days else str(name)
+
+
 def load_insights(d: Path) -> list[dict]:
     p = d / "insights.jsonl"
     if not p.exists():
@@ -58,7 +81,10 @@ def card(r: dict, ai: dict | None = None):
     with st.container(border=True):
         conf = confidence_word(r.get("confidence"))
         head = ai["headline"] if ai else r.get("topic", "")
-        st.markdown(f"**{head}**" + (f" &nbsp; :blue-badge[{conf}]" if conf else ""))
+        status = str(r.get("status") or "").lower()
+        badge = STATUS_BADGE.get(status, "")
+        st.markdown(f"**{head}**" + (f" &nbsp; {badge}" if badge else "")
+                    + (f" &nbsp; :blue-badge[{conf}]" if conf and status not in WEAK else ""))
         st.markdown(ai["finding"] if ai else first_sentence(r.get("finding")))
         rec = ai["recommendation"] if ai else r.get("recommendation")
         if rec:
@@ -82,10 +108,20 @@ def card(r: dict, ai: dict | None = None):
 
 
 st.subheader("What we learned")
-st.caption("Lessons from one synthetic year of the fictional PLATO-40 hotel — for the next building and for running "
+st.caption("Lessons from the synthetic operating data of the fictional PLATO-40 hotel — for the next building and for running "
            "this one better. Not facts about real PLATO buildings or CLARA installations.")
+data_dir = Path(common.ctx()["data_dir"])
+if not os.environ.get("PLATO40_INSIGHTS_DIR") and not common.insights_ready(data_dir) \
+        and (data_dir / "manifest.json").exists():
+    with st.spinner(f"Analysing {dataset_line(data_dir)} for lessons (once, then stored)…"):
+        ok, log = common.generate_insights(data_dir)
+    if not ok:
+        st.warning("The lessons for this dataset could not be computed; showing the dev-year lessons instead.",
+                   icon=":material/warning:")
+        C.tech_details({"log": log})
 d = insights_dir()
 rows = load_insights(d)
+same = d.resolve() == common.dataset_insights_dir(data_dir).resolve()
 if not rows:
     st.info("The lessons from the PLATO-40 year are not loaded in this installation yet.", icon=":material/info:")
     if (common.DEV_DATA / "manifest.json").exists():
@@ -102,8 +138,10 @@ if not rows:
     with st.expander("Technical details", icon=":material/code:"):
         st.code(GENERATE, language="bash")
 else:
-    st.caption(":material/calendar_month: Computed from the full 365-day dev year — the same lessons are shown "
-               "whichever dataset is selected above.")
+    src = dataset_line(data_dir) if same else dataset_line(common.DEV_DATA)
+    st.caption(f":material/calendar_month: Computed from **{src}**. Pick another dataset above and the analysis "
+               "and its plain-language wording are created for it (once, then stored)."
+               + ("" if same else " This dataset's own lessons are not available, so the dev year is shown."))
     if insights_ai.available() and insights_ai.missing(rows, insights_ai.load()):
         with st.spinner("Writing the lessons in plain language (once, then stored)…"):
             insights_ai.generate(rows)

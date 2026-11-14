@@ -41,7 +41,7 @@ def test_generate_stores_once_and_rejects_bad_text(store):
     assert len(calls) == 1
     e = A.entry(ROW, A.load())
     assert e and e["headline"] == GOOD["headline"]
-    assert json.loads(store.read_text())["PLATO-P1"]["source_hash"] == A.key_for(ROW, "m")
+    assert A.key_for(ROW) in json.loads(store.read_text())
 
     changed = {**ROW, "finding": ROW["finding"].replace("17.3", "18.1")}
     assert A.entry(changed, A.load()) is None                              # insight changed -> regenerate
@@ -72,3 +72,20 @@ def test_plato40_is_not_a_free_40_and_headlines_have_no_numbers():
     assert not A.check({**GOOD, "finding": GOOD["finding"] + " A gateway outage blinds 40 rooms."}, ROW)
     assert not A.check({**GOOD, "headline": "Floor 1 runs 6.8 points colder"}, ROW)
     assert A.check({**GOOD, "finding": "PLATO-40: " + GOOD["finding"]}, ROW)
+
+
+def test_two_datasets_keep_their_own_cards():
+    other = {**ROW, "finding": ROW["finding"].replace("17.3", "9.8"), "status": "rejected"}
+    assert A.key_for(other) != A.key_for(ROW)
+    assert A.generate([ROW], complete=lambda *a: json.dumps(GOOD), model="m") == (1, 0)
+    good2 = {**GOOD, "finding": "PLATO-40: this dataset does not support it (9.8 %)."}
+    assert A.generate([other], complete=lambda *a: json.dumps(good2), model="m") == (1, 0)
+    s = A.load()
+    assert A.entry(ROW, s)["finding"] == GOOD["finding"] and A.entry(other, s)["finding"] == good2["finding"]
+
+
+def test_rejected_insights_keep_the_analysis_text():
+    rej = {**ROW, "status": "rejected"}
+    assert A.missing([rej], {}) == []
+    assert A.generate([rej], complete=lambda *a: json.dumps(GOOD), model="m") == (0, 0)
+    assert A.entry(rej, A.load()) is None
