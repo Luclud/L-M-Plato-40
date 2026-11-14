@@ -115,13 +115,13 @@ git add decisions_holdout.jsonl && git commit -m "Holdout run" && git push
 ```
 
 ### Changes after pre-holdout
-_None yet._ Per the organizers (Sat 14 Nov), visualisation, dashboard, README and demo changes are allowed after the
+Per the organizers (Sat 14 Nov), visualisation, dashboard, README and demo changes are allowed after the
 tag; detection and decision logic, thresholds, prompts and data processing stay frozen. Every commit after the tag is
 listed here. Visualisation code lives only in `viewer/`, separate from the pipeline (`plato40/`, `run.py`).
 
 | Commit | Files / folders | What changed and why | Effect on `decisions_holdout.jsonl` |
 |---|---|---|---|
-| — | — | — | — |
+| PR `ui-final` (viewer UI polish) | `viewer/` (app, style.css, views: common, housekeeping, incidents, approvals, learned, proof), `tests/test_viewer_approvals.py`, `.env.example`, `README.md` | Final UI clean-up: shorter brand row, aligned controls, no Housekeeping legend caption, no mock banner on Approvals (each decided card still says "mock"), target-architecture block removed from What we learned, downloads side by side; `STEWARD_GUIDED_DEMO=0` (or `SHOW_GUIDED_DEMO = False` in `viewer/app.py`) hides the Guided demo tab for the video | None — viewer only, pipeline untouched |
 
 ## Architecture
 

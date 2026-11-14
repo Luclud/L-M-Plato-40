@@ -65,9 +65,10 @@ def page_list(c: dict):
     opts = ["All"] + [t for t in L.INCIDENT_TYPES if counts.get(t, 0)]
     fmt = {"All": f"All {len(inc)}", **{t: f"{L.label('issue', t)} {counts.get(t, 0)}" for t in L.INCIDENT_TYPES}}
     pick = st.pills("Type", opts, default="All", format_func=fmt.get, key="inc_type", label_visibility="collapsed")
-    f1, f2, f3 = st.columns([1.3, 3, 1.5])
+    f1, f2, f3 = st.columns([1.3, 3, 1.5], vertical_alignment="center")
     need = f1.toggle("Needs approval", key="inc_need")
-    q = f2.text_input("Search room or asset", key="inc_q", placeholder="Search room or asset (e.g. 104, heat pump)")
+    q = f2.text_input("Search room or asset", key="inc_q", placeholder="Search room or asset (e.g. 104, heat pump)",
+                      label_visibility="collapsed")
     sort = f3.selectbox("Sort", ["Most severe", "Newest", "Oldest"], key="inc_sort", label_visibility="collapsed")
     sub = inc if pick in (None, "All") else inc[inc.issue_type == pick]
     if need:

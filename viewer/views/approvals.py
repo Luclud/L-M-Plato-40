@@ -69,8 +69,9 @@ def card(c: dict, row, key: str):
             st.markdown(f"{L.icon('issue', row.issue_type)} **{L.label('issue', row.issue_type)}** · "
                         f"{L.assets_text(list(first.affected_assets)[:3])} · since {C.local_time(row.start)}")
             C.chips(row.priority)
-        d.page_link("views/incidents.py", label="Open incident", icon=":material/open_in_new:",
-                    query_params={"episode": row.episode})
+        with d.container(key=f"corner_{key}_{row.episode}"):   # style.css: pinned to the card's top-right corner
+            st.page_link("views/incidents.py", label="Open incident", icon=":material/open_in_new:",
+                         query_params={"episode": row.episode})
         for r in rows.itertuples():
             st.markdown(f"**{question(r)}**")
             st.caption(why(r))
@@ -92,8 +93,6 @@ def card(c: dict, row, key: str):
 
 c = common.ctx()
 st.subheader("Approvals")
-st.warning(f"{L.MOCK}. Approve/Reject is only written to a local approvals file (see Technical details).",
-           icon=":material/science:")
 allc = cards(c["df"], c.get("approvals") or {})
 if allc.empty:
     st.info("Nothing needs a human decision in this run.")
