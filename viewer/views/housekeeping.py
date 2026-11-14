@@ -168,8 +168,9 @@ def turnovers(c: dict, d: S.Day, as_of=None):
         x, y = st.columns([7, 1])
         x.markdown(f"{L.label('asset', room)} · " + " · ".join(bits))
         if eps:
-            y.page_link("views/incidents.py", label="Open", icon=":material/open_in_new:",
-                        query_params={"episode": eps[-1]})
+            with y.container(key=f"right_hk_{room}"):
+                st.page_link("views/incidents.py", label="Open", icon=":material/open_in_new:",
+                             query_params={"episode": eps[-1]})
 
 
 def _moment(c, tw) -> pd.Timestamp:

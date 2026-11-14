@@ -55,7 +55,9 @@ def card(r, key: str, summary: dict | None = None):
             st.markdown(f"“{r.headline}”")
         x, y = st.columns([6, 1])
         x.caption(f"We: {r.steps}")
-        y.button("Open", key=f"{key}_{r.episode}", icon=":material/open_in_new:", on_click=_open, args=(r.episode,))
+        y.container(key=f"right_{key}_{r.episode}").button("Open", key=f"{key}_{r.episode}",
+                                                          icon=":material/open_in_new:", on_click=_open,
+                                                          args=(r.episode,))
 
 
 def page_list(c: dict):
@@ -65,7 +67,7 @@ def page_list(c: dict):
     opts = ["All"] + [t for t in L.INCIDENT_TYPES if counts.get(t, 0)]
     fmt = {"All": f"All {len(inc)}", **{t: f"{L.label('issue', t)} {counts.get(t, 0)}" for t in L.INCIDENT_TYPES}}
     pick = st.pills("Type", opts, default="All", format_func=fmt.get, key="inc_type", label_visibility="collapsed")
-    f1, f2, f3 = st.columns([1.3, 3, 1.5], vertical_alignment="center")
+    f1, f2, f3 = st.columns([0.85, 3.45, 1.5], vertical_alignment="center")
     need = f1.toggle("Needs approval", key="inc_need")
     q = f2.text_input("Search room or asset", key="inc_q", placeholder="Search room or asset (e.g. 104, heat pump)",
                       label_visibility="collapsed")
@@ -113,7 +115,8 @@ def routine(c: dict, eps: pd.DataFrame):
         for r in sub.iloc[(page - 1) * PAGE: page * PAGE].itertuples():
             x, y = st.columns([8, 1])
             x.markdown(f"{C.local_time(r.start)} · {L.assets_text(r.assets)} — {r.headline}")
-            y.button("Open", key=f"rt_{r.episode}", on_click=_open, args=(r.episode,), type="tertiary")
+            y.container(key=f"right_rt_{r.episode}").button("Open", key=f"rt_{r.episode}", on_click=_open,
+                                                            args=(r.episode,), type="tertiary")
 
 
 c = common.ctx()

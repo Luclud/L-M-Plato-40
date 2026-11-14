@@ -96,8 +96,9 @@ def attention(c: dict, t, open_eps: pd.DataFrame, pending: dict):
             x, y = st.columns([7, 1])
             x.markdown(f"{L.icon('issue', r.issue_type)} **{L.label('issue', r.issue_type)}** · {assets} · "
                        f"since {C.local_time(r.start)} · {status}")
-            y.page_link("views/incidents.py", label="Open", icon=":material/open_in_new:",
-                        query_params={"episode": r.episode})
+            with y.container(key=f"right_att_{r.episode}"):
+                st.page_link("views/incidents.py", label="Open", icon=":material/open_in_new:",
+                             query_params={"episode": r.episode})
         if len(open_eps) > 6:
             st.caption(f"+{len(open_eps) - 6} more open incidents — see Incidents.")
 
@@ -199,7 +200,7 @@ def room_panel(c: dict, room: str, t, day_start, day_end):
     with st.container(border=True, key="card_room"):
         a, b = st.columns([6, 1])
         a.markdown(f"**{L.label('asset', room)}** · {C.local_time(day_start)}")
-        if b.button("Close", key="b_close", type="tertiary", icon=":material/close:"):
+        if b.container(key="right_b_close").button("Close", key="b_close", type="tertiary", icon=":material/close:"):
             st.session_state.pop("b_room", None)
             st.rerun()
         tel = store.telemetry(room)
@@ -231,7 +232,8 @@ def room_panel(c: dict, room: str, t, day_start, day_end):
             x, y = st.columns([7, 1])
             x.markdown(f"{L.icon('issue', r.issue_type)} {L.label('issue', r.issue_type)} · "
                        f"{C.time_range(r.start, r.end)}")
-            y.page_link("views/incidents.py", label="Open", query_params={"episode": r.episode})
+            with y.container(key=f"right_room_{r.episode}"):
+                st.page_link("views/incidents.py", label="Open", query_params={"episode": r.episode})
 
 
 # ---------------------------------------------------------------------------- today in charts

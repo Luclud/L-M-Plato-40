@@ -121,14 +121,14 @@ if len(gw):
                  hide_index=True)
 
 st.markdown("#### Downloads")
-d1, d2, d3, _ = st.columns([1, 1, 1, 3])   # buttons side by side, not spread
+row = st.container(key="btnrow_downloads")   # style.css: buttons side by side
 dec = c["decisions"]
-d1.download_button("decisions.jsonl", dec.read_bytes() if dec.exists() else b"", file_name=dec.name,
+row.download_button("decisions.jsonl", dec.read_bytes() if dec.exists() else b"", file_name=dec.name,
                    icon=":material/download:", key="dl_dec")
-for col, name in ((d2, "insights.md"), (d3, "insights.jsonl")):
+for name in ("insights.md", "insights.jsonl"):
     p = insights_dir() / name
     if p.exists():
-        col.download_button(name, p.read_bytes(), file_name=name, icon=":material/download:", key=f"dl_{name}")
+        row.download_button(name, p.read_bytes(), file_name=name, icon=":material/download:", key=f"dl_{name}")
     else:
-        col.caption(f"{name}: not generated yet")
+        row.caption(f"{name}: not generated yet")
 

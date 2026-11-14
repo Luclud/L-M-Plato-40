@@ -61,7 +61,6 @@ def show(turn: dict):
 c = common.ctx()
 df = c["df"]
 st.subheader("Ask the building")
-st.caption(L.ASK_INTRO)
 client = copilot.default_client()
 if client is None:
     st.info(L.ASK_NO_KEY, icon=":material/key_off:")
@@ -74,8 +73,6 @@ if df.empty:
 
 tw = get_twin(str(c["data_dir"]), c["data"])
 now = moment(c, tw)
-st.caption(f":material/schedule: “Now” is **{copilot.C.local_time(now)}**, the moment selected on the Building "
-           "page. Status answers use only what was known then.")
 with st.expander("What can I ask?", icon=":material/help:"):
     st.markdown("- **A room:** “How is Room 104 right now?” · “What happened in Room 305?”\n"
                 "- **The building:** “What is going on right now?” · “Which rooms need cleaning?”\n"

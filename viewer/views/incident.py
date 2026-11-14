@@ -84,13 +84,12 @@ def _approve_buttons(ctx, r, key):
     if decided:
         st.caption(f"{L.MOCK} · recorded: {decided['status']}")
         return
-    a, b, c = st.columns([1, 1, 4])
-    for col, status, lab, icon in ((a, "approved", "Approve", ":material/check:"),
-                                   (b, "rejected", "Reject", ":material/close:")):
-        if col.button(lab, key=f"{key}_{status}_{r.event_id}", icon=icon):
+    row_ = st.container(key=f"btnrow_{key}_{r.event_id}")   # style.css: buttons side by side
+    for status, lab, icon in (("approved", "Approve", ":material/check:"), ("rejected", "Reject", ":material/close:")):
+        if row_.button(lab, key=f"{key}_{status}_{r.event_id}", icon=icon):
             ctx["approvals"] = core.record_approval(ctx["approvals_path"], r.event_id, status, str(ctx["decisions"]))
             st.rerun()
-    c.caption(L.MOCK)
+    row_.caption(L.MOCK)
 
 
 def render(ctx: dict, episode: str, key: str = "story"):
