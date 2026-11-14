@@ -188,7 +188,9 @@ Data: `data/` (CC BY 4.0, see `data/README.md`). Never concatenate quickstart an
 - Implausible values → NaN (temperature outside −5…45 °C, humidity 0…100 %, CO₂ 250…10 000 ppm).
 - Water meters: consumption between consecutive valid readings; negative step > 50 L = meter reset
   (consumption unknown for that step); smaller negative steps = jitter (clipped to 0).
-- Duplicate keys dropped (first kept). All cleaning is listed in `<out>_dq.json`.
+- Duplicate keys dropped (first kept), in every time-series file incl. the weather forecast; rows in any order.
+- Non-numeric measurement cells (e.g. `n/a`) = missing; rows whose timestamp cannot be parsed are dropped.
+  All cleaning is listed in `<out>_dq.json`.
 
 ## Environment
 
