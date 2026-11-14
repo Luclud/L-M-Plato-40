@@ -23,8 +23,8 @@ LOCAL_TZ = "Europe/Vienna"
 PRIO_RANK = {"critical": 0, "high": 1, "medium": 2, "low": 3}
 
 SIMULATED = "SIMULATED"
-PROPOSED = "PROPOSED — not delivered"
-MOCK = "SIMULATION — mock executor, nothing is executed"
+PROPOSED = "PROPOSED, not delivered"
+MOCK = "SIMULATION: mock executor, nothing is executed"
 
 BADGES = {  # autonomy -> (label, colour)
     "autonomous": ("autonomous", "#2e7d32"),

@@ -28,8 +28,8 @@ def bms_sentence(c: dict) -> tuple[str, pd.DataFrame | None]:
     leaks = df[df.issue_type == "water_leak"].episode.nunique() if len(df) else 0
     all_raised = int((b.state == "raised").sum())
     ours = df[~df.issue_type.isin(L.ROUTINE_TYPES)].episode.nunique() if len(df) else 0
-    text = (f"The BMS raised {len(raised)} water alarm(s); we opened {leaks} water-leak incident(s). "
-            f"Across all codes the BMS raised {all_raised} alarm(s), we opened {ours} incident(s) "
+    text = (f"The BMS raised {L.n(len(raised), 'water alarm')}; we opened {L.n(leaks, 'water-leak incident')}. "
+            f"Across all codes the BMS raised {L.n(all_raised, 'alarm')}, we opened {L.n(ours, 'incident')} "
             "(BMS alarms are a clue, not ground truth).")
     table = None
     files = core.side_files(c["decisions"])["bms"]
@@ -63,7 +63,6 @@ def _first_action(s: str) -> str:
 c = common.ctx()
 df = c["df"]
 st.subheader("Proof")
-st.caption("Evidence for the jury and developers. This page shows raw file names, ids and UTC on purpose.")
 
 st.markdown("#### Safety & contract check")
 key = ("proof_check", str(c["decisions"]), c["mtime"])
@@ -71,18 +70,16 @@ if st.button("Run check", icon=":material/verified:", type="primary", key="proof
     with st.spinner("Running validate.py and eval/evaluate.py …"):
         st.session_state[key] = c["checks"].result()
 res = st.session_state.get(key)
-if res is None:
-    st.caption("Runs validate.py (and the dev-aid evaluator) on the selected decisions file. Not run on page load.")
-else:
+if res is not None:
     ok, vout, eout = res
-    (st.success if ok else st.error)(f"validate.py: **{'PASS' if ok else 'FAIL'}** — "
+    (st.success if ok else st.error)(f"validate.py: **{'PASS' if ok else 'FAIL'}**: "
                                      + ("0 safety/contract violations" if ok else "see the output below"))
     with st.expander("validate.py output", expanded=not ok):
         st.code(vout, language="text")
     head, table, miss = friendly_eval(eout)
     if len(table):
         st.markdown("#### Detection vs labels")
-        st.caption("Dev aid — labels are not ground truth (hand labels on quickstart, work orders on dev).")
+        st.caption("Dev aid: labels are not ground truth (hand labels on quickstart, work orders on dev).")
         if head:
             st.markdown(f"**{head}**")
         st.dataframe(table, width="stretch", hide_index=True)
@@ -97,7 +94,7 @@ else:
         with st.expander("evaluate.py output"):
             st.code(eout, language="text")
     else:
-        st.caption("No labels for this dataset — detection is not scored.")
+        st.caption("No labels for this dataset, so detection is not scored.")
 
 st.markdown("#### BMS vs us")
 sentence, table = bms_sentence(c)
@@ -108,14 +105,14 @@ if table is not None:
 st.markdown("#### Data quality")
 dq = pd.DataFrame([vars(x) for x in c["data"].dq])
 if len(dq):
-    st.markdown(f"{int(dq['count'].sum())} rows cleaned while loading ({len(dq)} finding(s)); "
+    st.markdown(f"{int(dq['count'].sum())} rows cleaned while loading ({L.n(len(dq), 'finding')}); "
                 "missing values stay unknown.")
     st.dataframe(dq.groupby(["kind", "source"]).agg(findings=("count", "size"), rows=("count", "sum")), width="stretch")
 dqd = df[df.issue_type == "data_quality"] if len(df) else df
 gw = dqd[dqd.affected_assets.map(lambda a: any(x.startswith("GW_") for x in a)).astype(bool)] if len(dqd) else dqd
-st.markdown(f"{dqd.episode.nunique() if len(dqd) else 0} data-quality episode(s), "
-            f"{gw.episode.nunique() if len(gw) else 0} gateway outage(s) — "
-            "rooms behind an outage are unknown, not normal.")
+st.markdown(f"{L.n(dqd.episode.nunique() if len(dqd) else 0, 'data-quality episode')}, "
+            f"{L.n(gw.episode.nunique() if len(gw) else 0, 'gateway outage')}. "
+            "Rooms behind an outage are unknown, not normal.")
 if len(gw):
     st.dataframe(gw[["event_id", "timestamp_utc", "affected_assets", "action", "reason"]], width="stretch",
                  hide_index=True)

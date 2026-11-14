@@ -42,8 +42,8 @@ def question(r) -> str:
         f" +{len(r.affected_assets) - 3} more" if len(r.affected_assets) > 3 else "")
     res = f" ({L.label('resource', r.resource_id)})" if isinstance(r.resource_id, str) and r.resource_id else ""
     if r.action == "request_human_approval":
-        return f"Your decision is needed for {assets} — {C.local_time(when)}"
-    return f"Approve “{L.label('action', r.action)}”{res} for {assets} — {C.local_time(when)}?"
+        return f"Your decision is needed for {assets} on {C.local_time(when)}"
+    return f"Approve “{L.label('action', r.action)}”{res} for {assets} on {C.local_time(when)}?"
 
 
 def why(r) -> str:
@@ -82,7 +82,7 @@ def card(c: dict, row, key: str):
                 st.error(L.CONSENT_NEEDED, icon=":material/gpp_maybe:")
             rec = (c.get("approvals") or {}).get(r.event_id)
             if rec:
-                st.caption(f"{'Approved' if rec['status'] == 'approved' else 'Rejected'} (mock) — nothing was executed")
+                st.caption(f"{'Approved' if rec['status'] == 'approved' else 'Rejected'} (mock), nothing was executed")
                 continue
             row_ = st.container(key=f"btnrow_{key}_{r.event_id}")   # style.css: buttons side by side
             row_.button("Approve", key=f"{key}_ok_{r.event_id}", type="primary", icon=":material/check:",
@@ -104,7 +104,7 @@ else:
     sub = allc[allc.pending > 0] if show == "Pending" else allc[allc.pending == 0]
     pages = max(1, -(-len(sub) // PAGE))
     page = st.number_input("Page", 1, pages, 1, key="ap_page") if pages > 1 else 1
-    st.caption(f"{len(sub)} incident(s)" + (f" · page {page} of {pages}" if pages > 1 else ""))
+    st.caption(f"{L.n(len(sub), 'incident')}" + (f" · page {page} of {pages}" if pages > 1 else ""))
     if sub.empty:
         st.info("No pending approvals." if show == "Pending" else "Nothing decided yet.")
     for row in sub.iloc[(page - 1) * PAGE: page * PAGE].itertuples():

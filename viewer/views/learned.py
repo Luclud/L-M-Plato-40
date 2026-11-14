@@ -74,11 +74,18 @@ def section(md: str, title: str) -> str:
     if not m:
         return ""
     body = "\n".join(x for x in m.group(1).splitlines() if not x.startswith("Starting point:"))
-    return _PATH.sub("", body).strip()
+    return plain(_PATH.sub("", body).strip())
+
+
+def plain(text: str) -> str:
+    """Display only: the analysis files use spaced dashes as clause breaks; show them as a colon."""
+    return text.replace(" — ", ": ") if isinstance(text, str) else text
 
 
 def card(r: dict, ai: dict | None = None):
     """One insight; with ``ai`` the plain-language AI wording leads and the analysis text stays under the evidence."""
+    raw = r
+    r = {k: plain(v) for k, v in r.items()}
     with st.container(border=True):
         conf = confidence_word(r.get("confidence"))
         head = ai["headline"] if ai else r.get("topic", "")
@@ -105,12 +112,10 @@ def card(r: dict, ai: dict | None = None):
             for k, title in (("method", "How we checked"), ("uncertainty", "How sure we are")):
                 if r.get(k):
                     st.markdown(f"**{title}:** {r[k]}")
-        C.tech_details({k: r.get(k) for k in ("insight_id", "status", "hypothesis", "evidence", "numbers")})
+        C.tech_details({k: raw.get(k) for k in ("insight_id", "status", "hypothesis", "evidence", "numbers")})
 
 
 st.subheader("What we learned")
-st.caption("Lessons from the synthetic operating data of the fictional PLATO-40 hotel — for the next building and for running "
-           "this one better. Not facts about real PLATO buildings or CLARA installations.")
 data_dir = Path(common.ctx()["data_dir"])
 if not os.environ.get("PLATO40_INSIGHTS_DIR") and not common.insights_ready(data_dir) \
         and (data_dir / "manifest.json").exists():
@@ -139,10 +144,8 @@ if not rows:
     with st.expander("Technical details", icon=":material/code:"):
         st.code(GENERATE, language="bash")
 else:
-    src = dataset_line(data_dir) if same else dataset_line(common.DEV_DATA)
-    st.caption(f":material/calendar_month: Computed from **{src}**. Pick another dataset above and the analysis "
-               "and its plain-language wording are created for it (once, then stored)."
-               + ("" if same else " This dataset's own lessons are not available, so the dev year is shown."))
+    if not same:
+        st.caption("This dataset's own lessons are not available, so the dev year is shown.")
     if insights_ai.available() and insights_ai.missing(rows, insights_ai.load()):
         with st.spinner("Writing the lessons in plain language (once, then stored)…"):
             insights_ai.generate(rows)
@@ -152,7 +155,7 @@ else:
         mine = [r for r in rows if str(r.get("target", "")).upper() == target]
         with col:
             st.markdown(f"#### {title}")
-            st.caption(f"{len(mine)} insight(s)")
+            st.caption(f"{L.n(len(mine), 'insight')}")
             for r in mine:
                 card(r, insights_ai.entry(r, ai_store))
 md = (d / "insights.md").read_text(encoding="utf-8") if (d / "insights.md").exists() else ""

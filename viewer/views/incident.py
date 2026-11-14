@@ -123,8 +123,6 @@ def render(ctx: dict, episode: str, key: str = "story"):
             with cols[i % len(cols)]:
                 st.plotly_chart(core.figure(ch, markers, shade=(t0, t1)), width="stretch", theme=None,
                                 key=f"{key}_{episode}_chart_{i}", config={"displayModeBar": False})
-        st.caption("Red numbers = what we did and when (data to the right of a number was not yet known then). "
-                   "Amber band = incident period. Grey = data gap (unknown, never treated as zero).")
     else:
         st.caption("No measured series for this incident (it is based on bookings and staff plans).")
 
@@ -146,7 +144,7 @@ def render(ctx: dict, episode: str, key: str = "story"):
             a, b = st.columns([5, 2])
             res = f" · {L.label('resource', r.resource_id)}" if isinstance(r.resource_id, str) else ""
             a.markdown(f"**{n}** · {C.local_time(r.t)} · {L.icon('action', r.action)} "
-                       f"**{L.label('action', r.action)}** — {L.assets_text(r.affected_assets)}{res}")
+                       f"**{L.label('action', r.action)}** · {L.assets_text(r.affected_assets)}{res}")
             with b:
                 C.status_chip(r.autonomy)
             st.markdown(humanize(r.reason))
