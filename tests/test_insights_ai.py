@@ -75,10 +75,10 @@ def test_plato40_is_not_a_free_40_and_headlines_have_no_numbers():
 
 
 def test_two_datasets_keep_their_own_cards():
-    other = {**ROW, "finding": ROW["finding"].replace("17.3", "9.8"), "status": "rejected"}
+    other = {**ROW, "finding": ROW["finding"].replace("17.3", "9.8"), "status": "qualified"}
     assert A.key_for(other) != A.key_for(ROW)
     assert A.generate([ROW], complete=lambda *a: json.dumps(GOOD), model="m") == (1, 0)
-    good2 = {**GOOD, "finding": "PLATO-40: this dataset does not support it (9.8 %)."}
+    good2 = {**GOOD, "finding": "PLATO-40: the evidence is partial (9.8 %)."}
     assert A.generate([other], complete=lambda *a: json.dumps(good2), model="m") == (1, 0)
     s = A.load()
     assert A.entry(ROW, s)["finding"] == GOOD["finding"] and A.entry(other, s)["finding"] == good2["finding"]
