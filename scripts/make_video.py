@@ -191,9 +191,15 @@ def piper_model(cache: Path) -> Path | None:
 
 class Piper:
     def __init__(self, model: Path):
-        from piper import PiperVoice, SynthesisConfig
+        from piper import PiperVoice
         self.voice = PiperVoice.load(str(model))
-        self.config = SynthesisConfig(length_scale=SPEECH_RATE)
+
+    def _say(self, text: str, w) -> None:
+        if hasattr(self.voice, "synthesize_wav"):      # piper-tts >= 1.3 (GPL engine), if installed instead
+            from piper import SynthesisConfig
+            self.voice.synthesize_wav(text, w, syn_config=SynthesisConfig(length_scale=SPEECH_RATE))
+        else:                                          # piper-tts 1.2.0 (MIT engine, pinned)
+            self.voice.synthesize(text, w, length_scale=SPEECH_RATE)
 
     def scene(self, sentences: list[str], dst: Path, tmp: Path) -> list[tuple[str, float, float]]:
         """One wav per sentence, joined with short gaps -> exact sentence timings for the captions."""
@@ -201,7 +207,7 @@ class Piper:
         for i, s in enumerate(sentences):
             raw = tmp / f"{dst.stem}_{i}.wav"
             with wave.open(str(raw), "wb") as w:
-                self.voice.synthesize_wav(s, w, syn_config=self.config)
+                self._say(s, w)
             std = to_std_wav(raw, tmp / f"{dst.stem}_{i}_48k.wav")
             d = wav_seconds(std)
             parts += [(std, d), (None, GAP_S)]

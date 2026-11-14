@@ -52,7 +52,9 @@ in `out/video/<cut>_work/`), `--storyboard <path>`.
 - The spoken text is the storyboard text after placeholder substitution: `[HOLDOUT]` is replaced by `--holdout`
   verbatim; if it is empty, the whole sentence containing it is dropped. Nothing is added or rephrased.
 
-**TTS voice:** [Piper](https://github.com/rhasspy/piper) (offline, runs on CPU) with the voice
+**TTS engine:** `piper-tts==1.2.0`, the MIT-licensed [Piper](https://github.com/rhasspy/piper) release (1.3+ moved
+to GPL-3.0; the script also works with it if installed instead).
+**TTS voice:** Piper (offline, runs on CPU) with the voice
 **`en_US-ljspeech-high`** (US English, female, 22.05 kHz) from
 [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US/ljspeech/high). The voice
 model is trained on the [LJ Speech dataset](https://keithito.com/LJ-Speech-Dataset/), which is in the **public
