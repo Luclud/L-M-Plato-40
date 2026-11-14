@@ -47,7 +47,7 @@ Do **not** commit, paste or log the password (type it into your own shell only).
 ```bash
 (cd data/raw && sha256sum -c --ignore-missing SHA256SUMS.txt)   # archive intact
 7z x -p'<pw>' data/raw/PLATO40_v2_holdout_encrypted.7z -odata/holdout   # needs 7-Zip: apt install p7zip-full / 7-zip.org
-python run.py data/holdout --out decisions_holdout.jsonl          # code unchanged! (dir or its parent both work)
+python run.py data/holdout --no-llm --out decisions_holdout.jsonl # code unchanged! --no-llm: deterministic even with a key in .env
 python validate.py decisions_holdout.jsonl data/holdout           # RESULT: PASS
 git add decisions_holdout.jsonl decisions_holdout_dq.json && git commit -m "Holdout run (pre-holdout code)" && git push
 ```

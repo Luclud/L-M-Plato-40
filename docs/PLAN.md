@@ -13,6 +13,12 @@ main @ 73a2a5b: quickstart **7/7**, dev **39/40** (miss: SURGE-2026-09-19), vali
 Robustness (start 1 Mar / 1 Jul / 60 d / 21 d): no crashes, validate PASS; comfort warm-up gap fixed in #19.
 T11 re-run on 73a2a5b: insights regenerate byte-identical (5 PLATO, 6 CLARA; all say PLATO-40, evidence + uncertainty).
 
+## Status (Sat 14 Nov, 02:00) — full check by Claude on main @ 66eca84
+330 tests green (viewer UI tests need streamlit, not run here), quickstart 7/7, dev 39/40, validate PASS, dev run ~23 s,
+release check PASS (offline). Future-data check: dev runs trimmed at 4 dates give identical decisions before the cut.
+Date-shift check (±1 year, half a year): same detections. Messy-data stress test found 2 crashes → PR #50.
+All viewer pages + every incident story (quickstart + dev, also `extras`) executed headless without errors.
+
 ## Ticket board
 
 Frontend redesign: see [FRONTEND_PLAN.md](FRONTEND_PLAN.md) (T17–T25).
@@ -43,8 +49,13 @@ Frontend redesign: see [FRONTEND_PLAN.md](FRONTEND_PLAN.md) (T17–T25).
 | [T24](tasks/T24-ai-incident-summaries.md) | AI incident summaries (optional) | C | P2 | T18 | ✅ merged [#35](https://github.com/Luclud/L-M-Plato-40/pull/35) |
 | [T25](tasks/T25-ask-the-building.md) | "Ask the building" copilot (optional) | C | P2 | T18 | ✅ merged [#36](https://github.com/Luclud/L-M-Plato-40/pull/36) |
 | [T23](tasks/T23-viewer-polish.md) | Viewer polish, DEMO.md, screenshots | C | P0 | T22 | ✅ merged [#37](https://github.com/Luclud/L-M-Plato-40/pull/37) |
-| [T27](tasks/T27-demo-video.md) | Generate the demo video automatically (Playwright + ffmpeg) | C | P0 | viewer on main | ⬜ open |
-| [T28](tasks/T28-housekeeping-timeline.md) | Housekeeping & robot timeline (Gantt per day) | C | P1 | viewer on main | ⬜ open |
+| [T27](tasks/T27-demo-video.md) | Generate the demo video automatically (Playwright + ffmpeg) | C | P0 | viewer on main | 🔶 PR [#48](https://github.com/Luclud/L-M-Plato-40/pull/48) open (needs a real run on a machine with streamlit + Piper) |
+| [T28](tasks/T28-housekeeping-timeline.md) | Housekeeping & robot timeline (Gantt per day) | C | P1 | viewer on main | ✅ merged [#44](https://github.com/Luclud/L-M-Plato-40/pull/44) |
+| [T29](tasks/T29-alarm-fatigue.md) | Alarms vs Steward (extras) | C | P2 | — | 🔶 merged into branch `extras` ([#45](https://github.com/Luclud/L-M-Plato-40/pull/45)), **not on main** |
+| [T30](tasks/T30-plato-design-board.md) | Next building design board (extras) | C | P2 | — | 🔶 merged into branch `extras` ([#46](https://github.com/Luclud/L-M-Plato-40/pull/46)), **not on main** |
+| [T31](tasks/T31-guest-conversations.md) | Guest messages (extras) | C | P2 | — | 🔶 merged into branch `extras` ([#47](https://github.com/Luclud/L-M-Plato-40/pull/47)), **not on main** |
+| — | Messy-data robustness (dupes, non-numeric, bad timestamps) + causal AHU fallback | R | P0 | — | 🔶 PR [#50](https://github.com/Luclud/L-M-Plato-40/pull/50) — merge before `pre-holdout` |
+| — | Release hardening: `--no-llm` for deliverable runs, root decisions in viewer image | R | P0 | — | 🔶 this PR |
 | [T14](tasks/T14-pitch-video.md) | Pitch, demo script, video | C | P0 | T10, T11 | humans, Sat |
 | [T15](tasks/T15-submission-repo.md) | Submission logistics, Proximata org repo | R | P0 | — | humans, now |
 

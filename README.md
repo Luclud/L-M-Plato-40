@@ -107,7 +107,7 @@ scripts/release_check.sh --copy-back          # Windows: powershell -ExecutionPo
 ```bash
 git tag pre-holdout && git push origin pre-holdout          # BEFORE the release
 7z x -p'<password>' data/raw/PLATO40_v2_holdout_encrypted.7z -odata/holdout
-python run.py data/holdout --out decisions_holdout.jsonl     # code unchanged
+python run.py data/holdout --no-llm --out decisions_holdout.jsonl   # code unchanged; --no-llm = deterministic
 python validate.py decisions_holdout.jsonl data/holdout
 git add decisions_holdout.jsonl && git commit -m "Holdout run" && git push
 ```

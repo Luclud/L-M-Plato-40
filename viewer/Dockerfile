@@ -10,6 +10,9 @@ COPY eval eval
 COPY run.py validate.py ./
 COPY analysis analysis
 COPY insights.md insights.jsonl ./
+# committed root decisions (dev = decisions.jsonl, later decisions_holdout.jsonl) so the dataset picker offers
+# "Dev year" and "Holdout" too (data/ comes from the volume). Rebuild after committing the holdout run.
+COPY decisions*.jsonl decisions*_dq.json ./
 COPY viewer viewer
 COPY .streamlit .streamlit
 ENV PLATO40_DATA=data/quickstart \
