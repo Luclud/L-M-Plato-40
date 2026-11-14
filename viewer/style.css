@@ -117,8 +117,12 @@ code, kbd, .mono { font-variant-numeric: tabular-nums; }
 /* --- housekeeping: the two switches sit on the time slider's track line (housekeeping.py) --- */
 [class*="st-key-hk_switch_"] { padding-top: 2.15rem; }
 
-/* --- approvals: "Open incident" pinned to the card's top-right corner (approvals.py) --- */
-[class*="st-key-corner_"] { align-items: flex-end; }
-[class*="st-key-corner_"] [data-testid="stElementContainer"] { width: auto !important; }
-[class*="st-key-corner_"] [data-testid="stPageLink"],
-[class*="st-key-corner_"] [data-testid="stPageLink"] > div { display: flex; justify-content: flex-end; }
+/* --- right-aligned cells: containers keyed right_* push their link/button to the right edge --- */
+[class*="st-key-right_"] { align-items: flex-end; }
+[class*="st-key-right_"] [data-testid="stElementContainer"] { width: auto !important; }
+[class*="st-key-right_"] [data-testid="stPageLink"],
+[class*="st-key-right_"] [data-testid="stPageLink"] > div { display: flex; justify-content: flex-end; }
+
+/* --- button rows: containers keyed btnrow_* lay their buttons out side by side with a small gap --- */
+[class*="st-key-btnrow_"] { flex-direction: row; flex-wrap: wrap; align-items: center; gap: .5rem; }
+[class*="st-key-btnrow_"] [data-testid="stElementContainer"] { width: auto !important; flex: 0 0 auto; }

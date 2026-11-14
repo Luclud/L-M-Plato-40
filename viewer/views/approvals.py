@@ -69,7 +69,7 @@ def card(c: dict, row, key: str):
             st.markdown(f"{L.icon('issue', row.issue_type)} **{L.label('issue', row.issue_type)}** · "
                         f"{L.assets_text(list(first.affected_assets)[:3])} · since {C.local_time(row.start)}")
             C.chips(row.priority)
-        with d.container(key=f"corner_{key}_{row.episode}"):   # style.css: pinned to the card's top-right corner
+        with d.container(key=f"right_{key}_{row.episode}"):   # style.css: pinned to the card's top-right corner
             st.page_link("views/incidents.py", label="Open incident", icon=":material/open_in_new:",
                          query_params={"episode": row.episode})
         for r in rows.itertuples():
@@ -84,10 +84,10 @@ def card(c: dict, row, key: str):
             if rec:
                 st.caption(f"{'Approved' if rec['status'] == 'approved' else 'Rejected'} (mock) — nothing was executed")
                 continue
-            x, y, _ = st.columns([1, 1, 5])
-            x.button("Approve", key=f"{key}_ok_{r.event_id}", type="primary", icon=":material/check:",
+            row_ = st.container(key=f"btnrow_{key}_{r.event_id}")   # style.css: buttons side by side
+            row_.button("Approve", key=f"{key}_ok_{r.event_id}", type="primary", icon=":material/check:",
                      on_click=_record, args=(c, r.event_id, "approved"))
-            y.button("Reject", key=f"{key}_no_{r.event_id}", icon=":material/close:",
+            row_.button("Reject", key=f"{key}_no_{r.event_id}", icon=":material/close:",
                      on_click=_record, args=(c, r.event_id, "rejected"))
 
 
