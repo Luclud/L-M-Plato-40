@@ -18,7 +18,8 @@ import streamlit as st  # noqa: E402
 from viewer import labels as L  # noqa: E402
 from viewer.views import common  # noqa: E402
 
-st.set_page_config(page_title=L.APP_NAME, page_icon=":material/apartment:", layout="wide")
+ASSETS = Path(__file__).parent / "assets"
+st.set_page_config(page_title=L.APP_NAME, page_icon=str(ASSETS / "bot_avatar.png"), layout="wide")
 st.html("<style>" + (Path(__file__).parent / "style.css").read_text(encoding="utf-8") + "</style>")
 ctx = common.build_ctx()
 n = common.pending_approvals(ctx)
