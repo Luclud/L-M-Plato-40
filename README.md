@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/img/logo.png" alt="Steward logo" width="160"></p>
+
 # Steward — runs the building, answers to people
 
 **Steward** is our prototype for the autonomous operation of **PLATO-40**, the fictional 40-room
