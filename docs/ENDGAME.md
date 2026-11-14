@@ -17,6 +17,29 @@ Code freeze **Sat 14 Nov 14:00 sharp** · holdout release **11:00** (Discord) ·
 | D-9 | **Install 7-Zip** on the laptop that runs the holdout; who runs it at 11:00 | Luca's laptop | tonight |
 | D-8 | UI feedback after clicking through the new viewer (only a human can judge "easy to understand") | — | before T23 |
 
+## 0b. Organizer clarification (Sat 14 Nov, Rhomberg track): UI changes after `pre-holdout` are allowed
+The pre-holdout rule freezes **detection and decision logic, not the UI**. Visualisations, dashboards, README and demo
+may change after the tag, as long as:
+1. `decisions_holdout.jsonl` is produced by the pipeline **at the `pre-holdout` tag**, with no change to logic,
+   thresholds, prompts or data processing.
+2. Every change after the tag is listed in README → "Changes after pre-holdout" (files/folders + one line why).
+   Their automated check flags **every** code change after the tag; the README note is how they verify it.
+   Tip from them: keep visualisation code in its own folder (ours: `viewer/`), so the check is quick.
+
+**What this means for us**
+
+| After the tag | Allowed? |
+|---|---|
+| `viewer/` (pages, charts, CSS, assets), `.streamlit/`, `docs/`, `README.md`, `video/` | ✅ yes, log each commit in the README table |
+| `plato40/` (incl. message templates / LLM prompts in `messaging.py`), `run.py`, `validate.py`, `requirements.txt` | ❌ no (only an unavoidable crash fix, see `docs/RELEASE.md` §3) |
+| `analysis/` (generates `insights.md`), `insights.md` / `insights.jsonl`, `decisions.jsonl`, `data/` | ❌ no (counts as data processing / deliverable) |
+
+**Therefore before the tag (by 10:30):** anything that changes `insights.md` (e.g. the Earned-autonomy CLARA
+recommendation from `analysis/`), `release_check --copy-back` + commit the refreshed root `decisions.jsonl`
+(the committed one is 1 decision behind the current code: battery plan 2026-06-16).
+**After the holdout (11:30–13:30):** viewer-only work (Earned-autonomy table, Steward-vs-BMS scoreboard,
+year heatmap on the floor plan), one README line per commit. Stop at 13:45.
+
 ## 1. Tonight after the frontend (until ~01:00)
 1. **Click through the viewer** on quickstart and dev (D-8). Note anything confusing → one fix list for T23.
 2. **Pipeline freeze** (D-2): after this, only release steps touch the pipeline outputs.
@@ -31,8 +54,8 @@ Code freeze **Sat 14 Nov 14:00 sharp** · holdout release **11:00** (Discord) ·
 2. `python analysis/insights.py data/dev --out insights.md --jsonl insights.jsonl` → commit if changed.
 3. `scripts/release_check.ps1 -CopyBack` (Windows) or `scripts/release_check.sh --copy-back` → must end with
    `RELEASE CHECK: PASS`; commit the refreshed `decisions.jsonl` / `decisions_dq.json` if they changed (see `docs/RELEASE.md` §1).
-5. README final pass: name, one-line pitch, team, run command, holdout section, "Changes after pre-holdout" (empty), viewer.
-6. **`git tag pre-holdout && git push origin pre-holdout` by 10:30.** From here: no code changes.
+5. README final pass: name, one-line pitch, team, run command, holdout section, "Changes after pre-holdout" (empty table, filled after the tag per §0b), viewer.
+6. **`git tag pre-holdout && git push origin pre-holdout` by 10:30.** From here: no pipeline/analysis changes; viewer, docs, README and video only, each listed in README "Changes after pre-holdout" (see §0b).
 7. Rehearse the guided tour twice (time it, ≤ 3 min) incl. the live approval click.
 
 ## 3. Holdout (11:00–11:45) — exact commands in `docs/RELEASE.md` §2

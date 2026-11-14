@@ -115,9 +115,11 @@ git add decisions_holdout.jsonl && git commit -m "Holdout run" && git push
 ```
 
 ### Changes after pre-holdout
-_None yet. Any change after the tag must be justified here (separate commit each; re-run the holdout afterwards):_
+_None yet._ Per the organizers (Sat 14 Nov), visualisation, dashboard, README and demo changes are allowed after the
+tag; detection and decision logic, thresholds, prompts and data processing stay frozen. Every commit after the tag is
+listed here. Visualisation code lives only in `viewer/`, separate from the pipeline (`plato40/`, `run.py`).
 
-| Commit | What changed | Why it was unavoidable | Effect on `decisions_holdout.jsonl` |
+| Commit | Files / folders | What changed and why | Effect on `decisions_holdout.jsonl` |
 |---|---|---|---|
 | — | — | — | — |
 
