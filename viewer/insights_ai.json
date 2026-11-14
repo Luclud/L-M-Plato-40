@@ -1,0 +1,79 @@
+{
+ "PLATO-P1": {
+  "headline": "Floor above car park stays colder than upper floors",
+  "finding": "In PLATO-40, rooms on floor 1 (above the car park) fell below 20 °C in 17.3 % of winter intervals when occupied, compared to 9.8 %–11.3 % on floors 2, 3, and 4. The gap widened on the coldest days, reaching 26.3 % on floor 1 versus 11.3 % on upper floors.",
+  "recommendation": "For the next building, insulate the car park ceiling and give floor 1 rooms a larger heater or separate heating control. For PLATO-40 now, raise the setpoint for floor 1 occupied rooms by 0.5 °C during winter.",
+  "model": "claude-haiku-4-5",
+  "source_hash": "464ea23a947f4d52"
+ },
+ "PLATO-P2": {
+  "headline": "Summer rooms overheat without active cooling",
+  "finding": "In PLATO-40, occupied rooms exceeded 26 °C in 32.5 % of summer intervals, with 1,368 occupied room-days above that threshold. South-facing rooms reached 26 °C more often (36.1 %) than north-facing ones (29.0 %), and guests submitted 201 complaints about heat. Vacant rooms also exceeded 26 °C in 23.0 % of intervals, showing that solar gain through the building envelope, not occupant activity, drives the overheating.",
+  "recommendation": "Install external shading such as fixed overhangs or exterior blinds on south facades in the next PLATO building. For PLATO-40, use night flushing and close south-facing blinds before hot afternoons to reduce peak temperatures.",
+  "model": "claude-haiku-4-5",
+  "source_hash": "977ed37af6d354ee"
+ },
+ "PLATO-P3": {
+  "headline": "Rooftop air unit access delays filter maintenance",
+  "finding": "PLATO-40 postponed 2 filter changes because the rooftop unit requires a lift platform to reach. Each postponement delayed the filter swap by 12 to 16 days, allowing pressure to rise to 202 to 234 Pa. Two unplanned contractor replacements followed after 10 FILTER_DP_HIGH and 9 AIRFLOW_LOW alarms triggered at pressures of 260 Pa or higher.",
+  "recommendation": "For the next building, install permanent roof access (fixed stair, ladder, or guarded walkway) or relocate the air unit to ground or technical-room level so the in-house technician can reach and swap filters without ordering a lift platform. Position the filter door to be accessible from the walkway.",
+  "model": "claude-haiku-4-5",
+  "source_hash": "df6542bf4b00e629"
+ },
+ "PLATO-P4": {
+  "headline": "Common-area leaks hide in the main meter gap",
+  "finding": "PLATO-40 shows a median daily gap of 329 L/day between the main meter and the sum of all room meters. A seven-day leak in common pipework in July 2026 added 593 L/day above the normal baseline, totalling about 4153 L,, but the BMS night-flow rule did not flag it. Room-side leaks are visible on individual room meters, but leaks in shared pipes show up only as a rise in the main-meter gap.",
+  "recommendation": "Install separate sub-meters for each riser, the technical room, and irrigation so that every litre on the main meter is assigned to a known zone. Add a leak sensor in the technical room. Use a daily gap-baseline rule to flag common-area leaks as soon as they occur, rather than waiting for a work order.",
+  "model": "claude-haiku-4-5",
+  "source_hash": "7f11c488f984f67f"
+ },
+ "PLATO-P5": {
+  "headline": "Floor three gateway fails far more often than others",
+  "finding": "In PLATO-40, the floor three gateway had 11 outages lasting 52.8 h total, while floor one had 3 outages for 9.0 h, and floors two and four had none. Floor three accounts for 85.4 % of all gateway outage hours across the building.",
+  "recommendation": "For the next hotel, install two gateways per floor with overlapping coverage to avoid floor-wide sensor blindness. Before opening, check the radio path and physical placement of the floor three gateway in PLATO-40 to understand why it fails so much more often.",
+  "model": "claude-haiku-4-5",
+  "source_hash": "06ad5ac642984519"
+ },
+ "CLARA-C1": {
+  "headline": "Rotate vacant rooms to prevent water stagnation",
+  "finding": "PLATO-40 had 11 legionella flushing work orders in a year. During the same period, 81 vacancy runs of 7 days or longer occurred across 36 rooms, yet in every single case another room of the same size was booked before day 7, meaning rotation could have kept water moving.",
+  "recommendation": "When assigning a booking, choose the vacant room of the requested type that has been empty longest. If any room still reaches 5 vacant days, add a tap flush to the next scheduled housekeeping visit instead of calling a contractor.",
+  "model": "claude-haiku-4-5",
+  "source_hash": "8bb3ad6011a786dd"
+ },
+ "CLARA-C3": {
+  "headline": "Cold snaps reduce heat pump efficiency and warm rooms",
+  "finding": "On the coldest days, the occupied share of rooms below 20 °C reaches 15.0 %, while the heat pump's efficiency (COP) drops to 2.27. The weather forecast is reliable enough to act on: it predicts temperature within 0.82 K for the next 12 hours.",
+  "recommendation": "When the forecast shows temperatures dropping to −5 °C or colder within 12–24 hours, pre-heat occupied rooms to 22–23 °C during cheap hours before the cold arrives, and charge hot water ahead of time. Treat the first heat pump lockout during a cold spell as a signal to request a technician visit, rather than waiting for guest complaints.",
+  "model": "claude-haiku-4-5",
+  "source_hash": "dcbecf5f0a6e748a"
+ },
+ "CLARA-C4": {
+  "headline": "Filter changes happen after alarms, not before",
+  "finding": "PLATO-40 detected 5 filter cycles over the year. Clean filters start at approximately 90 Pa of pressure drop and load at a median rate of 1.51 Pa per day. At this rate, filters reach the alarm threshold of approximately 260 Pa in a median of 105 days. However, planned filter changes arrived at irregular intervals, and the fastest-loading filters still hit the alarm before the next planned change.",
+  "recommendation": "Schedule filter changes based on the pressure drop trend from the last 14 days of operation rather than fixed calendar intervals. Create a work order when the forecast shows the filter will reach alarm threshold within 21 days, allowing 14 days to book the technician and equipment. This approach will shift filter changes to occur before alarms trigger instead of after.",
+  "model": "claude-haiku-4-5",
+  "source_hash": "57ef7b005bd6ba95"
+ },
+ "CLARA-C6": {
+  "headline": "High occupancy drives vending stockouts and waste overflow",
+  "finding": "PLATO-40's drinks vending machine ran out of stock 20 times, with 14 of those on Sundays when occupancy averaged 69.5 %, compared to 60.0 % overall. The waste container reached full capacity for 72 hours across 3 events, while floor bins peaked at only 63 % capacity.",
+  "recommendation": "Order extra vending restocks when occupancy forecasts exceed the yearly median before the next scheduled restock. Order extra waste pickups when fill trends project the container will reach full capacity before the next regular pickup. Continue floor-bin emptying through housekeeping staff rather than adding robot runs.",
+  "model": "claude-haiku-4-5",
+  "source_hash": "00fdb5182982011c"
+ },
+ "CLARA-C2": {
+  "headline": "Most temperature alarms fire in empty rooms",
+  "finding": "PLATO-40 raised 160 low-temperature alarms, but only 4 of them occurred in occupied rooms. During the same year, occupied rooms fell below 20 °C on 1,937 room-days without triggering an alarm, showing the current rule misses real comfort problems while flooding staff with false alerts from vacant setback spaces.",
+  "recommendation": "Retune the BMS to ignore low-temperature alarms in unoccupied rooms unless frost risk is severe, and instead alarm occupied rooms when they stay below 20 °C for extended periods. Replace the single water-flow alarm rule with per-room monitoring to catch leaks earlier and reduce noise from the current system.",
+  "model": "claude-haiku-4-5",
+  "source_hash": "507d767f2ce667a1"
+ },
+ "CLARA-C5": {
+  "headline": "Robot pre-cleaning cuts larger room turnaround time",
+  "finding": "At PLATO-40, human cleaning of 28 m² and 32 m² rooms took a median of 60 minutes. When a robot had floor-cleaned the room in the 4 hours before, that median dropped to 45 minutes. Cleaning of 22 m² rooms stayed at 45 minutes regardless of robot pre-cleaning.",
+  "recommendation": "Dispatch robots to pre-clean vacated larger rooms (28 m² and above) first. Use the learned P90 durations per room size—45 minutes for 22 m², 60 minutes for 28 m², and 60 minutes for 32 m²—to plan turnaround slots instead of a flat duration.",
+  "model": "claude-haiku-4-5",
+  "source_hash": "268efe1739751664"
+ }
+}

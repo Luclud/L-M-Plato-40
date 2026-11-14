@@ -8,6 +8,8 @@ from pathlib import Path
 import streamlit as st
 
 from viewer import components as C
+from viewer import insights_ai
+from viewer import labels as L
 from viewer.views import common
 from viewer.views.incident import confidence_word
 
@@ -51,17 +53,28 @@ def section(md: str, title: str) -> str:
     return _PATH.sub("", body).strip()
 
 
-def card(r: dict):
+def card(r: dict, ai: dict | None = None):
+    """One insight; with ``ai`` the plain-language AI wording leads and the analysis text stays under the evidence."""
     with st.container(border=True):
         conf = confidence_word(r.get("confidence"))
-        st.markdown(f"**{r.get('topic', '')}**" + (f" &nbsp; :blue-badge[{conf}]" if conf else ""))
-        st.markdown(first_sentence(r.get("finding")))
-        if r.get("recommendation"):
-            st.markdown(f":material/lightbulb: **Recommendation:** {r['recommendation']}")
+        head = ai["headline"] if ai else r.get("topic", "")
+        st.markdown(f"**{head}**" + (f" &nbsp; :blue-badge[{conf}]" if conf else ""))
+        st.markdown(ai["finding"] if ai else first_sentence(r.get("finding")))
+        rec = ai["recommendation"] if ai else r.get("recommendation")
+        if rec:
+            st.markdown(f":material/lightbulb: **Recommendation:** {rec}")
+        if ai:
+            st.caption(L.AI_INSIGHT, help="Written once by an AI model from this insight only and stored. Rejected "
+                                          "automatically if it adds or changes any number. The analysis wording is "
+                                          "under 'Show full evidence'.")
         if r.get("expected_benefit"):
             st.caption(f"Expected benefit (estimate, not measured): {r['expected_benefit']}")
         with st.expander("Show full evidence", icon=":material/fact_check:"):
+            if ai:
+                st.markdown(f"**{r.get('topic', '')}**")
             st.markdown(r.get("finding", ""))
+            if ai and r.get("recommendation"):
+                st.markdown(f"**Recommendation (analysis):** {r['recommendation']}")
             for k, title in (("method", "How we checked"), ("uncertainty", "How sure we are")):
                 if r.get(k):
                     st.markdown(f"**{title}:** {r[k]}")
@@ -91,6 +104,10 @@ if not rows:
 else:
     st.caption(":material/calendar_month: Computed from the full 365-day dev year — the same lessons are shown "
                "whichever dataset is selected above.")
+    if insights_ai.available() and insights_ai.missing(rows, insights_ai.load()):
+        with st.spinner("Writing the lessons in plain language (once, then stored)…"):
+            insights_ai.generate(rows)
+    ai_store = insights_ai.load()
     cols = st.columns(2)
     for col, (target, title, icon) in zip(cols, COLUMNS):
         mine = [r for r in rows if str(r.get("target", "")).upper() == target]
@@ -98,7 +115,7 @@ else:
             st.markdown(f"#### {title}")
             st.caption(f"{len(mine)} insight(s)")
             for r in mine:
-                card(r)
+                card(r, insights_ai.entry(r, ai_store))
 md = (d / "insights.md").read_text(encoding="utf-8") if (d / "insights.md").exists() else ""
 arch, lim = section(md, "Target architecture"), section(md, "Limitations")
 if arch:
