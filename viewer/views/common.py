@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 import os
 import subprocess
@@ -18,6 +19,14 @@ if str(ROOT) not in sys.path:
 from plato40 import io  # noqa: E402
 from viewer import core  # noqa: E402
 from viewer import labels as L  # noqa: E402
+
+
+@st.cache_resource
+def logo_uri() -> str:
+    """The Steward butler logo as a data URI for the brand row."""
+    png = (Path(__file__).resolve().parents[1] / "assets" / "logo.png").read_bytes()
+    return "data:image/png;base64," + base64.b64encode(png).decode()
+
 
 GENERATED_INSIGHTS = ROOT / "out" / "insights"   # written by the "Generate insights" button (out/ is writable)
 DEV_DATA = ROOT / "data" / "dev"
@@ -122,7 +131,7 @@ def _pick() -> tuple[str, str]:
         st.session_state["dataset"] = options[0]
     c1, c2 = st.columns([5, 2])
     c1.markdown(
-        f"<div class='brand'><div class='brand-mark'>{L.APP_NAME[:1]}</div><div><div class='brand-name'>{L.APP_NAME}</div>"
+        f"<div class='brand'><img class='brand-mark' src='{logo_uri()}' alt='{L.APP_NAME} logo'><div><div class='brand-name'>{L.APP_NAME}</div>"
         "<div class='brand-note'>Fictional building, synthetic data · simulated effects are marked “Simulated” · "
         "guest messages are proposed and never sent · approvals here are mock</div></div></div>",
         unsafe_allow_html=True)

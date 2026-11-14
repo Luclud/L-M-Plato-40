@@ -47,8 +47,7 @@ code, kbd, .mono { font-variant-numeric: tabular-nums; }
 
 /* --- brand row (common.py) --- */
 .brand { display: flex; align-items: center; gap: .85rem; }
-.brand-mark { width: 2.25rem; height: 2.25rem; border-radius: .6rem; flex: none; display: grid; place-items: center;
-  background: var(--accent); color: #fff; font: 600 .95rem/1 "Space Grotesk", sans-serif; letter-spacing: -.02em; }
+.brand-mark { height: 3.5rem; width: auto; flex: none; display: block; }
 .brand-name { font: 600 1.35rem/1.15 "Space Grotesk", sans-serif; letter-spacing: -.02em; color: var(--ink); }
 .brand-note { font-size: .82rem; color: var(--muted); margin-top: .15rem; }
 
