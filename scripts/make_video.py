@@ -269,7 +269,9 @@ FIND_JS = """
   } else {
     for (const e of document.querySelectorAll('body *')) {
       if (e.id === '__vcur' || ['SCRIPT', 'STYLE'].includes(e.tagName) || !vis(e) || !has(e, needle)) continue;
-      const score = txt(e).length - (txt(e).toLowerCase() === needle.toLowerCase() ? 1e6 : 0);
+      // exact text first; among equals prefer what appeared since the last click (e.g. the opened room panel)
+      const score = txt(e).length - (txt(e).toLowerCase() === needle.toLowerCase() ? 1e6 : 0)
+                    - (e.hasAttribute('data-vold') ? 0 : 1e4);
       if (score < bestScore) { best = e; bestScore = score; }
     }
   }
@@ -291,6 +293,8 @@ SCROLL_JS = """
 }
 """
 
+MARK_OLD_JS = "() => document.querySelectorAll('body *').forEach(e => e.setAttribute('data-vold', ''))"
+
 SCROLL_BY_JS = """
 (dy) => { const m = document.querySelector('section.stMain, [data-testid="stMain"]');
   let c = m; while (c && !(c.scrollHeight > c.clientHeight && /(auto|scroll)/.test(getComputedStyle(c).overflowY)))
@@ -310,7 +314,7 @@ HIGHLIGHT_JS = """
 """
 
 ACTION_COST = {"hover": 1.8, "scroll_to_text": 1.6, "highlight_text": 1.8, "click_button": 3.0,
-               "click_button_near_text": 4.5, "wait_for_text": 0.3, "scroll_to_top": 1.5, "click_text": 2.6,
+               "click_button_near_text": 7.0, "wait_for_text": 0.3, "scroll_to_top": 1.5, "click_text": 2.6,
                "click_key": 2.6, "type_text": 2.0, "scroll_by": 1.2}
 TYPE_CPS = 25  # type_text speed, characters per second
 
@@ -391,9 +395,15 @@ class Browser:
         self.cursor = (x, y)
         page.wait_for_timeout(int(hold * 1000))
 
-    def _click(self, page, loc) -> None:
+    def _click(self, page, loc, vid: str | None = None) -> None:
         """Visible click: cursor dot glides to the element, presses, Streamlit reruns."""
-        loc.scroll_into_view_if_needed(timeout=5000)
+        page.evaluate(MARK_OLD_JS)
+        box = loc.bounding_box() if vid else None
+        if vid and not (box and 110 <= box["y"] and box["y"] + box["height"] <= page.viewport_size["height"]):
+            page.evaluate(SCROLL_JS, [vid, False])  # below the sticky top bar, not under it
+            page.wait_for_timeout(900)
+        else:
+            loc.scroll_into_view_if_needed(timeout=5000)
         page.wait_for_timeout(300)
         self._move_to(page, loc, hold=0.4)
         page.evaluate("window.__cursorClick()")
@@ -455,24 +465,31 @@ class Browser:
                 page.evaluate(SCROLL_JS, [vid, False])
                 page.wait_for_timeout(1000)
                 self._move_to(page, loc, hold=0.4)
+                page.evaluate(MARK_OLD_JS)
                 page.evaluate("window.__cursorClick()")
                 loc.click(timeout=5000)
                 self._settle(page, 0.6)
                 if near:  # show the result where the button was ("Approved (mock), nothing was executed")
                     try:
                         try:
-                            res, rid = self._find(page, "(mock)", timeout=5)
+                            res, rid = self._find(page, "(mock)", timeout=1.2)  # page has settled already
                         except LookupError:
-                            res, rid = self._find(page, "recorded:", timeout=2)
+                            try:  # the decided card left the "Pending" list: open "Decided" to show it
+                                tab, tid = self._find(page, "Decided", mode="click", timeout=2)
+                                log(f"{label} near {near!r}: card moved to Decided -> showing it there")
+                                self._click(page, tab, tid)
+                                res, rid = self._find(page, "(mock)", timeout=3)
+                            except LookupError:
+                                res, rid = self._find(page, "recorded:", timeout=2)
                         page.evaluate(SCROLL_JS, [rid, False])
                         page.wait_for_timeout(900)
                         page.evaluate(HIGHLIGHT_JS, [rid, 1800])
-                        page.wait_for_timeout(1500)
+                        page.wait_for_timeout(300)  # the scene's remaining seconds hold the result on screen
                     except LookupError:
                         pass
             elif kind == "click_text":
-                loc, _ = self._find(page, str(arg), mode="click", timeout=8)
-                self._click(page, loc)
+                loc, vid = self._find(page, str(arg), mode="click", timeout=8)
+                self._click(page, loc, vid)
             elif kind == "click_key":
                 box = page.locator(f".st-key-{arg}").first
                 box.wait_for(state="visible", timeout=8000)

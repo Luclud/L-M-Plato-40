@@ -89,6 +89,7 @@ python scripts/make_video.py --storyboard video/storyboard_final.yaml --cut fina
   `click_key: "<streamlit key>"` (the widget inside `.st-key-<key>`), `type_text: {into: "<placeholder or label>",
   text: "...", submit: true|false}` (typed character by character), `scroll_by: <px>` (smooth). All of them move
   the visible cursor first. `click_button_near_text` now highlights the mock result line
-  ("Approved (mock), nothing was executed").
+  ("Approved (mock), nothing was executed"); if the card left the "Pending" list it opens "Decided" to show it.
+  Text lookups prefer what appeared since the last click (e.g. the opened room panel over the KPI row).
 - Every subtitle number must match the Holdout UI (facts table in `docs/tasks/T32-final-video.md`); if one does
   not, only that number is removed from the subtitle.
