@@ -121,7 +121,8 @@ listed here. Visualisation code lives only in `viewer/`, separate from the pipel
 
 | Commit | Files / folders | What changed and why | Effect on `decisions_holdout.jsonl` |
 |---|---|---|---|
-| PR `ui-final` (viewer UI polish) | `viewer/` (app, style.css, views: common, housekeeping, incidents, approvals, learned, proof), `tests/test_viewer_approvals.py`, `.env.example`, `README.md` | Final UI clean-up: shorter brand row, aligned controls, no Housekeeping legend caption, no mock banner on Approvals (each decided card still says "mock"), target-architecture block removed from What we learned, downloads side by side; `STEWARD_GUIDED_DEMO=0` (or `SHOW_GUIDED_DEMO = False` in `viewer/app.py`) hides the Guided demo tab for the video | None — viewer only, pipeline untouched |
+| PR #63 | `viewer/copilot.py`, `viewer/views/ask.py`, `viewer/labels.py`, `tests/test_copilot.py` | Ask the building: read-only building-data tools (room status, building now, measurements with charts, staff, arrivals, guest requests), as known at the selected moment. Viewer feature for the demo. | None (viewer only; pipeline at the tag unchanged) |
+| PR #64 | `viewer/` (app, style.css, views: common, housekeeping, incidents, approvals, learned, proof), `tests/test_viewer_approvals.py`, `.env.example`, `README.md` | Final UI clean-up: shorter brand row, aligned controls, no Housekeeping legend caption, no mock banner on Approvals (each decided card still says "mock"), target-architecture block removed from What we learned, downloads side by side; `STEWARD_GUIDED_DEMO=0` (or `SHOW_GUIDED_DEMO = False` in `viewer/app.py`) hides the Guided demo tab for the video | None — viewer only, pipeline untouched |
 
 ## Architecture
 
