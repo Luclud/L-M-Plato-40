@@ -95,18 +95,18 @@ scenes:
       - {at: 11, text: "In this prototype approving is a mock. Nothing is executed."}
   - id: ask
     url: "/ask"
-    seconds: 17
+    seconds: 23   # live AI copilot (--copilot + key): answers take ~4-5 s each
     actions:
       - wait_for_text: "What would you like to know?"
       - click_key: ask_suggest_0
-      - pause: 3
+      - pause: 6
       - type_text: {into: "Ask about a room", text: "Show the heat pump on 26 Jan", submit: true}
-      - pause: 3
+      - pause: 5
       - scroll_by: 400
     subtitles:
       - {at: 0,  text: "Ask the building answers from the decision log and the building data."}
-      - {at: 6,  text: "Every answer cites its decisions. Measurements come with a chart."}
-      - {at: 13, text: "It is read-only: it cannot approve, decide or change anything."}
+      - {at: 8,  text: "Every answer cites its decisions. Measurements come with a chart."}
+      - {at: 17, text: "It is read-only: it cannot approve, decide or change anything."}
   - id: learned
     url: "/learned"
     seconds: 15

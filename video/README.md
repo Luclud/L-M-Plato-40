@@ -23,7 +23,7 @@ in `out/video/<cut>_work/`), `--storyboard <path>`.
    real output, trimmed to its last lines; `RESULT: PASS` is always kept. The typing is compressed in time.
 3. Builds the voice per scene (see below). A scene lasts `max(storyboard seconds, voice + 0.5 s)`.
 4. Starts the viewer (`streamlit run viewer/app.py` on the storyboard port, or a free one if it's busy, with
-   `PLATO40_NO_LLM=1` and `PLATO40_APPROVALS=out/video_approvals.json`) and records one clip per scene with
+   `PLATO40_NO_LLM=1` unless `--copilot`, and `PLATO40_APPROVALS=out/video_approvals.json`) and records one clip per scene with
    Playwright Chromium (`record_video_dir`). The storyboard `zoom` sets the viewport to 1920/zoom × 1080/zoom CSS
    px; Playwright records CSS pixels, so the clip is recorded at that size and scaled to 1920×1080 (full frame, no
    grey margin). Timing starts only after the
@@ -73,9 +73,14 @@ sentence length.
 
 ```bash
 # needs data/holdout/ (not in git, never commit it) next to the committed decisions_holdout.jsonl
-python scripts/make_video.py --storyboard video/storyboard_final.yaml --cut final --voice none
+python scripts/make_video.py --storyboard video/storyboard_final.yaml --cut final --voice none --copilot
 # -> out/video/steward_final.mp4, final.srt, final_contact_sheet.png
 ```
+
+- `--copilot`: the viewer may use the LLM key (`LLM_PROVIDER=anthropic`, `LLM_API_KEY`, `LLM_MODEL` from `.env` or the
+  environment; never committed), so "Ask the building" answers live and the "AI copilot is off" banner is not shown.
+  Without the flag the recorder forces `PLATO40_NO_LLM=1` (cached/offline answers, banner visible). The `ask` scene
+  (23 s) leaves ~5 s per answer; use a model that accepts `temperature` (the published video used `claude-haiku-4-5`).
 
 - `viewer.run_pipeline: false`: `run.py` is **not** run; the viewer opens `decisions_holdout.jsonl` and
   `data/holdout` exactly as configured (the frozen holdout run is never regenerated). The viewer starts with

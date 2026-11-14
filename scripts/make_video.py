@@ -729,7 +729,9 @@ def start_viewer(cfg: dict) -> tuple[subprocess.Popen, str]:
         log(f"port {url.port} is busy -> viewer on {port}")
     approvals = ROOT / cfg.get("approvals_file", "out/video_approvals.json")
     approvals.unlink(missing_ok=True)
-    env = dict(os.environ, PLATO40_APPROVALS=str(approvals), PLATO40_NO_LLM="1", PLATO40_DEFAULT_DATASET="off")
+    env = dict(os.environ, PLATO40_APPROVALS=str(approvals), PLATO40_DEFAULT_DATASET="off")
+    if not cfg.get("copilot"):
+        env["PLATO40_NO_LLM"] = "1"
     if not cfg.get("run_pipeline", True):
         env["STEWARD_GUIDED_DEMO"] = "0"
     cmd = [sys.executable, "-m", "streamlit", "run", "viewer/app.py", "--server.headless", "true",
@@ -769,12 +771,15 @@ def main(argv=None) -> int:
     ap.add_argument("--holdout", default=None, help="text for [HOLDOUT]; empty drops that sentence")
     ap.add_argument("--keep", action="store_true", help="keep per-scene clips in out/video/<cut>_work/")
     ap.add_argument("--storyboard", type=Path, default=STORYBOARD)
+    ap.add_argument("--copilot", action="store_true",
+                    help="let the viewer use the LLM key from .env/environment (Ask the building live)")
     args = ap.parse_args(argv)
     if not shutil.which("ffmpeg"):
         raise SystemExit("ffmpeg not found on PATH")
 
     sb = load_storyboard(args.storyboard)
     cfg, scenes = sb["viewer"], {s["id"]: s for s in sb["scenes"]}
+    cfg["copilot"] = args.copilot
     placeholders = dict(sb.get("placeholders") or {})
     if args.holdout is not None:
         placeholders["HOLDOUT"] = args.holdout
