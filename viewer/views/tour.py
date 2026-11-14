@@ -116,7 +116,7 @@ def show_learned():
     h = page_helpers("learned.py")
     rows = h["load_insights"](h["insights_dir"]())
     if not rows:
-        st.info("No insights generated yet — this step is skipped.", icon=":material/info:")
+        st.info("No insights generated yet. This step is skipped.", icon=":material/info:")
         return
     cols = st.columns(2)
     for col, (target, title, _icon) in zip(cols, h["COLUMNS"]):
@@ -146,7 +146,7 @@ if key == "building":
 elif key in SCENARIOS:
     ep = hero.get(key)
     if ep is None:
-        st.warning("No matching incident in this dataset — this step is skipped. Press Next.",
+        st.warning("No matching incident in this dataset. Press Next to skip this step.",
                    icon=":material/skip_next:")
     else:
         incident.render(c, ep, key=f"tour{n}")

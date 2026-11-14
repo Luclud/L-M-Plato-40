@@ -24,7 +24,7 @@ say = "A guest arrives before the room can be cleaned in time. When a cleaner fa
 [[step]]
 key = "surge"
 title = "Event weekend and a sick cleaner"
-say = "Bookings show the arrival peak days ahead; when a cleaner calls in sick we re-plan as soon as we know. Extra staff needs a manager — approve it here (mock, nothing is sent)."
+say = "Bookings show the arrival peak days ahead; when a cleaner calls in sick we re-plan as soon as we know. Extra staff needs a manager, so approve it here (mock, nothing is sent)."
 
 [[step]]
 key = "filter"

@@ -28,6 +28,10 @@ _DEMAND = re.compile(r"demand (\d+) min vs capacity (\d+) min")
 BLOCK_COLS = ["resource_id", "room", "start", "end", "kind", "label", "episode", "superseded", "known_at"]
 
 
+def _n(count, word: str) -> str:
+    return f"{count:,} {word}{'' if count == 1 else 's'}"
+
+
 def day_bounds(day) -> tuple[pd.Timestamp, pd.Timestamp]:
     s = pd.Timestamp(day).tz_localize(None).normalize()
     return s.tz_localize(LOCAL_TZ).tz_convert("UTC"), (s + pd.Timedelta(days=1)).tz_localize(LOCAL_TZ).tz_convert("UTC")
@@ -214,7 +218,7 @@ class Day:
             arr = arr[arr.created_utc <= as_of]
         if len(arr):
             rows.append(("checkin", at_local(self.day, CHECKIN_LOCAL), None, f"Check-in from {CHECKIN_LOCAL}"
-                         f" · {len(arr)} arrival(s)"))
+                         f" · {_n(len(arr), 'arrival')}"))
         gr = self.data.guest_requests
         gr = gr[(gr.request_type == "early_checkin") & gr.booking_id.isin(set(arr.booking_id))]
         if as_of is not None:
@@ -285,7 +289,7 @@ _RES = {"CLEANER_1": "Cleaner 1", "CLEANER_2": "Cleaner 2", "CLEANER_3": "Cleane
 
 
 def short_reason(text: str) -> str:
-    """'CLEANER_1 sick became known - capacity re-planned' -> 'Cleaner 1 sick became known — re-planned'."""
+    """'CLEANER_1 sick became known - capacity re-planned' -> 'Cleaner 1 sick became known, re-planned'."""
     t = str(text).strip()
     if re.match(r"daily re-plan", t, re.I):
         return "Daily re-plan " + t.split("re-plan", 1)[1].replace("local", "").strip()
@@ -293,4 +297,4 @@ def short_reason(text: str) -> str:
         t = t.replace(code, name)
     t = re.sub(r"\bR(\d{3})\b", r"Room \1", t)
     t = re.sub(r"\s*-\s*capacity re-planned", "", t).replace(" local", "")
-    return f"{t} — re-planned"
+    return f"{t}, re-planned"

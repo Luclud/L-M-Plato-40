@@ -98,7 +98,7 @@ def decision_step(row, n: int):
     c1, c2 = st.columns([5, 2])
     with c1:
         st.markdown(f"**{n}** · {local_time(row['timestamp_utc'], with_day=False)} · "
-                    f"{L.icon('action', row['action'])} {L.label('action', row['action'])} — "
+                    f"{L.icon('action', row['action'])} {L.label('action', row['action'])} · "
                     f"{L.assets_text(row.get('affected_assets'))}")
         st.caption(headline(row.get("reason")))
     with c2:

@@ -716,24 +716,24 @@ def _offline_building(q: str, low: str, day, tools: Tools, use) -> Answer | None
     if re.search(r"guest requests?|requests? from|\bcomplain", low):
         res = use("guest_requests", **{k: v for k, v in (("room", room), ("date", date)) if v})
         if not res["count"]:
-            return Answer(f"No guest request matches — that is {NOT_IN_LOG}.", "offline")
-        lines = [f"- {r['time']}, {r['room']}: {r['type']} ({r['language']}, {r['priority']}) — “{r['text']}”"
+            return Answer(f"No guest request matches. That is {NOT_IN_LOG}.", "offline")
+        lines = [f"- {r['time']}, {r['room']}: {r['type']} ({r['language']}, {r['priority']}): “{r['text']}”"
                  + (f" [{', '.join(r['answered_by'])}]" if r["answered_by"] else "") for r in res["requests"][:6]]
-        return Answer(f"{res['count']} guest request(s):\n" + "\n".join(lines), "offline")
+        return Answer(f"{L.n(res['count'], 'guest request')}:\n" + "\n".join(lines), "offline")
     if re.search(r"\bwho(?: is|'s| are)? (?:working|on shift|on duty)|\bstaff\b|\broster\b|\bshifts?\b", low):
         res = use("staff_schedule", **({"date": date} if date else {}))
         if not res["shifts"]:
             return Answer(f"No shifts are published for {res['day']} (as known at {res['as_known_at']}).", "offline")
         lines = [f"- {s['who']}: {s['shift'].split(', ')[-1]}" + ("" if s["status"] == "scheduled" else
-                 f" — **{s['status']}**" + (f" (known {s['known_since']})" if "known_since" in s else ""))
+                 f": **{s['status']}**" + (f" (known {s['known_since']})" if "known_since" in s else ""))
                  for s in res["shifts"]]
         return Answer(f"Staff on {res['day']} (as known at {res['as_known_at']}):\n" + "\n".join(lines), "offline")
     if "early" not in low and re.search(r"\barriv\w*|\bcheck-?ins?\b|\bdepart\w*|\bcheck-?outs?\b", low):
         res = use("arrivals_departures", **({"date": date} if date else {}))
         arr = ", ".join(f"{a['room']} {a['time']}" for a in res["arriving"][:10])
         dep = ", ".join(f"{a['room']} {a['time']}" for a in res["departing"][:10])
-        return Answer(f"{res['day']} (as booked at {res['as_known_at']}): {res['arrivals']} arrival(s), "
-                      f"{res['departures']} departure(s).\n- Arriving: {arr or 'none'}\n- Departing: {dep or 'none'}",
+        return Answer(f"{res['day']} (as booked at {res['as_known_at']}): {L.n(res['arrivals'], 'arrival')}, "
+                      f"{L.n(res['departures'], 'departure')}.\n- Arriving: {arr or 'none'}\n- Departing: {dep or 'none'}",
                       "offline")
     subject = next((k for k, words in _SUBJECT_WORDS.items() if any(w in low for w in words)), None)
     if (room or subject) and _SHOW_RX.search(low):
@@ -755,7 +755,7 @@ def _offline_building(q: str, low: str, day, tools: Tools, use) -> Answer | None
                 f"humidity {_fmt(r.get('humidity_pct'), ' %')}, CO₂ {_fmt(r.get('co2_ppm'), ' ppm')}",
                 f"water {_fmt(r.get('water_l_per_15min'), ' L/15 min')}"]
         if "booking" in r:
-            bits.append(f"booked {r['booking']['stay']} ({r['booking']['guests']} guest(s))")
+            bits.append(f"booked {r['booking']['stay']} ({L.n(r['booking']['guests'], 'guest')})")
         elif "next_arrival" in r:
             bits.append(f"next arrival {r['next_arrival']}")
         inc = "".join(f"\n- Open: **{i['title']}** since {i['since']} [{i['first_decision_id']}]"
@@ -794,14 +794,14 @@ def ask_offline(question: str, tools: Tools) -> Answer:
         local = df.t.dt.tz_convert(L.TZ).dt.date
         rows = df[(df.action == action) & (local == day)]
         if rows.empty:
-            return Answer(f"No “{L.label('action', action).lower()}” on {pd.Timestamp(day):%a %-d %b} — that is "
+            return Answer(f"No “{L.label('action', action).lower()}” on {pd.Timestamp(day):%a %-d %b}. That is "
                           f"{NOT_IN_LOG}.", "offline", calls)
         lines = []
         for r in rows.head(5).itertuples():
             d = use("get_decision", event_id=r.event_id)
-            lines.append(f"- {d['time']}: {d['did']} for {', '.join(d['assets']) or 'the building'} — {d['reason']}"
+            lines.append(f"- {d['time']}: {d['did']} for {', '.join(d['assets']) or 'the building'}: {d['reason']}"
                          f"{'; ' + d['approval'] if 'approval' in d else ''} [{r.event_id}]")
-        return Answer(f"On {pd.Timestamp(day):%a %-d %b} the log has {len(rows)} such decision(s):\n" + "\n".join(lines),
+        return Answer(f"On {pd.Timestamp(day):%a %-d %b} the log has {L.n(len(rows), 'such decision')}:\n" + "\n".join(lines),
                       "offline", calls)
     if "approv" in low:
         res = use("pending_approvals")
@@ -810,7 +810,7 @@ def ask_offline(question: str, tools: Tools) -> Answer:
         lines = [f"- **{o['title']}** ({o['priority']}): "
                  + ", ".join(f"{w['did'].lower()} [{w['decision_id']}]" for w in o["waiting"]) for o in res["incidents"]]
         more = res["count"] - len(res["incidents"])
-        return Answer(f"{res['count']} incident(s) still wait for a manager's decision. {L.MOCK}.\n"
+        return Answer(f"{L.n(res['count'], 'incident')} still wait for a manager's decision. {L.MOCK}.\n"
                       + "\n".join(lines) + (f"\n- … and {more} more" if more > 0 else ""), "offline", calls)
     if re.search(r"\bhow many\b|\bcount\b|\beach type\b|\bper type\b", low):
         res = use("count_by_type")
@@ -837,11 +837,11 @@ def ask_offline(question: str, tools: Tools) -> Answer:
         what = " and ".join(x for x in (L.label("asset", asset) if asset else "",
                                         L.label("issue", typ).lower() if typ else "") if x)
         if not res["count"]:
-            return Answer(f"No incident for {what} — that is {NOT_IN_LOG}.", "offline", calls)
+            return Answer(f"No incident for {what}. That is {NOT_IN_LOG}.", "offline", calls)
         more = res.get("more", 0)
-        return Answer(f"{res['count']} incident(s) for {what}:\n" + "\n".join(_bullet(o) for o in res["incidents"][:6])
+        return Answer(f"{L.n(res['count'], 'incident')} for {what}:\n" + "\n".join(_bullet(o) for o in res["incidents"][:6])
                       + (f"\n- … and {res['count'] - 6} more" if res["count"] > 6 or more else ""), "offline", calls)
-    return Answer(f"I couldn't find that — it is {NOT_IN_LOG} as far as the offline helper can tell. Without the "
+    return Answer(f"I couldn't find that. It is {NOT_IN_LOG} as far as the offline helper can tell. Without the "
                   "AI copilot I understand questions about a room (what happened, or its status now), the building "
                   "right now, staff, arrivals, guest requests, measurements ('show the heat pump'), a date with an "
                   "action, approvals, counts and incident types.", "offline", calls)

@@ -88,7 +88,7 @@ def page_list(c: dict):
         page = 1
         if pages > 1:
             page = st.segmented_control("Page", list(range(1, pages + 1)), default=1, key="inc_page") or 1
-        st.caption(f"{len(sub)} incident(s)" + (f" · page {page} of {pages}" if pages > 1 else ""))
+        st.caption(f"{L.n(len(sub), 'incident')}" + (f" · page {page} of {pages}" if pages > 1 else ""))
         summ = summaries.load(c["decisions"])
         for r in sub.iloc[(page - 1) * PAGE: page * PAGE].itertuples():
             card(r, "open", summ.get(r.episode))
@@ -114,7 +114,7 @@ def routine(c: dict, eps: pd.DataFrame):
         page = st.number_input("Page", 1, pages, 1, key=f"rt_page_{t}") if pages > 1 else 1
         for r in sub.iloc[(page - 1) * PAGE: page * PAGE].itertuples():
             x, y = st.columns([8, 1])
-            x.markdown(f"{C.local_time(r.start)} · {L.assets_text(r.assets)} — {r.headline}")
+            x.markdown(f"{C.local_time(r.start)} · {L.assets_text(r.assets)} · {r.headline}")
             y.container(key=f"right_rt_{r.episode}").button("Open", key=f"rt_{r.episode}", on_click=_open,
                                                             args=(r.episode,), type="tertiary")
 

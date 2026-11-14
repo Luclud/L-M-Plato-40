@@ -100,7 +100,7 @@ def attention(c: dict, t, open_eps: pd.DataFrame, pending: dict):
                 st.page_link("views/incidents.py", label="Open", icon=":material/open_in_new:",
                              query_params={"episode": r.episode})
         if len(open_eps) > 6:
-            st.caption(f"+{len(open_eps) - 6} more open incidents — see Incidents.")
+            st.caption(f"+{len(open_eps) - 6} more open incidents on the Incidents page.")
 
 
 def floors(c: dict, rooms: pd.DataFrame, open_eps: pd.DataFrame, planned: dict):

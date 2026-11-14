@@ -55,14 +55,14 @@ def figure(day: S.Day, as_of=None, moment=None, highlight_rooms=(), highlight_re
     for r in sh.itertuples():
         lane = lane_name(r.resource_id)
         if r.absent:
-            lab = f"{r.status.replace('_', ' ')}" + (f" — known {_hm(r.known_at)}" if r.known_at is not None else "")
+            lab = f"{r.status.replace('_', ' ')}" + (f", known {_hm(r.known_at)}" if r.known_at is not None else "")
             bar(lane, r.start, r.end, "rgba(200,60,60,.18)", lab, f"{lane}: {lab}",
                 line=dict(color="rgba(200,60,60,.7)", width=1), pattern=dict(shape="/", fgcolor="rgba(200,60,60,.55)"),
                 width=0.8)
             if r.known_at is not None:
                 fig.add_trace(go.Scatter(x=[_loc(r.known_at)], y=[lane], mode="markers",
                                          marker=dict(symbol="triangle-down", size=11, color="#C83C3C"),
-                                         hovertext=[f"{lane} {r.status.replace('_', ' ')} — known {_hm(r.known_at)}"],
+                                         hovertext=[f"{lane} {r.status.replace('_', ' ')}, known {_hm(r.known_at)}"],
                                          hoverinfo="text", showlegend=False))
         else:
             what = "on call" if r.status == "on_call" else "on shift"
@@ -121,10 +121,10 @@ def figure(day: S.Day, as_of=None, moment=None, highlight_rooms=(), highlight_re
 def summary_text(s: dict) -> str:
     parts = [f"{s['rooms']} rooms to turn over",
              f"{s['demand_min']:,} min of cleaning vs {s['staff_min']:,} min of staff"
-             + (" — more work than staff" if s["over"] else "")]
+             + (" (more work than staff)" if s["over"] else "")]
     if s["absent"]:
-        parts.append(f"{s['absent']} absence(s)")
-    parts.append(f"{s['waited']} guest(s) waited" if s["waited"] else "no guest waited")
+        parts.append(f"{L.n(s['absent'], 'absence')}")
+    parts.append(f"{L.n(s['waited'], 'guest')} waited" if s["waited"] else "no guest waited")
     if s["oncall"]:
         parts.append(f"on-call called {'once' if s['oncall'] == 1 else str(s['oncall']) + ' times'}")
     return " · ".join(parts)

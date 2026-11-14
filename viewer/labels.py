@@ -67,16 +67,16 @@ ROLES = {"cleaner": "Cleaner", "technician": "Technician", "robot": "Robot", "on
          "on_call": "On-call housekeeper", "on_call_housekeeping": "On-call housekeeper"}
 
 # honesty labels - never remove
-PROPOSED = "Proposed message — not sent"
+PROPOSED = "Proposed message, not sent"
 SIMULATED = "Simulated"
-MOCK = "Mock approval — nothing is executed"
-CONSENT_NEEDED = "Guest consent needed — not granted"
-AI_SUMMARY = "AI summary — facts from the decision log"
-AI_ANSWER = "AI answer from the decision log — check the cited decisions"
-AI_INSIGHT = "AI wording of the analysis — numbers checked against it"
-OFFLINE_ANSWER = "Looked up in the decision log and building data without an AI model — check the cited decisions"
+MOCK = "Mock approval, nothing is executed"
+CONSENT_NEEDED = "Guest consent needed, not granted"
+AI_SUMMARY = "AI summary of the decision log"
+AI_ANSWER = "AI answer from the decision log. Check the cited decisions."
+AI_INSIGHT = "AI wording of the analysis, numbers checked against it"
+OFFLINE_ANSWER = "Looked up in the decision log and building data without an AI model. Check the cited decisions."
 CACHED_ANSWER = "Cached example answer"
-ASK_INTRO = ("Ask about this run — a room, the building right now, staff, arrivals, guest requests, measurements or "
+ASK_INTRO = ("Ask about this run: a room, the building right now, staff, arrivals, guest requests, measurements or "
              "incidents. Answers come only from the decision log and the building data, with numbered sources and a "
              "chart for every measurement; the copilot cannot approve, decide or change anything.")
 ASK_NO_KEY = ("The AI copilot is off (no key configured). Suggested questions show cached examples; typed questions "
@@ -108,6 +108,11 @@ _TABLES = {"issue": ISSUE_TYPES, "action": ACTIONS, "autonomy": AUTONOMY, "prior
 
 def _name(v):
     return v[0] if isinstance(v, tuple) else v
+
+
+def n(count, word: str) -> str:
+    """'1 incident', '3 incidents' (no "incident(s)")."""
+    return f"{count:,} {word}{'' if count == 1 else 's'}"
 
 
 def label(kind: str, code) -> str:

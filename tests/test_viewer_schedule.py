@@ -42,7 +42,7 @@ def test_plan_window_regex_cleaner_robot_oncall():
 
 def test_short_reason_is_plain_words():
     assert S.short_reason("CLEANER_1 sick became known - capacity re-planned") == \
-        "Cleaner 1 sick became known — re-planned"
+        "Cleaner 1 sick became known, re-planned"
     assert S.short_reason("daily re-plan 06:30 local") == "Daily re-plan 06:30"
     assert "R308" not in S.short_reason("checkout of R308 at 10:45 local")
 

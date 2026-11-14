@@ -74,7 +74,7 @@ def test_learned_skips_damaged_line(sets, monkeypatch, tmp_path):
     (d / "insights.jsonl").write_text("\n".join([lines[0], "{broken", lines[-1]]))
     shutil.copy(V.ROOT / "insights.md", d / "insights.md")
     at = _open(monkeypatch, "views/learned.py", dec, data, tmp_path, insights=d)
-    assert any(c.value == "1 insight(s)" for c in at.caption)
+    assert any(c.value == "1 insight" for c in at.caption)
 
 
 @pytest.mark.parametrize("name", ["quickstart", "dev", "empty"])
@@ -104,6 +104,6 @@ def test_bms_sentence_uses_real_numbers(sets, monkeypatch, tmp_path):
     n = int(((b.alarm_code == "WATER_NIGHT_FLOW") & (b.state == "raised")).sum())
     leaks = core.load_decisions(dec).query("issue_type == 'water_leak'").episode.nunique()
     at = _open(monkeypatch, "views/proof.py", dec, data, tmp_path)
-    assert any(x.value.startswith(f"The BMS raised {n} water alarm(s); we opened {leaks} water-leak")
+    assert any(x.value.startswith(f"The BMS raised {L.n(n, 'water alarm')}; we opened {L.n(leaks, 'water-leak incident')}")
                for x in at.markdown)
     assert L.ROUTINE_TYPES

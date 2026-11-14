@@ -64,7 +64,7 @@ st.subheader("Ask the building")
 client = copilot.default_client()
 if client is None:
     st.info(L.ASK_NO_KEY, icon=":material/key_off:")
-    with st.expander("Technical details — turn on the AI copilot", icon=":material/code:"):
+    with st.expander("Turn on the AI copilot", icon=":material/code:"):
         st.code("# .env (git-ignored), then restart the viewer\nLLM_PROVIDER=anthropic\nLLM_API_KEY=...\n"
                 "LLM_MODEL=<Claude model id>", language="bash")
 if df.empty:
