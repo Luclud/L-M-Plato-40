@@ -32,8 +32,6 @@ pages = {
         st.Page("views/learned.py", title="What we learned", icon=":material/lightbulb:"),
         st.Page("views/tour.py", title="Guided demo", icon=":material/play_circle:"),
         st.Page("views/ask.py", title="Ask the building", icon=":material/forum:"),
-    ],
-    "Proof": [
         st.Page("views/proof.py", title="Proof", icon=":material/verified:"),
     ],
 }
