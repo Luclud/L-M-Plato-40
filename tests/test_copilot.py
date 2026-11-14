@@ -2,6 +2,7 @@
 import json
 import re
 
+import pandas as pd
 import pytest
 
 pytest.importorskip("streamlit")
@@ -167,3 +168,138 @@ def test_page_without_key(qs, monkeypatch, tmp_path):
     assert "Sent a technician" in md
     assert any(c.value == L.OFFLINE_ANSWER for c in at.caption)
     _no_raw(" ".join(m.value for m in at.markdown))
+
+
+# ----------------------------------------------------------------------------- building-data tools
+@pytest.fixture(scope="module")
+def bd():
+    from plato40 import io
+    from viewer import twin as TW
+    d = io.load(V.ROOT / "data" / "quickstart")
+    return d, core.SeriesStore(d), TW.Twin(d)
+
+
+def _tools(df, bd, now="2026-01-12T17:45Z"):
+    d, s, tw = bd
+    return CP.Tools(df, {}, data=d, store=s, twin=tw, now=pd.Timestamp(now))
+
+
+def test_building_tools_answer_with_friendly_names_and_local_times(df, bd):
+    t = _tools(df, bd)
+    r = t.call("room_status", {"room": "Room 104"})
+    assert r["room"] == "Room 104" and r["at"] == "Mon 12 Jan, 18:45" and "temperature_c" in r
+    assert r["open_incidents"] and r["open_incidents"][0]["title"].startswith("Water leak")
+    b = t.call("building_now", {})
+    assert sum(b["rooms"].values()) == 40 and set(b["plant"]) == {"Heat pump", "Ventilation", "Water main",
+                                                                   "PV / battery"}
+    m = t.call("measurements", {"subject": "Room 305", "metric": "water", "date_from": "2026-01-10",
+                                "date_to": "2026-01-12"})
+    assert m["subject"] == "Room 305" and m["measurements"][0]["unit"] == "L/15 min"
+    assert t.charts and t.charts[-1]["title"].startswith("Room 305")
+    g = _tools(df, bd, "2026-01-24T12:00Z").call("guest_requests", {"room": "Room 104"})
+    assert g["count"] >= 1 and all(r["room"] == "Room 104" for r in g["requests"])
+    for bad in (("room_status", {"room": "Room 999"}), ("measurements", {"subject": "moon"}),
+                ("measurements", {"subject": "heat pump", "metric": "colour"})):
+        assert "error" in t.call(*bad)
+    blob = json.dumps([r, b, m, g], ensure_ascii=False, default=str)
+    for rx in (r"\bR\d{3}\b", r"\bSH\d{6}\b", r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}", r"\b(?:CLEANER|ROBOT|TECH)_\d\b"):
+        assert not re.search(rx, blob), rx
+
+
+def test_building_tools_use_only_what_is_known_at_now(df, bd):
+    early, late = _tools(df, bd, "2026-01-12T17:45Z"), _tools(df, bd, "2026-01-24T06:00Z")
+    assert early.call("staff_schedule", {"date": "2026-01-24"})["absent"] == []        # sick notice known 06:30
+    assert late.call("staff_schedule", {})["absent"] == ["Cleaner 1"]
+    a1 = early.call("arrivals_departures", {"date": "2026-01-23"})["arrivals"]
+    a2 = _tools(df, bd, "2026-01-23T06:00Z").call("arrivals_departures", {})["arrivals"]
+    assert a1 <= a2                                                                    # later bookings appear later
+    today = early.call("measurements", {"subject": "heat pump"})
+    assert all(x["latest_at"] <= "Mon 12 Jan, 18:45" for x in today["measurements"])
+    assert early.charts[-1]["end"] == pd.Timestamp("2026-01-12T18:00Z")
+
+
+def test_building_tools_are_read_only_and_need_data(df, bd):
+    d, s, _ = bd
+    before = [x.copy(deep=True) for x in (d.telemetry, d.bookings, d.roster, d.guest_requests)]
+    t = _tools(df, bd)
+    for name in ("room_status", "building_now", "measurements", "staff_schedule", "arrivals_departures",
+                 "guest_requests"):
+        args = {"room": "Room 101"} if name == "room_status" else {"subject": "building"} if name == "measurements" else {}
+        assert isinstance(t.call(name, args), dict)
+        assert "not loaded" in CP.Tools(df).call(name, args)["error"]
+    assert all(a.equals(b) for a, b in zip(before, (d.telemetry, d.bookings, d.roster, d.guest_requests)))
+
+
+def test_offline_routes_building_questions(df, bd):
+    def ask(q):
+        t = _tools(df, bd)
+        a = CP.answer(q, t)
+        md, _ = CP.render(a.text, df)
+        _no_raw(md)
+        return a, t
+    a, _ = ask("How is Room 104 right now?")
+    assert a.tool_calls[0][0] == "room_status" and "Room 104 at Mon 12 Jan, 18:45" in a.text
+    a, _ = ask("What happened in Room 104?")
+    assert a.tool_calls[0][0] == "list_incidents"
+    a, _ = ask("Who is working on 24 Jan?")
+    assert a.tool_calls[0][0] == "staff_schedule" and "Cleaner" in a.text
+    a, t = ask("Show the heat pump today")
+    assert a.tool_calls[0][0] == "measurements" and t.charts
+    a, _ = ask("Who arrives on 13 Jan?")
+    assert a.tool_calls[0][0] == "arrivals_departures" and "arrival" in a.text
+    a, _ = ask("Can guests get an early check-in in Room 104?")
+    assert not a.tool_calls or a.tool_calls[0][0] != "arrivals_departures"
+    a, _ = ask("What is going on right now?")
+    assert a.tool_calls[0][0] == "building_now" and "Building at" in a.text
+
+
+def test_llm_gets_the_moment_and_new_tools(df, bd):
+    seen = {}
+
+    def client(system, messages, tools, timeout):
+        seen["system"] = system
+        seen["tools"] = {x["name"] for x in tools}
+        return {"content": [{"type": "text", "text": "ok"}], "stop_reason": "end_turn"}
+    CP.answer("How is Room 104?", _tools(df, bd), client)
+    assert "Now (the moment selected in the viewer) is Mon 12 Jan, 18:45 2026 (local 2026-01-12 18:45)" in seen["system"]
+    assert {"room_status", "building_now", "measurements", "staff_schedule", "arrivals_departures",
+            "guest_requests"} <= seen["tools"]
+
+
+def test_page_draws_a_chart_for_a_measurement(qs, monkeypatch, tmp_path):
+    monkeypatch.setenv("PLATO40_NO_LLM", "1")
+    at = V.app(monkeypatch, qs, V.ROOT / "data" / "quickstart", tmp_path / "a.json")
+    at.switch_page("views/ask.py")
+    at.run()
+    at.chat_input[0].set_value("Show the heat pump on 12 Jan").run()
+    assert not at.exception, V.errors(at)
+    assert "Heat pump" in " ".join(m.value for m in at.markdown)
+    assert len(at.get("plotly_chart")) == 1
+
+
+def test_measurements_and_requests_stop_at_now(df, bd):
+    t = _tools(df, bd)
+    day = t.call("measurements", {"subject": "heat pump", "date_from": "2026-01-12"})
+    assert all(x["latest_at"] <= "Mon 12 Jan, 18:45" for x in day["measurements"])
+    assert "after now" in t.call("measurements", {"subject": "heat pump", "date_from": "2026-01-20"})["error"]
+    assert all(r["time"] <= "Mon 12 Jan, 18:45" for r in t.call("guest_requests", {})["requests"]
+               if r["time"].startswith("Mon 12 Jan"))
+    assert _tools(df, bd).call("guest_requests", {"room": "Room 104"})["count"] == 0      # its requests come later
+
+
+def test_dates_outside_the_data_are_a_clear_error(df, bd):
+    t = _tools(df, bd)
+    for name, args in (("measurements", {"subject": "heat pump", "date_from": "2025-01-11"}),
+                       ("staff_schedule", {"date": "2025-01-12"}), ("arrivals_departures", {"date": "2027-01-01"}),
+                       ("room_status", {"room": "Room 104", "time": "2025-01-12 10:00"})):
+        err = t.call(name, args)["error"]
+        assert "outside the data" in err and "2026-01-05" in err, (name, err)
+
+
+def test_multi_day_measurements_have_per_day_values(df, bd):
+    m = _tools(df, bd).call("measurements", {"subject": "heat pump", "metric": "cop", "date_from": "2026-01-11",
+                                              "date_to": "2026-01-12"})["measurements"][0]
+    assert [d["day"] for d in m["by_day"]] == ["Sun 11 Jan", "Mon 12 Jan"]
+    assert min(d["min"] for d in m["by_day"]) == m["min"] and max(d["max"] for d in m["by_day"]) == m["max"]
+    one = _tools(df, bd).call("measurements", {"subject": "heat pump", "date_from": "2026-01-11"})["measurements"][0]
+    assert "by_day" not in one

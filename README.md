@@ -115,13 +115,13 @@ git add decisions_holdout.jsonl && git commit -m "Holdout run" && git push
 ```
 
 ### Changes after pre-holdout
-_None yet._ Per the organizers (Sat 14 Nov), visualisation, dashboard, README and demo changes are allowed after the
+Per the organizers (Sat 14 Nov), visualisation, dashboard, README and demo changes are allowed after the
 tag; detection and decision logic, thresholds, prompts and data processing stay frozen. Every commit after the tag is
 listed here. Visualisation code lives only in `viewer/`, separate from the pipeline (`plato40/`, `run.py`).
 
 | Commit | Files / folders | What changed and why | Effect on `decisions_holdout.jsonl` |
 |---|---|---|---|
-| — | — | — | — |
+| PR #63 | `viewer/copilot.py`, `viewer/views/ask.py`, `viewer/labels.py`, `tests/test_copilot.py` | Ask the building: read-only building-data tools (room status, building now, measurements with charts, staff, arrivals, guest requests), as known at the selected moment. Viewer feature for the demo. | None (viewer only; pipeline at the tag unchanged) |
 
 ## Architecture
 
