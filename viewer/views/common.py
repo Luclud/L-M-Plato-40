@@ -149,12 +149,24 @@ def checks(decisions: str, data_dir: str, mtime: float) -> core.Checks:
     return core.Checks(decisions, data_dir)
 
 
+DEFAULT_DATASET = "Holdout"   # opened on start when available; PLATO40_DEFAULT_DATASET=<name> or "off" overrides
+
+
+def _default_dataset(ds: dict) -> str | None:
+    from plato40 import llm   # reads the environment and .env; nothing is sent
+    name = llm._cfg("PLATO40_DEFAULT_DATASET") or DEFAULT_DATASET
+    return name if name.lower() not in ("off", "0", "none") and name in ds else None
+
+
 def _pick() -> tuple[str, str]:
     a = args()
     ds = datasets()
     options = list(ds) + [CUSTOM]
     if "dataset" not in st.session_state:
-        if a.decisions or a.data:
+        start = _default_dataset(ds)
+        if start:
+            st.session_state["dataset"] = start
+        elif a.decisions or a.data:
             want = (str(abs_path(a.decisions)) if a.decisions else None, str(abs_path(a.data)) if a.data else None)
             hit = [k for k, v in ds.items() if (want[0] in (None, v[0])) and (want[1] in (None, str(Path(v[1]))))]
             st.session_state["dataset"] = hit[0] if hit and a.decisions else CUSTOM

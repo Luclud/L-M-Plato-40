@@ -148,3 +148,9 @@ code, kbd, .mono { font-variant-numeric: tabular-nums; }
   background: var(--surface); border: 1px solid var(--line); border-radius: .9rem; padding: 1rem 1.1rem;
   box-shadow: 0 1px 2px rgba(29, 36, 33, .04), 0 4px 14px rgba(29, 36, 33, .04); }
 [data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) { background: transparent; }
+
+/* --- pager (components.pager, many pages): previous · numbers · next on one line --- */
+.pager-label { font-size: .875rem; color: var(--ink); margin-bottom: -.4rem; }
+[class*="st-key-pager_"] { flex-direction: row; flex-wrap: wrap; align-items: center; gap: .35rem; }
+[class*="st-key-pager_"] [data-testid="stElementContainer"] { width: auto !important; flex: 0 0 auto; }
+.pager-of { font-size: .875rem; color: var(--muted); }

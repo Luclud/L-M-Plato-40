@@ -33,6 +33,7 @@ def app(monkeypatch, decisions, data, approvals, timeout=180):
     monkeypatch.setenv("PLATO40_DECISIONS", str(decisions))
     monkeypatch.setenv("PLATO40_DATA", str(data))
     monkeypatch.setenv("PLATO40_APPROVALS", str(approvals))
+    monkeypatch.setenv("PLATO40_DEFAULT_DATASET", "off")   # use the files above, not a local holdout
     return testing.AppTest.from_file(str(APP), default_timeout=timeout)
 
 

@@ -102,8 +102,7 @@ else:
                                 format_func=lambda s: f"{s} {n_p if s == 'Pending' else n_d}",
                                 label_visibility="collapsed") or "Pending"
     sub = allc[allc.pending > 0] if show == "Pending" else allc[allc.pending == 0]
-    pages = max(1, -(-len(sub) // PAGE))
-    page = st.number_input("Page", 1, pages, 1, key="ap_page") if pages > 1 else 1
+    page, pages = C.pager(len(sub), f"ap_page_{show}", PAGE)
     st.caption(f"{L.n(len(sub), 'incident')}" + (f" · page {page} of {pages}" if pages > 1 else ""))
     if sub.empty:
         st.info("No pending approvals." if show == "Pending" else "Nothing decided yet.")

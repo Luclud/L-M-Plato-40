@@ -84,10 +84,7 @@ def page_list(c: dict):
     if sub.empty:
         st.info("No incidents match." if len(inc) else "No incidents in this run.")
     else:
-        pages = max(1, -(-len(sub) // PAGE))
-        page = 1
-        if pages > 1:
-            page = st.segmented_control("Page", list(range(1, pages + 1)), default=1, key="inc_page") or 1
+        page, pages = C.pager(len(sub), "inc_page", PAGE)
         st.caption(f"{L.n(len(sub), 'incident')}" + (f" · page {page} of {pages}" if pages > 1 else ""))
         summ = summaries.load(c["decisions"])
         for r in sub.iloc[(page - 1) * PAGE: page * PAGE].itertuples():
@@ -110,8 +107,7 @@ def routine(c: dict, eps: pd.DataFrame):
         t = st.pills("Routine type", L.ROUTINE_TYPES, default="guest_request", key="rt_type",
                      format_func=lambda x: f"{L.label('issue', x)} {n[x]}", label_visibility="collapsed")
         sub = eps[eps.issue_type == (t or "guest_request")].sort_values("start", ascending=False)
-        pages = max(1, -(-len(sub) // PAGE))
-        page = st.number_input("Page", 1, pages, 1, key=f"rt_page_{t}") if pages > 1 else 1
+        page, _ = C.pager(len(sub), f"rt_page_{t}", PAGE)
         for r in sub.iloc[(page - 1) * PAGE: page * PAGE].itertuples():
             x, y = st.columns([8, 1])
             x.markdown(f"{C.local_time(r.start)} · {L.assets_text(r.assets)} · {r.headline}")

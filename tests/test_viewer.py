@@ -157,6 +157,7 @@ def test_streamlit_app_smoke(monkeypatch, tmp_path):
     monkeypatch.setenv("PLATO40_DECISIONS", str(SAMPLE))
     monkeypatch.setenv("PLATO40_DATA", str(ROOT / "data" / "quickstart"))
     monkeypatch.setenv("PLATO40_APPROVALS", str(tmp_path / "approvals.json"))
+    monkeypatch.setenv("PLATO40_DEFAULT_DATASET", "off")
     at = testing.AppTest.from_file(str(ROOT / "viewer" / "app.py"), default_timeout=120)
     at.run()
     assert not at.exception
