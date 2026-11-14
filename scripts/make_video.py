@@ -730,7 +730,9 @@ def start_viewer(cfg: dict) -> tuple[subprocess.Popen, str]:
     approvals = ROOT / cfg.get("approvals_file", "out/video_approvals.json")
     approvals.unlink(missing_ok=True)
     env = dict(os.environ, PLATO40_APPROVALS=str(approvals), PLATO40_DEFAULT_DATASET="off")
-    if not cfg.get("copilot"):
+    if cfg.get("copilot"):
+        env.pop("PLATO40_NO_LLM", None)
+    else:
         env["PLATO40_NO_LLM"] = "1"
     if not cfg.get("run_pipeline", True):
         env["STEWARD_GUIDED_DEMO"] = "0"
