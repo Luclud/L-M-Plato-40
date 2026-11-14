@@ -50,7 +50,7 @@ year heatmap on the floor plan), one README line per commit. Stop at 13:45.
 7. **Sleep.** Alarm 08:30.
 
 ## 2. Saturday morning — release (09:00–10:30)
-1. `git pull` on the demo laptop; `python -m pytest -q`; run quickstart + dev; check 7/7 and 39/40.
+1. `git pull` on the demo laptop; `python -m pytest -q`; run quickstart + dev; check 7/7 and 40/40.
 2. `python analysis/insights.py data/dev --out insights.md --jsonl insights.jsonl` → commit if changed.
 3. `scripts/release_check.ps1 -CopyBack` (Windows) or `scripts/release_check.sh --copy-back` → must end with
    `RELEASE CHECK: PASS`; commit the refreshed `decisions.jsonl` / `decisions_dq.json` if they changed (see `docs/RELEASE.md` §1).
@@ -82,7 +82,7 @@ year heatmap on the floor plan), one README line per commit. Stop at 13:45.
 - Laptop charged, viewer already running (`--server.headless true`), first load done (cache warm), Wi-Fi not required
   (AI answers cached). Backup: the video and screenshots.
 - Flow: guided tour (≈ 3 min) → Proof page with holdout numbers and the safety scorecard → questions.
-- Say "PLATO-40" for every finding; show limitations on purpose (missed surge, remaining unmatched turnarounds).
+- Say "PLATO-40" for every finding; show limitations on purpose (remaining unmatched turnarounds; weak labels are not ground truth).
 
 ## 6. Cut list if late
 T25 copilot → T24 summaries → option A table → hosted demo link. Never cut: `pre-holdout` tag, holdout run, validator PASS,
