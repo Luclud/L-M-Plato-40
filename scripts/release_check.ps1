@@ -91,7 +91,7 @@ New-Item -ItemType Directory -Force -Path "out" | Out-Null
 if (Test-Path "decisions.jsonl") { Copy-Item "decisions.jsonl" "out/committed_decisions.jsonl" }
 $ValDev = Join-Path $Work "validate_dev.txt"
 $EvalDev = Join-Path $Work "eval_dev.txt"
-Step "run.py $Data --out decisions.jsonl" { & $VPy run.py $Data --out decisions.jsonl }
+Step "run.py $Data --no-llm --out decisions.jsonl" { & $VPy run.py $Data --no-llm --out decisions.jsonl }
 Step "validate.py decisions.jsonl $Data" { & $VPy validate.py decisions.jsonl $Data } $ValDev
 if (-not (Select-String -Path $ValDev -Pattern '^RESULT: PASS' -Quiet)) { Write-Host "RELEASE CHECK: FAIL (validate did not print RESULT: PASS)"; Finish 1 }
 Step "eval/evaluate.py decisions.jsonl" { & $VPy eval/evaluate.py decisions.jsonl --data $Data } $EvalDev
@@ -99,7 +99,7 @@ Step "eval/evaluate.py decisions.jsonl" { & $VPy eval/evaluate.py decisions.json
 $ValHo = Join-Path $Work "validate_holdout.txt"
 if ($Holdout) {
   if (-not (Test-Path $Holdout -PathType Container)) { Write-Host "RELEASE CHECK: FAIL (holdout dir not found: $Holdout)"; Finish 1 }
-  Step "run.py holdout --out decisions_holdout.jsonl" { & $VPy run.py $Holdout --out decisions_holdout.jsonl }
+  Step "run.py holdout --no-llm --out decisions_holdout.jsonl" { & $VPy run.py $Holdout --no-llm --out decisions_holdout.jsonl }
   Step "validate.py decisions_holdout.jsonl" { & $VPy validate.py decisions_holdout.jsonl $Holdout } $ValHo
   if (-not (Select-String -Path $ValHo -Pattern '^RESULT: PASS' -Quiet)) { Write-Host "RELEASE CHECK: FAIL (holdout validate not PASS)"; Finish 1 }
 }

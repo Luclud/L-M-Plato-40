@@ -61,7 +61,8 @@ year heatmap on the floor plan), one README line per commit. Stop at 13:45.
 ## 3. Holdout (11:00–11:45) — exact commands in `docs/RELEASE.md` §2
 1. Get the password from Discord (never paste it into git, chat or logs); check `data/raw/SHA256SUMS.txt`; unpack
    `data/raw/PLATO40_v2_holdout_encrypted.7z` into `data/holdout/` with **7-Zip** (install it tonight on the demo laptop).
-2. `python run.py data/holdout --out decisions_holdout.jsonl` — **unchanged code** (the `pre-holdout` tag).
+2. `python run.py data/holdout --no-llm --out decisions_holdout.jsonl` — **unchanged code** (the `pre-holdout` tag). `--no-llm`
+   because the Claude key sits in `.env` on this laptop (D-4): without it every guest message would be an API call.
 3. `python validate.py decisions_holdout.jsonl data/holdout` → PASS; `python scripts/robustness_check.py --data data/holdout`
    optional sanity run.
 4. Commit `decisions_holdout.jsonl` + `decisions_holdout_dq.json` and push (`data/holdout/` is git-ignored — never commit it).

@@ -90,14 +90,14 @@ step "pytest -q" env -u RELEASE_CHECK_E2E "$VPY" -m pytest -q   # no recursion i
 DEV_OUT="$CLONE/out/release_dev_eval.txt"
 mkdir -p out
 cp decisions.jsonl out/committed_decisions.jsonl 2>/dev/null || true
-step "run.py $DATA --out decisions.jsonl" "$VPY" run.py "$DATA" --out decisions.jsonl
+step "run.py $DATA --no-llm --out decisions.jsonl" "$VPY" run.py "$DATA" --no-llm --out decisions.jsonl
 step "validate.py decisions.jsonl $DATA" bash -c '"$0" validate.py decisions.jsonl "$1" | tee "$2"' "$VPY" "$DATA" "$WORK/validate_dev.txt"
 grep -q '^RESULT: PASS' "$WORK/validate_dev.txt" || { echo "RELEASE CHECK: FAIL (validate did not print RESULT: PASS)"; exit 1; }
 step "eval/evaluate.py decisions.jsonl" bash -c '"$0" eval/evaluate.py decisions.jsonl --data "$1" > "$2"' "$VPY" "$DATA" "$DEV_OUT"
 
 if [[ -n "$HOLDOUT" ]]; then
   [[ -d "$HOLDOUT" ]] || { echo "RELEASE CHECK: FAIL (holdout dir not found: $HOLDOUT)"; exit 1; }
-  step "run.py holdout --out decisions_holdout.jsonl" "$VPY" run.py "$HOLDOUT" --out decisions_holdout.jsonl
+  step "run.py holdout --no-llm --out decisions_holdout.jsonl" "$VPY" run.py "$HOLDOUT" --no-llm --out decisions_holdout.jsonl
   step "validate.py decisions_holdout.jsonl" bash -c '"$0" validate.py decisions_holdout.jsonl "$1" | tee "$2"' "$VPY" "$HOLDOUT" "$WORK/validate_holdout.txt"
   grep -q '^RESULT: PASS' "$WORK/validate_holdout.txt" || { echo "RELEASE CHECK: FAIL (holdout validate not PASS)"; exit 1; }
 fi
