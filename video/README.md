@@ -24,14 +24,15 @@ in `out/video/<cut>_work/`), `--storyboard <path>`.
 3. Builds the voice per scene (see below). A scene lasts `max(storyboard seconds, voice + 0.5 s)`.
 4. Starts the viewer (`streamlit run viewer/app.py` on the storyboard port, or a free one if it's busy, with
    `PLATO40_NO_LLM=1` and `PLATO40_APPROVALS=out/video_approvals.json`) and records one clip per scene with
-   Playwright Chromium (`record_video_dir`) at 1920×1080. The storyboard `zoom` is applied as device scale
-   (viewport 1920/zoom × 1080/zoom CSS px, rendered at 1920×1080), so text is sharp. Timing starts only after the
+   Playwright Chromium (`record_video_dir`). The storyboard `zoom` sets the viewport to 1920/zoom × 1080/zoom CSS
+   px; Playwright records CSS pixels, so the clip is recorded at that size and scaled to 1920×1080 (full frame, no
+   grey margin). Timing starts only after the
    scene's first `wait_for_text` is visible and Streamlit has stopped running. A visible cursor dot moves to every
    hovered or clicked element. Actions: `wait_for_text`, `scroll_to_text` (smooth), `hover`, `highlight_text`,
    `click_button`, `click_button_near_text` (then highlights the "recorded: …" mock result), `pause`,
    `scroll_to_top`, `next_url_at_seconds` (switches to the second of `urls`). A selector that is not found prints a
    `WARN` and the scene continues.
-5. Assembles with ffmpeg: 1.5 s title card ("Steward — runs the building, answers to people" /
+5. Assembles with ffmpeg: 1.5 s title card ("Steward · Runs the building, answers to people" /
    "PLATO-40 is a fictional building · synthetic data · simulated effects"), all scenes, H.264 + AAC, 30 fps,
    `-preset veryfast`, 1 s fade from and to black, captions burned in (white on a dark translucent box,
    bottom centre).
@@ -65,3 +66,29 @@ Speech rate: `length_scale 0.9` (`SPEECH_RATE` in the script).
 `name.wav`, `terminal.wav`, `water.wav`, `surge.wav`, `heating.wav`, `learned.wav`, `proof.wav`), read exactly the
 storyboard text, then run with `--voice auto` or `--voice human`. Captions are then spread over each recording by
 sentence length.
+
+## Final cut (T32)
+`video/storyboard_final.yaml` is the final jury video: the real viewer pages on the **Holdout** year, every tab once
+(except the hidden Guided demo), subtitles only, ≤ 3:00. The T27 storyboard and its cuts are unchanged.
+
+```bash
+# needs data/holdout/ (not in git, never commit it) next to the committed decisions_holdout.jsonl
+python scripts/make_video.py --storyboard video/storyboard_final.yaml --cut final --voice none
+# -> out/video/steward_final.mp4, final.srt, final_contact_sheet.png
+```
+
+- `viewer.run_pipeline: false`: `run.py` is **not** run; the viewer opens `decisions_holdout.jsonl` and
+  `data/holdout` exactly as configured (the frozen holdout run is never regenerated). The viewer starts with
+  `PLATO40_DEFAULT_DATASET=off` (the `--decisions`/`--data` arguments decide the dataset) and
+  `STEWARD_GUIDED_DEMO=0` (no Guided demo tab).
+- `--cut` accepts any cut defined in the storyboard; every cut except `short` must stay ≤ 180 s.
+- Scene `subtitles: [{at: <s from scene start>, text: "..."}]`: each line is shown verbatim from its `at` until the
+  next line's `at` (the last one until the scene ends). A line longer than 2 × 42 characters is split into
+  consecutive cards, never shortened. With `--voice none` no TTS runs.
+- Extra actions: `click_text: "<visible text>"` (most specific clickable element: button, tab, link, label, chip),
+  `click_key: "<streamlit key>"` (the widget inside `.st-key-<key>`), `type_text: {into: "<placeholder or label>",
+  text: "...", submit: true|false}` (typed character by character), `scroll_by: <px>` (smooth). All of them move
+  the visible cursor first. `click_button_near_text` now highlights the mock result line
+  ("Approved (mock), nothing was executed").
+- Every subtitle number must match the Holdout UI (facts table in `docs/tasks/T32-final-video.md`); if one does
+  not, only that number is removed from the subtitle.
