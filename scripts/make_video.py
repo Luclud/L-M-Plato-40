@@ -250,10 +250,10 @@ class ElevenLabsTTS:
 
 
 def voice_scene(self, sentences: list[str], dst: Path, tmp: Path, starts: list[float] | None = None,
-                seconds: float = 0.0) -> list[tuple[str, float, float]]:
+                seconds: float | None = None) -> list[tuple[str, float, float]]:
     """One clip per sentence, joined with short gaps -> exact sentence timings for the captions.
     `starts` (storyboard subtitle `at`): a sentence waits for its cue, so it stays on its action, but only as long
-    as the scene still ends within `seconds` (the waits never make a scene longer than its speech needs)."""
+    as the scene still ends within `seconds` (no `seconds`: always wait for the cue)."""
     clips = []
     for i, s in enumerate(sentences):
         context = (" ".join(sentences[:i]), " ".join(sentences[i + 1:]))
@@ -261,7 +261,7 @@ def voice_scene(self, sentences: list[str], dst: Path, tmp: Path, starts: list[f
                          VOICE_TEMPO)
         clips.append((std, wav_seconds(std)))
     speech = sum(d for _, d in clips) + GAP_S * (len(clips) - 1)
-    slack = max(0.0, seconds - TAIL_S - speech)
+    slack = float("inf") if seconds is None else max(0.0, seconds - TAIL_S - speech)
     parts, times, t = [], [], 0.0
     for i, (s, (std, d)) in enumerate(zip(sentences, clips)):
         wait = min(max(0.0, starts[i] - t), slack) if starts else 0.0

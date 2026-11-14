@@ -92,6 +92,8 @@ def test_voice_scene_starts_each_sentence_at_its_subtitle_cue(tmp_path):
     tight = mv.voice_scene(FakeTTS(), ["a", "b", "c"], dst, tmp_path, starts=[0.0, 5.0, 6.0], seconds=8)
     assert [round(a, 2) for _, a, _ in tight] == [0.0, 3.3, 5.5]   # only 1.1 s of slack to wait for "b"
     assert [round(a, 2) for _, a, _ in mv.voice_scene(FakeTTS(), ["a", "b"], dst, tmp_path)] == [0.0, 2.2]
+    assert [round(a, 2) for _, a, _ in mv.voice_scene(FakeTTS(), ["a", "b"], dst, tmp_path, starts=[0.0, 5.0])] \
+        == [0.0, 5.0]
 
 
 def test_elevenlabs_needs_a_key(monkeypatch, tmp_path):
