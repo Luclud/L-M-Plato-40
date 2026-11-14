@@ -71,3 +71,30 @@ def test_unknown_cut_is_rejected():
     mv = _mv()
     with pytest.raises(SystemExit, match="not in storyboard cuts"):
         mv.main(["--storyboard", str(ROOT / "video" / "storyboard_final.yaml"), "--cut", "nope", "--voice", "none"])
+
+
+def test_voice_scene_starts_each_sentence_at_its_subtitle_cue(tmp_path):
+    import wave
+    mv = _mv()
+
+    class FakeTTS:
+        def sentence(self, text, raw, context):
+            p = raw.with_suffix(".wav")
+            with wave.open(str(p), "wb") as w:
+                w.setnchannels(1), w.setsampwidth(2), w.setframerate(mv.RATE)
+                w.writeframes(b"\0\0" * int(mv.RATE * 2.0))   # every sentence lasts 2 s
+            return p
+
+    dst = tmp_path / "s_vo.wav"
+    times = mv.voice_scene(FakeTTS(), ["a", "b", "c"], dst, tmp_path, starts=[0.0, 5.0, 6.0])
+    assert [round(a, 2) for _, a, _ in times] == [0.0, 5.0, 7.2]   # cue 6 is still busy -> right after "b"
+    assert abs(mv.wav_seconds(dst) - 9.2) < 0.01
+    assert [round(a, 2) for _, a, _ in mv.voice_scene(FakeTTS(), ["a", "b"], dst, tmp_path)] == [0.0, 2.2]
+
+
+def test_elevenlabs_needs_a_key(monkeypatch, tmp_path):
+    pytest.importorskip("elevenlabs")
+    mv = _mv()
+    monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
+    with pytest.raises(SystemExit, match="ELEVENLABS_API_KEY"):
+        mv.ElevenLabsTTS(tmp_path)

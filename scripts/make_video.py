@@ -11,6 +11,7 @@ captions and assembles everything with ffmpeg. Outputs go to out/video/ (git-ign
 from __future__ import annotations
 
 import argparse
+import hashlib
 import html
 import json
 import os
@@ -42,6 +43,10 @@ SPEECH_RATE = 0.9  # Piper length_scale (<1 = faster); keeps the short cut near 
 MAX_SUBMISSION_S = 180.0
 CAPTION_WIDTH, CAPTION_LINES = 42, 2
 PIPER_VOICE = "en_US-ljspeech-high"
+ELEVEN_VOICE = os.environ.get("ELEVENLABS_VOICE_ID", "JBFqnCBsd6RMkjVDRZzb")  # George, pre-made
+ELEVEN_MODEL = os.environ.get("ELEVENLABS_MODEL", "eleven_multilingual_v2")       # has style + speed
+ELEVEN_SETTINGS = {"stability": 0.35, "similarity_boost": 0.75, "style": 0.45, "speed": 1.08,
+                   "use_speaker_boost": True}
 PIPER_URL = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ljspeech/high/"
 BRAND = "#1f6f50"
 
@@ -207,20 +212,61 @@ class Piper:
         else:                                          # piper-tts 1.2.0 (MIT engine, pinned)
             self.voice.synthesize(text, w, length_scale=SPEECH_RATE)
 
-    def scene(self, sentences: list[str], dst: Path, tmp: Path) -> list[tuple[str, float, float]]:
-        """One wav per sentence, joined with short gaps -> exact sentence timings for the captions."""
-        parts, times, t = [], [], 0.0
-        for i, s in enumerate(sentences):
-            raw = tmp / f"{dst.stem}_{i}.wav"
-            with wave.open(str(raw), "wb") as w:
-                self._say(s, w)
-            std = to_std_wav(raw, tmp / f"{dst.stem}_{i}_48k.wav")
-            d = wav_seconds(std)
-            parts += [(std, d), (None, GAP_S)]
-            times.append((s, t, t + d))
-            t += d + GAP_S
-        write_track(parts[:-1], dst)
-        return times
+    def sentence(self, text: str, raw: Path, context: tuple[str, str]) -> Path:
+        raw = raw.with_suffix(".wav")
+        with wave.open(str(raw), "wb") as w:
+            self._say(text, w)
+        return raw
+
+    scene = None  # set below (voice_scene)
+
+
+class ElevenLabsTTS:
+    """ElevenLabs text-to-speech (needs `pip install elevenlabs` and ELEVENLABS_API_KEY in the environment).
+    Each sentence is cached in out/video/voices/elevenlabs/ by text + voice + model + settings."""
+
+    def __init__(self, cache: Path):
+        from elevenlabs import ElevenLabs, VoiceSettings
+        if not os.environ.get("ELEVENLABS_API_KEY"):
+            raise SystemExit("--voice elevenlabs: set ELEVENLABS_API_KEY (environment or .env, never committed)")
+        self.client, self.settings = ElevenLabs(), VoiceSettings(**ELEVEN_SETTINGS)
+        self.cache = cache
+        cache.mkdir(parents=True, exist_ok=True)
+
+    def sentence(self, text: str, raw: Path, context: tuple[str, str]) -> Path:
+        key = json.dumps([text, *context, ELEVEN_VOICE, ELEVEN_MODEL, ELEVEN_SETTINGS], sort_keys=True)
+        mp3 = self.cache / (hashlib.sha256(key.encode()).hexdigest()[:20] + ".mp3")
+        if not mp3.exists():
+            audio = self.client.text_to_speech.convert(
+                text=text, voice_id=ELEVEN_VOICE, model_id=ELEVEN_MODEL, voice_settings=self.settings,
+                output_format="mp3_44100_128", previous_text=context[0] or None, next_text=context[1] or None)
+            mp3.with_suffix(".part").write_bytes(b"".join(audio))
+            mp3.with_suffix(".part").rename(mp3)
+        return mp3
+
+    scene = None
+
+
+def voice_scene(self, sentences: list[str], dst: Path, tmp: Path,
+                starts: list[float] | None = None) -> list[tuple[str, float, float]]:
+    """One clip per sentence, joined with short gaps -> exact sentence timings for the captions.
+    `starts` (storyboard subtitle `at`): a sentence never starts before its cue, so it stays on its action."""
+    parts, times, t = [], [], 0.0
+    for i, s in enumerate(sentences):
+        if starts and starts[i] > t:
+            parts.append((None, starts[i] - t))
+            t = starts[i]
+        context = (" ".join(sentences[:i]), " ".join(sentences[i + 1:]))
+        std = to_std_wav(self.sentence(s, tmp / f"{dst.stem}_{i}", context), tmp / f"{dst.stem}_{i}_48k.wav")
+        d = wav_seconds(std)
+        parts += [(std, d), (None, GAP_S)]
+        times.append((s, t, t + d))
+        t += d + GAP_S
+    write_track(parts[:-1], dst)
+    return times
+
+
+Piper.scene = ElevenLabsTTS.scene = voice_scene
 
 
 # ---------------------------------------------------------------- browser recording
@@ -754,6 +800,8 @@ def start_viewer(cfg: dict) -> tuple[subprocess.Popen, str]:
 # ---------------------------------------------------------------- main
 
 def voice_mode(requested: str, scene_id: str, piper_ok: bool) -> str:
+    if requested == "elevenlabs":
+        return "tts"
     human = (VO_DIR / f"{scene_id}.wav").exists()
     if requested == "human":
         if not human:
@@ -769,7 +817,8 @@ def voice_mode(requested: str, scene_id: str, piper_ok: bool) -> str:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--cut", default="short", help="a cut name from the storyboard's `cuts`")
-    ap.add_argument("--voice", choices=["auto", "human", "tts", "none"], default="auto")
+    ap.add_argument("--voice", choices=["auto", "human", "tts", "elevenlabs", "none"],
+                    help="tts = offline Piper; elevenlabs = ElevenLabs API (ELEVENLABS_API_KEY)", default="auto")
     ap.add_argument("--holdout", default=None, help="text for [HOLDOUT]; empty drops that sentence")
     ap.add_argument("--keep", action="store_true", help="keep per-scene clips in out/video/<cut>_work/")
     ap.add_argument("--storyboard", type=Path, default=STORYBOARD)
@@ -810,7 +859,12 @@ def main(argv=None) -> int:
 
     # 2. voice per scene -> scene lengths and sentence timings
     piper = None
-    if args.voice == "tts" or (args.voice == "auto" and any(not (VO_DIR / f"{s}.wav").exists() for s in order)):
+    if args.voice == "elevenlabs":
+        try:
+            piper = ElevenLabsTTS(OUT / "voices" / "elevenlabs")
+        except ImportError:
+            raise SystemExit("--voice elevenlabs: pip install elevenlabs")
+    elif args.voice == "tts" or (args.voice == "auto" and any(not (VO_DIR / f"{s}.wav").exists() for s in order)):
         try:
             model = piper_model(OUT / "voices")
             piper = Piper(model) if model else None
@@ -832,7 +886,7 @@ def main(argv=None) -> int:
             times = proportional_times(sentences, 0.0, wav_seconds(wav))
         elif mode == "tts":
             wav = work / f"{sid}_vo.wav"
-            times = piper.scene(sentences, wav, work)
+            times = piper.scene(sentences, wav, work, [float(x["at"]) for x in subs] if subs else None)
         voice_s = wav_seconds(wav) if wav else 0.0
         seconds = max(float(sc["seconds"]), voice_s + TAIL_S if wav else 0.0)
         if subs and not wav:

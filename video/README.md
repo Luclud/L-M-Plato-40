@@ -50,6 +50,14 @@ in `out/video/<cut>_work/`), `--storyboard <path>`.
 - `--voice auto`: `video/vo/<scene id>.wav` if it exists (human recording), else Piper TTS, else captions only.
 - `--voice human`: only the recordings; fails if one is missing. `--voice tts`: Piper for every scene.
   `--voice none`: no audio (captions timed by text length).
+- `--voice elevenlabs`: [ElevenLabs](https://elevenlabs.io) text-to-speech for every scene (`pip install elevenlabs`,
+  `ELEVENLABS_API_KEY` in the environment with the *Text to Speech* permission; never committed). Default voice George
+  (pre-made, `ELEVENLABS_VOICE_ID` overrides), model `eleven_multilingual_v2` (`ELEVENLABS_MODEL`), expressive settings
+  in `ELEVEN_SETTINGS`. Each sentence is cached in `out/video/voices/elevenlabs/`, so a re-render costs no characters.
+  Audio generated with ElevenLabs is subject to the ElevenLabs terms of the account used (commercial use needs a paid
+  plan).
+- Scenes with storyboard `subtitles`: each spoken line starts at its `at` cue (or right after the previous line if
+  that is still speaking), so the voice stays on the action it describes; the captions follow the voice.
 - The spoken text is the storyboard text after placeholder substitution: `[HOLDOUT]` is replaced by `--holdout`
   verbatim; if it is empty, the whole sentence containing it is dropped. Nothing is added or rephrased.
 
