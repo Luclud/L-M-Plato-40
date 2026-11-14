@@ -132,3 +132,39 @@ def incident_card(ep: pd.DataFrame, key: str | None = None) -> bool:
         steps = list(dict.fromkeys(L.label("action", a).lower() for a in ep.action))
         st.caption("We: " + " → ".join(steps))
         return st.button("Open", key=key or f"open_{first.episode_id}", icon=":material/open_in_new:")
+
+
+def pager(total: int, key: str, per_page: int = 20, window: int = 9) -> tuple[int, int]:
+    """Page picker as numbered buttons (same look everywhere). Up to ``window`` pages: all numbers; more: a sliding
+    window of numbers with previous / next. Returns (page, pages)."""
+    pages = max(1, -(-int(total) // per_page))
+    if pages == 1:
+        return 1, 1
+    if pages <= window:
+        page = st.segmented_control("Page", list(range(1, pages + 1)), default=1, key=key) or 1
+        return min(int(page), pages), pages
+    cur_key = f"{key}_cur"
+    cur = min(max(int(st.session_state.get(cur_key, 1)), 1), pages)
+    st.session_state[cur_key] = cur
+    start = min(max(1, cur - window // 2), pages - window + 1)
+    seg = f"{key}_{start}_{pages}"
+    st.session_state[seg] = cur
+
+    def _set(v):
+        st.session_state[cur_key] = min(max(v, 1), pages)
+
+    def _seg():
+        v = st.session_state.get(seg)
+        if v:
+            st.session_state[cur_key] = v
+
+    st.markdown("<div class='pager-label'>Page</div>", unsafe_allow_html=True)
+    with st.container(key=f"pager_{key}"):
+        st.button("Previous", key=f"{key}_prev", icon=":material/chevron_left:", type="tertiary",
+                  disabled=cur == 1, on_click=_set, args=(cur - 1,))
+        st.segmented_control("Page", list(range(start, start + window)), key=seg, on_change=_seg,
+                             label_visibility="collapsed")
+        st.button("Next", key=f"{key}_next", icon=":material/chevron_right:", type="tertiary",
+                  disabled=cur == pages, on_click=_set, args=(cur + 1,))
+        st.markdown(f"<span class='pager-of'>of {pages}</span>", unsafe_allow_html=True)
+    return cur, pages
