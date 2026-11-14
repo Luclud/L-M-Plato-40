@@ -51,10 +51,10 @@ def c5_cleaning(c: Ctx) -> Insight:
     rate_other = (len(wt) - on_absent) / max(1, days_total - len(adays))
     rob_txt = "; ".join(f"{int(a)} m²: {r.get(False, np.nan):.0f} → {r.get(True, np.nan):.0f} min"
                         for a, r in rob.iterrows())
-    finding = (f"PLATO-40: human room cleaning takes median/P90 "
+    finding = ("PLATO-40: human room cleaning takes median/P90 "
                + ", ".join(f"{int(a)} m² {r['median']:.0f}/{r['<lambda_0>']:.0f} min (n={int(r['size'])})"
                            for a, r in dur.iterrows())
-               + f"; when a robot floor-cleaned the room in the 4 h before, the median is ({rob_txt}). "
+               + f"; median without → with a robot floor pre-clean of the room in the 4 h before: {rob_txt}. "
                f"{len(wt)} guests waited for their room (median {wait.median():.0f} min, max {wait.max():.0f} min); "
                f"{on_absent} of them on the {len(adays)} days with a cleaner absent ({rate_abs:.2f} waits/day vs "
                f"{rate_other:.2f} on other days). Absences became known only {lead.median():.1f} h (median) before "

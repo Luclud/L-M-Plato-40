@@ -14,7 +14,6 @@ import json
 import sys
 import time
 from dataclasses import asdict
-from pathlib import Path
 
 from plato40 import __version__, engine, io, llm
 from plato40.detectors import REGISTRY, build

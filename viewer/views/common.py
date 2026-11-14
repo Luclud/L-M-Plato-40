@@ -70,10 +70,12 @@ def abs_path(p: str | Path) -> Path:
     return q if q.is_absolute() else (ROOT / q)
 
 
-def _candidates(d: Path, profile: str) -> list[Path]:
+def _candidates(d: Path, profile: str, outer: str | None = None) -> list[Path]:
     short = {"quickstart": "qs"}.get(profile, profile)
     names = [f"out/{short}.jsonl", f"out/{d.name}.jsonl", f"out/{profile}.jsonl", f"out/decisions_{profile}.jsonl",
              f"decisions_{profile}.jsonl"]
+    if outer and outer != d.name:   # archive extracted into data/<outer>/<inner>/
+        names += [f"out/{outer}.jsonl", f"decisions_{outer}.jsonl"]
     if profile == "dev":
         names.append("decisions.jsonl")
     return [ROOT / n for n in dict.fromkeys(names)]
@@ -84,14 +86,19 @@ def datasets() -> dict[str, tuple[str, str]]:
     """Friendly name -> (decisions file, data dir), discovered from data/*/manifest.json and out/*.jsonl."""
     found = {}
     for d in sorted((ROOT / "data").glob("*/")):
+        outer = d.name
         m = d / "manifest.json"
         if not m.exists():
-            continue
+            # 7z may extract the holdout as data/holdout/<folder>/ - accept exactly one nested dataset (like io.load)
+            subs = [s for s in sorted(d.glob("*/")) if (s / "manifest.json").exists()]
+            if len(subs) != 1:
+                continue
+            d, m = subs[0], subs[0] / "manifest.json"
         try:
             profile = json.loads(m.read_text()).get("profile") or d.name
         except (OSError, ValueError):
             profile = d.name
-        dec = next((c for c in _candidates(d, profile) if c.exists()), None)
+        dec = next((c for c in _candidates(d, profile, outer) if c.exists()), None)
         if dec is not None:
             found.setdefault(PROFILE_NAMES.get(profile, profile.replace("_", " ").title()), (str(dec), str(d)))
     order = list(PROFILE_NAMES.values())

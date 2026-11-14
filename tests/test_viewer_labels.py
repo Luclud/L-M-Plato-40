@@ -68,7 +68,7 @@ def test_local_time_and_headline():
 
 
 def test_honesty_labels_present():
-    assert "not sent" in L.PROPOSED and "Simulated" == L.SIMULATED
+    assert "not sent" in L.PROPOSED and L.SIMULATED == "Simulated"
     assert "Mock" in L.MOCK and "not granted" in L.CONSENT_NEEDED
     assert C.simulated_badge("SIMULATED: 12 EUR saved").startswith(f":gray-badge[{L.SIMULATED}]")
     assert C.simulated_badge(None) is None

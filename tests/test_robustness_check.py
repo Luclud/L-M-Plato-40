@@ -4,7 +4,6 @@ import json
 from pathlib import Path
 
 import pandas as pd
-import pytest
 
 from plato40 import engine, io
 from plato40.detectors import build
