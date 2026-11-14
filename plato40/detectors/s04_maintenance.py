@@ -58,7 +58,8 @@ def features(data, ahu: str, nominal: float) -> pd.DataFrame:
         if c not in w:
             w[c] = np.nan
     if not np.isfinite(nominal):
-        nominal = float(w.airflow_m3h.expanding(min_periods=96).quantile(0.9).bfill().iloc[-1])
+        # no nameplate value: learn it causally (expanding, up to t) - never from the whole period incl. the future
+        nominal = w.airflow_m3h.expanding(min_periods=96).quantile(0.9)
     af = w.airflow_m3h.where(w.airflow_m3h > MIN_AIRFLOW_FRAC * nominal)
     dpn = w.filter_dp_pa * (nominal / af) ** 2
     lvl = dpn.rolling(LEVEL_WIN, min_periods=LEVEL_MIN_PERIODS).median()

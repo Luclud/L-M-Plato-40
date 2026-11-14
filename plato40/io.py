@@ -49,6 +49,19 @@ TS_COLUMNS = {
     "guest_requests.csv": ["timestamp_utc", "response_due_utc"],
 }
 
+# Measurement columns that must be numeric. A non-numeric cell (e.g. "n/a", "abc") is missing (NaN), not a crash.
+NUMERIC_COLUMNS = {
+    "room_telemetry.csv": ["temperature_c", "setpoint_c", "humidity_pct", "co2_ppm", "presence", "window_open"],
+    "room_water.csv": ["meter_total_l"],
+    "water_main.csv": ["meter_total_l"],
+    "energy.csv": ["building_load_kw", "hvac_electric_kw", "pv_kw", "battery_discharge_kw_signed",
+                   "battery_soc_kwh", "grid_import_kw", "grid_export_kw"],
+    "weather.csv": ["outdoor_c", "cloud_cover_pct"],
+    "weather_forecast.csv": ["outdoor_c_forecast"],
+    "tariff.csv": ["price_eur_kwh"],
+    "logistics.csv": ["value"],
+}
+
 
 @dataclass
 class DQIssue:
@@ -133,11 +146,25 @@ class Data:
 
 
 # ---------------------------------------------------------------------------
-def _read_csv(path: Path, name: str) -> pd.DataFrame:
+def _read_csv(path: Path, name: str, dq: list[DQIssue] | None = None) -> pd.DataFrame:
     df = pd.read_csv(path / name)
-    for col in TS_COLUMNS.get(name, []):
+    for i, col in enumerate(TS_COLUMNS.get(name, [])):
         if col in df.columns:
-            df[col] = pd.to_datetime(df[col], utc=True, format="ISO8601")
+            raw = df[col]
+            df[col] = pd.to_datetime(raw, utc=True, format="ISO8601", errors="coerce")
+            bad = df[col].isna() & raw.notna()
+            if bad.any():  # unparsable timestamp = unknown time; the row cannot be placed on the clock
+                if dq is not None:
+                    dq.append(DQIssue("unparsable_time", name, "*", int(bad.sum()), None, f"column {col}"))
+                if i == 0:
+                    df = df[~bad].reset_index(drop=True)
+    for col in NUMERIC_COLUMNS.get(name, []):
+        if col in df.columns and not pd.api.types.is_numeric_dtype(df[col]):
+            num = pd.to_numeric(df[col], errors="coerce")
+            bad = num.isna() & df[col].notna()
+            if bad.any() and dq is not None:
+                dq.append(DQIssue("non_numeric", name, "*", int(bad.sum()), None, f"column {col} -> NaN"))
+            df[col] = num
     return df
 
 
@@ -209,32 +236,33 @@ def load(data_dir: str | Path) -> Data:
     manifest = json.loads((path / "manifest.json").read_text())
     building = json.loads((path / "building.json").read_text())
 
-    telemetry = _clean_telemetry(_read_csv(path, "room_telemetry.csv"), dq)
-    room_water = _meter_to_use(_read_csv(path, "room_water.csv"), "room_id", "room_water.csv", dq)
-    wm = _read_csv(path, "water_main.csv").assign(room_id="WM_MAIN")
+    telemetry = _clean_telemetry(_read_csv(path, dq=dq, name="room_telemetry.csv"), dq)
+    room_water = _meter_to_use(_read_csv(path, dq=dq, name="room_water.csv"), "room_id", "room_water.csv", dq)
+    wm = _read_csv(path, dq=dq, name="water_main.csv").assign(room_id="WM_MAIN")
     water_main = _meter_to_use(wm, "room_id", "water_main.csv", dq)
 
-    equipment = _dedupe(_read_csv(path, "equipment.csv"), ["timestamp_utc", "asset_id", "metric"], "equipment.csv", dq)
+    equipment = _dedupe(_read_csv(path, dq=dq, name="equipment.csv"), ["timestamp_utc", "asset_id", "metric"], "equipment.csv", dq)
     equipment["value_num"] = pd.to_numeric(equipment["value"], errors="coerce")
 
     data = Data(
         path=path,
         manifest=manifest,
         building=building,
-        bookings=_read_csv(path, "bookings.csv"),
-        access=_read_csv(path, "access_log.csv").sort_values("timestamp_utc").reset_index(drop=True),
+        bookings=_read_csv(path, dq=dq, name="bookings.csv"),
+        access=_read_csv(path, dq=dq, name="access_log.csv").sort_values("timestamp_utc").reset_index(drop=True),
         telemetry=telemetry,
         room_water=room_water,
         water_main=water_main,
-        energy=_dedupe(_read_csv(path, "energy.csv"), ["timestamp_utc"], "energy.csv", dq),
-        weather=_dedupe(_read_csv(path, "weather.csv"), ["timestamp_utc"], "weather.csv", dq),
-        forecast=_read_csv(path, "weather_forecast.csv").sort_values(["issued_utc", "target_utc"]).reset_index(drop=True),
-        tariff=_dedupe(_read_csv(path, "tariff.csv"), ["timestamp_utc"], "tariff.csv", dq),
+        energy=_dedupe(_read_csv(path, dq=dq, name="energy.csv"), ["timestamp_utc"], "energy.csv", dq),
+        weather=_dedupe(_read_csv(path, dq=dq, name="weather.csv"), ["timestamp_utc"], "weather.csv", dq),
+        forecast=_dedupe(_read_csv(path, dq=dq, name="weather_forecast.csv"), ["issued_utc", "target_utc"],
+                         "weather_forecast.csv", dq),
+        tariff=_dedupe(_read_csv(path, dq=dq, name="tariff.csv"), ["timestamp_utc"], "tariff.csv", dq),
         equipment=equipment,
-        logistics=_dedupe(_read_csv(path, "logistics.csv"), ["timestamp_utc", "asset_id", "metric"], "logistics.csv", dq),
-        roster=_read_csv(path, "staff_roster.csv").sort_values("start_utc").reset_index(drop=True),
-        work_orders=_read_csv(path, "work_orders.csv").sort_values("created_utc").reset_index(drop=True),
-        guest_requests=_read_csv(path, "guest_requests.csv").sort_values("timestamp_utc").reset_index(drop=True),
+        logistics=_dedupe(_read_csv(path, dq=dq, name="logistics.csv"), ["timestamp_utc", "asset_id", "metric"], "logistics.csv", dq),
+        roster=_read_csv(path, dq=dq, name="staff_roster.csv").sort_values("start_utc").reset_index(drop=True),
+        work_orders=_read_csv(path, dq=dq, name="work_orders.csv").sort_values("created_utc").reset_index(drop=True),
+        guest_requests=_read_csv(path, dq=dq, name="guest_requests.csv").sort_values("timestamp_utc").reset_index(drop=True),
         events=_read_events(path),
         dq=dq,
     )
