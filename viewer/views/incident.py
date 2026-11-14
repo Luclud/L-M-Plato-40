@@ -155,6 +155,9 @@ def render(ctx: dict, episode: str, key: str = "story"):
                 st.caption(f"Planned for {C.local_time(r.scheduled_for_utc)}")
             if r.requires_guest_consent:
                 st.warning(L.CONSENT_NEEDED, icon=":material/gpp_maybe:")
+            if isinstance(r.guest_request_ids, list) and r.guest_request_ids:
+                from viewer.views import guests
+                guests.story_guest_text(ctx, r)
             C.message_bubble(core.nan_to_none(r.message))
             if r.requires_human_approval:
                 _approve_buttons(ctx, r, key)

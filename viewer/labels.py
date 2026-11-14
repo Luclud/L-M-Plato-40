@@ -157,3 +157,26 @@ ALARMS_LABELS_NOTE = {"hand": "Dev aid: hand labels for this dataset. Labels are
 ALARMS_HONEST = ("Alarms and labels are both imperfect evidence: an alarm can be right where no work order was "
                  "written, and Steward also misses things.")
 ALARMS_EMPTY = "This dataset has no building alarms and no Steward incidents to compare."
+
+# guest messages (T31)
+GUESTS_TITLE = "Guest messages"
+CHANNELS = {"app_chat": "App chat", "email": "Email", "phone": "Phone", "kiosk": "Kiosk"}
+REQUEST_TYPES = {
+    "early_checkin": "Early check-in", "late_checkout": "Late check-out", "temperature_hot": "Too warm",
+    "temperature_cold": "Too cold", "noise_complaint": "Noise", "wifi_help": "WiFi help", "extra_towels": "Extra towels",
+    "arrival_delay": "Arriving late", "parking": "Parking", "maintenance_issue": "Something broken",
+    "cleaning_request": "Cleaning", "luggage_storage": "Luggage storage", "invoice": "Invoice",
+    "access_issue": "Door / access", "waiting_for_room": "Waiting for the room", "air_quality": "Air quality",
+    "water_issue": "Water problem",
+}
+LANGUAGES = {"de": "German", "en": "English", "it": "Italian", "fr": "French", "es": "Spanish", "nl": "Dutch",
+             "pl": "Polish", "cs": "Czech"}
+MESSAGE_SOURCES = {"template": "template wording", "llm": "AI wording", "ai": "AI wording"}
+GUESTS_INTRO = ("What guests wrote, next to what Steward proposed to answer, with the reply deadline. Replies are "
+                "proposals — nothing was sent to a guest.")
+GUESTS_EMPTY = "This dataset has no guest requests."
+GUESTS_NONE_MATCH = "No guest request matches these filters."
+GUESTS_NO_REPLY = "No reply — Steward did not answer this request"
+GUESTS_DEADLINE_UNKNOWN = "no deadline given"
+CONSENT_MOCK = "Mock: simulates the guest's answer; consent is needed, not granted, until a real guest answers"
+CONSENT_YES, CONSENT_NO = "Guest says yes", "Guest says no"
