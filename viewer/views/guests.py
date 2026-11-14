@@ -104,7 +104,8 @@ def thread(c, r, consents: dict, path):
                            f"{L.PROPOSED} · {src}")
                 st.markdown(msg["text"])
                 if first and pd.notna(r["response_minutes"]):
-                    ok = ":green-badge[on time]" if r["on_time"] else ":red-badge[late]"
+                    ok = (f":gray-badge[{L.GUESTS_DEADLINE_UNKNOWN}]" if r["on_time"] is None
+                          else ":green-badge[on time]" if r["on_time"] else ":red-badge[late]")
                     st.markdown(f"Proposed after {r['response_minutes']:.0f} min {ok}")
             first = False
         if d.requires_guest_consent:
@@ -143,7 +144,7 @@ def _filter(th: pd.DataFrame) -> pd.DataFrame:
     if consent:
         m &= th.needs_consent | th.consent_flag
     if late:
-        m &= th.on_time.map(lambda v: v is not True)
+        m &= th.first_reply.isna() | th.on_time.eq(False)
     return th[m]
 
 
@@ -179,7 +180,7 @@ def page():
         pages = max(1, math.ceil(len(f) / PAGE))
         pg = st.number_input(f"Page (of {pages}) · {len(f):,} requests, newest first", 1, pages, 1, key="g_page")
         for r in f.iloc[(pg - 1) * PAGE:pg * PAGE].itertuples(index=False):
-            tag = "" if r.on_time is True else " · no reply" if r.on_time is None else " · late"
+            tag = " · no reply" if pd.isna(r.first_reply) else " · late" if r.on_time is False else ""
             tag += " · consent" if r.needs_consent else ""
             if st.button(f"{L.LANG_FLAGS.get(r.language, '')} {L.label('asset', r.room_id)} · "
                          f"{L.REQUEST_TYPES.get(r.request_type, r.request_type)} · {C.local_time(r.t)}{tag}",

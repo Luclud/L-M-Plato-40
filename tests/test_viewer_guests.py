@@ -163,3 +163,26 @@ def test_action_without_message_still_shows_no_reply(sets, monkeypatch, tmp_path
     at.run()
     assert not V.errors(at)
     assert any("No reply" in w.value for w in at.warning)
+
+
+def test_missing_deadline_is_unknown_not_late(sets, monkeypatch, tmp_path):
+    import shutil
+    _, src = sets["quickstart"]
+    dec = sets["quickstart"][0]
+    d = tmp_path / "qs"
+    shutil.copytree(src, d)
+    gr = pd.read_csv(d / "guest_requests.csv", dtype=str)
+    gr.loc[gr.request_id == "GR000034", "response_due_utc"] = ""
+    gr.to_csv(d / "guest_requests.csv", index=False)
+    r = K.threads(io.load(d), core.load_decisions(dec)).set_index("request_id").loc["GR000034"]
+    assert pd.notna(r.first_reply) and r.on_time is None
+    at = V.app(monkeypatch, dec, d, tmp_path / "appr.json")
+    at.run()
+    at.switch_page(PAGE)
+    at.query_params["request"] = "GR000034"
+    at.run()
+    assert not V.errors(at)
+    text = " ".join(m.value for m in at.markdown)
+    assert "no deadline given" in text and "late]" not in text
+    assert not any(w.value.startswith("No reply") for w in at.warning)
+    assert not any("GR000034" in (b.key or "") and "no reply" in b.label for b in at.button)

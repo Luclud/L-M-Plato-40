@@ -177,5 +177,6 @@ GUESTS_INTRO = ("What guests wrote, next to what Steward proposed to answer, wit
 GUESTS_EMPTY = "This dataset has no guest requests."
 GUESTS_NONE_MATCH = "No guest request matches these filters."
 GUESTS_NO_REPLY = "No reply — Steward did not answer this request"
+GUESTS_DEADLINE_UNKNOWN = "no deadline given"
 CONSENT_MOCK = "Mock: simulates the guest's answer; consent is needed, not granted, until a real guest answers"
 CONSENT_YES, CONSENT_NO = "Guest says yes", "Guest says no"
