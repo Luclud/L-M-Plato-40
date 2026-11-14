@@ -40,7 +40,7 @@ DAILY_LOCAL = "13:00"          # after the day-ahead tariff publication; ~2 days
 LOOKAHEAD_DAYS = 2
 MERGE_DAYS = 3                 # surge days this close belong to one event weekend (one episode)
 BUSY_SHARE = 0.45              # floor: a day on which almost half of the house arrives is busy
-BUSY_LOOKBACK = pd.Timedelta(days=90)
+BUSY_LOOKBACK = pd.Timedelta(days=365)  # all known history (was 90 d: a summer peak pushed p95 to 20, missed 19-arrival surge)
 BUSY_QUANTILE = 0.95
 MIN_HISTORY_DAYS = 14          # fewer known arrival days -> use the floor only
 ROBOT_LOCAL = CHECKOUT_LOCAL   # robots pre-clean floors of rooms vacated by check-out
