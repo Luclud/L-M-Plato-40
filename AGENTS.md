@@ -94,6 +94,9 @@ in the PR title (`[shared]`). Planning helpers live in `plato40/planning/` (tick
 - PR description: what/why, eval table before → after, validate summary, known limitations.
 - Never commit `out/`, `.env`, decrypted secrets. Do not rewrite history on `main`.
 - Deadline-critical: see `docs/PLAN.md` (code freeze Saturday 14:00 Europe/Vienna).
+- **After the `pre-holdout` tag (Sat ~10:30):** only `viewer/`, `.streamlit/`, `docs/`, `README.md`, `video/` may change.
+  Never touch `plato40/`, `run.py`, `validate.py`, `analysis/`, `requirements.txt`, `insights.*` or `decisions*.jsonl`.
+  Every commit after the tag gets a row in README "Changes after pre-holdout" (organizer rule, `docs/ENDGAME.md` §0b).
 
 ## Where things are
 | Path | What |

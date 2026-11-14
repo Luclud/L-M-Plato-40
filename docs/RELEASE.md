@@ -56,6 +56,12 @@ Alternative in one go, from a clean clone of the tagged code:
 `data/holdout/` is git-ignored — do not commit the decrypted data. Never assume the holdout period/profile
 (not January, not 365 days); if the run fails, read the error before touching code.
 
+### 2b. Viewer / docs changes after the tag (allowed, organizer clarification Sat 14 Nov)
+Visualisation, dashboard, README and demo changes are fine after `pre-holdout` (`viewer/`, `.streamlit/`, `docs/`,
+`README.md`, `video/`). Never `plato40/`, `run.py`, `validate.py`, `analysis/`, `requirements.txt` or the deliverables.
+Add one row per commit to README → "Changes after pre-holdout" (files + why + "no effect on `decisions_holdout.jsonl`").
+Their automated check flags every change after the tag; that row is how they verify it. Details: `docs/ENDGAME.md` §0b.
+
 ### 3. Only if a fix is unavoidable after the tag
 - Separate commit (no amend, no force-push, never move the `pre-holdout` tag).
 - Justify it in README → "Changes after pre-holdout" (what, why, which incidents/rows it changes).
