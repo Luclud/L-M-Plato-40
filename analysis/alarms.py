@@ -92,7 +92,7 @@ def p5_gateways(c: Ctx) -> Insight:
     total_h = sum(v["hours"] for v in stats.values())
     share_worst = stats[worst]["hours"] / total_h if total_h else np.nan
     status = "confirmed" if total_h and share_worst > 0.5 else ("qualified" if total_h else "rejected")
-    finding = (f"PLATO-40: gateway outages (all rooms of a gateway silent) — "
+    finding = ("PLATO-40: gateway outages (all rooms of a gateway silent) — "
                + "; ".join(f"{g}: {v['events']} outages, {v['hours']:.1f} h, room-level missing {pct(v['room_missing_share'], 2)}"
                            for g, v in stats.items())
                + f". {worst} accounts for {pct(share_worst)} of outage hours and {cl_gw.get(worst, 0)}/{len(cl)} "

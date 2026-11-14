@@ -3,7 +3,6 @@
 Raw codes and file names are allowed on this page (developer / jury evidence)."""
 from __future__ import annotations
 
-import os
 import re
 from pathlib import Path
 

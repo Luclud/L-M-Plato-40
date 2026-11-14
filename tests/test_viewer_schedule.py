@@ -1,5 +1,4 @@
 """T28 Housekeeping timeline: pure schedule functions + AppTest of the page and the incident embed."""
-import json
 import time
 
 import pandas as pd

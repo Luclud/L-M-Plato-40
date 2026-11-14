@@ -165,7 +165,7 @@ def test_turnaround_episodes_are_conflicts(decisions):
 
 def test_slack_constant_is_documented():
     from plato40.detectors import s01_turnaround as m
-    assert m.SLACK == pd.Timedelta(minutes=30)
+    assert pd.Timedelta(minutes=30) == m.SLACK
 
 
 def test_quickstart_turnaround_incidents_outside_s01_labels_are_surge_weekend_conflicts(decisions):

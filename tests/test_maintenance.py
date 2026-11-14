@@ -9,7 +9,6 @@ from conftest import ROOT
 from plato40 import engine, io
 from plato40.asof import AsOf
 from plato40.detectors.s04_maintenance import MaintenanceAgent
-from plato40.state import State
 
 T = pd.Timestamp
 DEV = ROOT / "data" / "dev"

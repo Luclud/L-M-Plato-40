@@ -180,9 +180,9 @@ def c3_preheating(c: Ctx) -> Insight:
     trig = max((iv.right for iv in cold_bins), default=None)
     finding = (f"PLATO-40: the occupied share below {COMFORT_LO:g} °C rises as days get colder ("
                + "; ".join(f"{iv.left:g}..{iv.right:g} °C: {pct(v)}" for iv, v in cold_by_bin.items())
-               + f"), while HP1 COP falls ("
+               + "), while HP1 COP falls ("
                + "; ".join(f"{iv.left:g}..{iv.right:g} °C: {v:.2f}" for iv, v in cop_bin.items() if np.isfinite(v))
-               + f"). The 06:00-local forecast is good enough to act on: MAE "
+               + "). The 06:00-local forecast is good enough to act on: MAE "
                + ", ".join(f"{iv.left:g}–{iv.right:g} h: {v:.2f} K" for iv, v in mae.items())
                + f". HP1 logged {len(lock)} lockout intervals (median outdoor {lock_out:.1f} °C); "
                f"{len(leads)}/{len(hp_wo)} corrective HP1 work orders were preceded by lockouts "

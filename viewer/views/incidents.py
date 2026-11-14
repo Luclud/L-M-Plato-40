@@ -5,7 +5,6 @@ import pandas as pd
 import streamlit as st
 
 from viewer import components as C
-from viewer import core
 from viewer import labels as L
 from viewer import summaries
 from viewer.views import common, incident
