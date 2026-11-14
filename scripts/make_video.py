@@ -694,7 +694,7 @@ def main(argv=None) -> int:
 
     # 2. voice per scene -> scene lengths and sentence timings
     piper = None
-    if args.voice in ("auto", "tts") and any(not (VO_DIR / f"{s}.wav").exists() for s in order):
+    if args.voice == "tts" or (args.voice == "auto" and any(not (VO_DIR / f"{s}.wav").exists() for s in order)):
         try:
             model = piper_model(OUT / "voices")
             piper = Piper(model) if model else None
