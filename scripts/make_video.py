@@ -482,6 +482,12 @@ class Browser:
         page.wait_for_timeout(300)
         page.screenshot(path=str(dst))
         ctx.close()
+        # viewport (W/zoom, rounded) x zoom can be 1 px off (1670 x 1.15 = 1920.5 -> 1921): force exactly W x H
+        from PIL import Image
+        with Image.open(dst) as im:
+            fixed = im.convert("RGB").resize((W, H), Image.LANCZOS) if im.size != (W, H) else None
+        if fixed is not None:
+            fixed.save(dst)
         return dst
 
 
