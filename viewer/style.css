@@ -11,6 +11,7 @@
   --ok: #2F7D4F;
   --warn: #C26A12;
   --crit: #B42318;
+  --tile-gap: .9rem;   /* gap between side-by-side cards on the Building page (stats row, attention | plant) */
 }
 
 /* --- page frame: no empty band above the content, readable line length --- */
@@ -74,7 +75,7 @@ code, kbd, .mono { font-variant-numeric: tabular-nums; }
 .side-row.warn { color: var(--crit); font-weight: 500; }
 .side-row.muted { color: var(--muted); }
 /* headline numbers strip */
-.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .9rem; margin: .2rem 0 1rem; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--tile-gap); margin: .2rem 0 1rem; }
 .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: .75rem; padding: .8rem 1rem;
   box-shadow: 0 1px 2px rgba(29, 36, 33, .04), 0 4px 14px rgba(29, 36, 33, .04); }
 .kpi .k { font-size: .8rem; color: var(--muted); }
@@ -82,6 +83,7 @@ code, kbd, .mono { font-variant-numeric: tabular-nums; }
   font-variant-numeric: tabular-nums; margin: .15rem 0 .1rem; }
 .kpi .v small { font-size: 1rem; color: var(--muted); font-weight: 500; }
 .kpi .s { font-size: .78rem; color: var(--muted); }
+.st-key-b_split > [data-testid="stLayoutWrapper"] > [data-testid="stHorizontalBlock"] { column-gap: var(--tile-gap); }
 @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .plant .name { font-weight: 500; color: var(--ink); }
 .plant .state { font-size: .8rem; font-weight: 600; padding: .15rem .55rem; border-radius: 999px; white-space: nowrap; }
