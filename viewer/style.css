@@ -49,6 +49,7 @@ code, kbd, .mono { font-variant-numeric: tabular-nums; }
 .brand { display: flex; align-items: center; gap: .85rem; }
 .brand-mark { height: 3.5rem; width: auto; flex: none; display: block; }
 .brand-name { font: 600 1.35rem/1.15 "Space Grotesk", sans-serif; letter-spacing: -.02em; color: var(--ink); }
+.chart-now { color: var(--muted); font-weight: 400; font-variant-numeric: tabular-nums; }
 .brand-note { font-size: .82rem; color: var(--muted); margin-top: .15rem; }
 
 /* --- building: legend + plant tiles (building.py) --- */

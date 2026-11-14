@@ -204,6 +204,133 @@ def room_panel(c: dict, room: str, t, day_start, day_end):
             y.page_link("views/incidents.py", label="Open", query_params={"episode": r.episode})
 
 
+# ---------------------------------------------------------------------------- today in charts
+# Fixed series order, validated with the dataviz palette checker on the paper ground (#F6F5F1): all six checks
+# pass. The brand green #0E6B57 itself is too grey for a data line, so charts use a slightly richer step of it.
+SERIES = ["#087A5A", "#C26A12", "#2F6BA8"]
+INK, MUTED, LINE = "#1D2421", "#5F6B66", "#DEDAD0"
+
+
+def _grid(day_start, day_end) -> pd.DatetimeIndex:
+    return pd.date_range(day_start, day_end, freq="15min", inclusive="left")
+
+
+def _upto(s: pd.Series, grid: pd.DatetimeIndex, t) -> pd.Series:
+    """The series on the day's 15-min grid, known up to t only (later steps empty; missing stays missing)."""
+    s = s[~s.index.duplicated()].reindex(grid)
+    return s.where(s.index <= t)
+
+
+@st.cache_data(show_spinner=False)
+def day_series(data_dir: str, day_start: pd.Timestamp, day_end: pd.Timestamp, _store, _tw) -> dict[str, pd.DataFrame]:
+    """One local day of building-wide measurements on the 15-min grid (whole day; cut at t when drawn)."""
+    store, tw = _store, _tw
+    grid = _grid(day_start, day_end)
+    en = store.energy()
+    en = en[(en.index >= day_start) & (en.index < day_end)]
+    energy = pd.DataFrame({k: en[col] if col in en else pd.Series(dtype=float) for k, col in
+                           (("Building load", "building_load_kw"), ("Solar (PV)", "pv_kw"),
+                            ("From the grid", "grid_import_kw"))}).reindex(grid)
+    tel = tw.day_telemetry(day_start, day_end)
+    state = pd.Series([twin.room_state(h, p) for h, p in zip(tel.housekeeping_state, tel.presence)], index=tel.index)
+    counts = pd.crosstab(tel.timestamp_utc, state).reindex(grid)
+    b = store.d.bookings
+    b = b[b.status == "confirmed"]
+    booked = pd.Series([int(((b.arrival_utc <= g) & (b.departure_utc > g) & (b.created_utc <= g)).sum())
+                        for g in grid], index=grid, dtype=float)
+    dirty = counts.get("needs_cleaning", pd.Series(0.0, index=grid)).fillna(0)
+    dirty[counts.drop(columns="unknown", errors="ignore").sum(axis=1, min_count=1).isna()] = float("nan")
+    rooms = pd.DataFrame({"Booked": booked, "Needs cleaning": dirty}, index=grid)
+    w = store.weather()
+    temps = pd.DataFrame({"Rooms (average)": tel.groupby("timestamp_utc").temperature_c.mean(),
+                          "Outdoors": w[(w.index >= day_start) & (w.index < day_end)]}).reindex(grid)
+    water = store.main_water()
+    water = pd.DataFrame({"Whole building": water[(water.index >= day_start) & (water.index < day_end)]})
+    return {"energy": energy, "rooms": rooms, "temps": temps,
+            "water": water[~water.index.duplicated()].reindex(grid)}
+
+
+def _now_value(s: pd.Series, t) -> float | None:
+    s = s[s.index <= t].dropna()
+    return None if s.empty else float(s.iloc[-1])
+
+
+def _fig(frame: pd.DataFrame, t, day_start, day_end, unit: str, fmt: str, ymin=None, step=False):
+    """Compact day chart: thin lines up to t, a 'now' rule, end-of-line labels, one legend, crosshair hover."""
+    import plotly.graph_objects as go
+
+    loc = lambda x: pd.DatetimeIndex(x).tz_convert(L.TZ).tz_localize(None)   # noqa: E731
+    fig = go.Figure()
+    for i, (name, s) in enumerate(frame.items()):
+        s = _upto(s, _grid(day_start, day_end), t)
+        col = SERIES[i % len(SERIES)]
+        fig.add_scatter(x=loc(s.index), y=s.values, name=name, mode="lines", connectgaps=False,
+                        line=dict(color=col, width=2, shape="hv" if step else "linear"),
+                        hovertemplate=f"{name}: %{{y:{fmt}}} {unit}<extra></extra>")
+        v = _now_value(s, t)
+        if v is not None and len(frame.columns) > 1:
+            fig.add_scatter(x=[loc([t])[0]], y=[v], mode="markers", showlegend=False, hoverinfo="skip",
+                            marker=dict(size=8, color=col, line=dict(color="#F6F5F1", width=2)))
+    now = loc([t])[0]
+    fig.add_vline(x=now, line=dict(color=MUTED, width=1, dash="dot"))
+    ax = dict(gridcolor="#E7E4DC", zeroline=False, linecolor=LINE, tickfont=dict(color=MUTED, size=11),
+              automargin=True, showticklabels=True)
+    fig.update_layout(
+        height=230, margin=dict(l=4, r=8, t=30, b=4), hovermode="x unified",
+        showlegend=len(frame.columns) > 1,
+        legend=dict(orientation="h", y=1.04, yanchor="bottom", x=0, xanchor="left", font=dict(size=11, color=INK)),
+        font=dict(family="IBM Plex Sans, sans-serif", color=INK, size=12),
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        hoverlabel=dict(bgcolor="#FFFFFF", bordercolor=LINE, font=dict(color=INK)),
+        xaxis=dict(range=[loc([day_start])[0], loc([day_end])[0]], tickformat="%H:%M", dtick=3 * 3600 * 1000,
+                   hoverformat="%H:%M", fixedrange=True, **ax),
+        yaxis=dict(ticksuffix=f" {unit}" if len(unit) <= 3 else "", rangemode="tozero" if ymin == 0 else "normal",
+                   fixedrange=True, **ax))
+    return fig
+
+
+def day_charts(c: dict, t, day_start, day_end):
+    """Today in four charts, each drawn up to the selected moment."""
+    tw_ = get_twin(str(c["data_dir"]))
+    d = day_series(str(c["data_dir"]), day_start, day_end, c["store"], tw_)
+    n = len(tw_.rooms)
+
+    def head(title: str, now: str | None):
+        st.markdown(f"**{title}**" + (f" <span class='chart-now'>· {now}</span>" if now else ""),
+                    unsafe_allow_html=True)
+
+    def num(frame, col, fmt, unit):
+        v = _now_value(_upto(frame[col], frame.index, t), t)
+        return None if v is None else f"{v:{fmt}} {unit} now"
+
+    st.markdown("<div style='height:.4rem'></div>", unsafe_allow_html=True)
+    st.markdown("##### Today in numbers")
+    st.caption(f"Measured so far today, up to {_hm(t)}. Gaps in a line are missing data (unknown, not zero).")
+    specs = [
+        ("Energy", "energy", "kW", ".1f", 0, num(d["energy"], "Building load", ".0f", "kW load")),
+        ("Rooms", "rooms", "", ".0f", 0, num(d["rooms"], "Booked", ".0f", f"of {n} booked")),
+        ("Temperature", "temps", "°C", ".1f", None, num(d["temps"], "Rooms (average)", ".1f", "°C in rooms")),
+        ("Water use", "water", "L", ".0f", 0, num(d["water"], "Whole building", ".0f", "L per 15 min")),
+    ]
+    for row in (specs[:2], specs[2:]):
+        cols = st.columns(2, gap="medium")
+        for col, (title, key, unit, fmt, ymin, now) in zip(cols, row):
+            with col, st.container(border=True, key=f"card_chart_{key}"):
+                head(title, now)
+                frame = d[key]
+                if frame.where(frame.index.to_series() <= t, axis=0).dropna(how="all").empty:
+                    st.caption("No measurements yet today.")
+                    continue
+                st.plotly_chart(_fig(frame, t, day_start, day_end, unit, fmt, ymin, step=key == "rooms"), width="stretch", theme=None,
+                                config={"displayModeBar": False}, key=f"b_day_{key}")
+    with st.expander("Today's numbers as a table", icon=":material/table:"):
+        tab = pd.concat([d[k].add_suffix(f" ({u})") for k, u in
+                         (("energy", "kW"), ("rooms", "rooms"), ("temps", "°C"), ("water", "L/15 min"))], axis=1)
+        tab = tab[tab.index <= t]
+        tab.index = tab.index.tz_convert(L.TZ).strftime("%H:%M")
+        st.dataframe(tab.round(1).iloc[::-1], width="stretch", height=260)
+
+
 c = common.ctx()
 tw = get_twin(str(c["data_dir"]))
 t = moment(c, tw)
@@ -222,3 +349,4 @@ st.caption(f"Today so far: {n['guest_request']} guest replies · {n['energy_opti
            f"({L.SIMULATED.lower()}) · {n['logistics']} supplies & waste · {n['cleanings']} cleanings scheduled")
 if st.session_state.get("b_room"):
     room_panel(c, st.session_state["b_room"], t, day_start, day_end)
+day_charts(c, t, day_start, day_end)
