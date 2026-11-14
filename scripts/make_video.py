@@ -11,6 +11,7 @@ captions and assembles everything with ffmpeg. Outputs go to out/video/ (git-ign
 from __future__ import annotations
 
 import argparse
+import hashlib
 import html
 import json
 import os
@@ -35,13 +36,18 @@ OUT = ROOT / "out" / "video"
 
 W, H, FPS = 1920, 1080, 30
 RATE = 48000
-TITLE = "Steward — runs the building, answers to people"
+TITLE = "Steward · Runs the building, answers to people"
 TITLE_SUB = "PLATO-40 is a fictional building · synthetic data · simulated effects"
 TITLE_S, FADE_S, TAIL_S, GAP_S = 1.5, 1.0, 0.5, 0.2
 SPEECH_RATE = 0.9  # Piper length_scale (<1 = faster); keeps the short cut near 2:10
 MAX_SUBMISSION_S = 180.0
 CAPTION_WIDTH, CAPTION_LINES = 42, 2
 PIPER_VOICE = "en_US-ljspeech-high"
+VOICE_TEMPO = float(os.environ.get("VOICE_TEMPO", 1.0))  # >1 speeds up synthetic speech (ffmpeg atempo)
+ELEVEN_VOICE = os.environ.get("ELEVENLABS_VOICE_ID", "JBFqnCBsd6RMkjVDRZzb")  # George, pre-made
+ELEVEN_MODEL = os.environ.get("ELEVENLABS_MODEL", "eleven_multilingual_v2")       # has style + speed
+ELEVEN_SETTINGS = {"stability": 0.35, "similarity_boost": 0.75, "style": 0.45, "speed": 1.08,
+                   "use_speaker_boost": True}
 PIPER_URL = "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/ljspeech/high/"
 BRAND = "#1f6f50"
 
@@ -150,13 +156,20 @@ def proportional_times(sentences: list[str], start: float, end: float) -> list[t
 
 # ---------------------------------------------------------------- audio
 
+def subtitle_times(subs: list[dict], seconds: float) -> list[tuple[str, float, float]]:
+    """Storyboard `subtitles`: each line verbatim from its `at` until the next line's `at` (last: scene end)."""
+    ats = [float(x["at"]) for x in subs] + [float(seconds)]
+    return [(str(x["text"]), ats[i], ats[i + 1]) for i, x in enumerate(subs)]
+
+
 def wav_seconds(path: Path) -> float:
     with wave.open(str(path)) as w:
         return w.getnframes() / w.getframerate()
 
 
-def to_std_wav(src: Path, dst: Path) -> Path:
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(src), "-ar", str(RATE), "-ac", "1",
+def to_std_wav(src: Path, dst: Path, tempo: float = 1.0) -> Path:
+    speed = ["-af", f"atempo={tempo}"] if tempo != 1.0 else []
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(src), *speed, "-ar", str(RATE), "-ac", "1",
                     "-sample_fmt", "s16", str(dst)], check=True)
     return dst
 
@@ -201,20 +214,68 @@ class Piper:
         else:                                          # piper-tts 1.2.0 (MIT engine, pinned)
             self.voice.synthesize(text, w, length_scale=SPEECH_RATE)
 
-    def scene(self, sentences: list[str], dst: Path, tmp: Path) -> list[tuple[str, float, float]]:
-        """One wav per sentence, joined with short gaps -> exact sentence timings for the captions."""
-        parts, times, t = [], [], 0.0
-        for i, s in enumerate(sentences):
-            raw = tmp / f"{dst.stem}_{i}.wav"
-            with wave.open(str(raw), "wb") as w:
-                self._say(s, w)
-            std = to_std_wav(raw, tmp / f"{dst.stem}_{i}_48k.wav")
-            d = wav_seconds(std)
-            parts += [(std, d), (None, GAP_S)]
-            times.append((s, t, t + d))
-            t += d + GAP_S
-        write_track(parts[:-1], dst)
-        return times
+    def sentence(self, text: str, raw: Path, context: tuple[str, str]) -> Path:
+        raw = raw.with_suffix(".wav")
+        with wave.open(str(raw), "wb") as w:
+            self._say(text, w)
+        return raw
+
+    scene = None  # set below (voice_scene)
+
+
+class ElevenLabsTTS:
+    """ElevenLabs text-to-speech (needs `pip install elevenlabs` and ELEVENLABS_API_KEY in the environment).
+    Each sentence is cached in out/video/voices/elevenlabs/ by text + voice + model + settings."""
+
+    def __init__(self, cache: Path):
+        from elevenlabs import ElevenLabs, VoiceSettings
+        if not os.environ.get("ELEVENLABS_API_KEY"):
+            raise SystemExit("--voice elevenlabs: set ELEVENLABS_API_KEY (environment or .env, never committed)")
+        self.client, self.settings = ElevenLabs(), VoiceSettings(**ELEVEN_SETTINGS)
+        self.cache = cache
+        cache.mkdir(parents=True, exist_ok=True)
+
+    def sentence(self, text: str, raw: Path, context: tuple[str, str]) -> Path:
+        key = json.dumps([text, *context, ELEVEN_VOICE, ELEVEN_MODEL, ELEVEN_SETTINGS], sort_keys=True)
+        mp3 = self.cache / (hashlib.sha256(key.encode()).hexdigest()[:20] + ".mp3")
+        if not mp3.exists():
+            audio = self.client.text_to_speech.convert(
+                text=text, voice_id=ELEVEN_VOICE, model_id=ELEVEN_MODEL, voice_settings=self.settings,
+                output_format="mp3_44100_128", previous_text=context[0] or None, next_text=context[1] or None)
+            mp3.with_suffix(".part").write_bytes(b"".join(audio))
+            mp3.with_suffix(".part").rename(mp3)
+        return mp3
+
+    scene = None
+
+
+def voice_scene(self, sentences: list[str], dst: Path, tmp: Path, starts: list[float] | None = None,
+                seconds: float | None = None) -> list[tuple[str, float, float]]:
+    """One clip per sentence, joined with short gaps -> exact sentence timings for the captions.
+    `starts` (storyboard subtitle `at`): a sentence waits for its cue, so it stays on its action, but only as long
+    as the scene still ends within `seconds` (no `seconds`: always wait for the cue)."""
+    clips = []
+    for i, s in enumerate(sentences):
+        context = (" ".join(sentences[:i]), " ".join(sentences[i + 1:]))
+        std = to_std_wav(self.sentence(s, tmp / f"{dst.stem}_{i}", context), tmp / f"{dst.stem}_{i}_48k.wav",
+                         VOICE_TEMPO)
+        clips.append((std, wav_seconds(std)))
+    speech = sum(d for _, d in clips) + GAP_S * (len(clips) - 1)
+    slack = float("inf") if seconds is None else max(0.0, seconds - TAIL_S - speech)
+    parts, times, t = [], [], 0.0
+    for i, (s, (std, d)) in enumerate(zip(sentences, clips)):
+        wait = min(max(0.0, starts[i] - t), slack) if starts else 0.0
+        if wait > 0:
+            parts.append((None, wait))
+            t, slack = t + wait, slack - wait
+        parts += [(std, d), (None, GAP_S)]
+        times.append((s, t, t + d))
+        t += d + GAP_S
+    write_track(parts[:-1], dst)
+    return times
+
+
+Piper.scene = ElevenLabsTTS.scene = voice_scene
 
 
 # ---------------------------------------------------------------- browser recording
@@ -242,7 +303,7 @@ FIND_JS = """
 ([needle, mode, near]) => {
   const vis = e => { const r = e.getBoundingClientRect(); const s = getComputedStyle(e);
     return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && s.display !== 'none'; };
-  const txt = e => (e.innerText || '').trim();
+  const txt = e => (e.innerText || (e.tagName === 'INPUT' ? e.value : '') || '').trim();  // selectbox value = input
   const has = (e, n) => txt(e).toLowerCase().includes(n.toLowerCase());
   let best = null, bestScore = Infinity;
   if (mode === 'button') {
@@ -252,10 +313,20 @@ FIND_JS = """
       for (let i = 0; i < 30 && a; i++, a = a.parentElement) if (has(a, near)) { score = txt(a).length; break; }
       if (score < bestScore) { best = b; bestScore = score; }
     }
+  } else if (mode === 'click') {
+    const sel = 'button, a, label, summary, [role=button], [role=tab], [role=option], [role=switch], [role=checkbox],' +
+                ' [data-baseweb=tag], [data-testid=stExpander] details > summary';
+    for (const e of document.querySelectorAll(sel)) {
+      if (!vis(e) || !has(e, needle)) continue;
+      const score = txt(e).length - (txt(e).toLowerCase() === needle.toLowerCase() ? 1e6 : 0);
+      if (score < bestScore) { best = e; bestScore = score; }
+    }
   } else {
     for (const e of document.querySelectorAll('body *')) {
       if (e.id === '__vcur' || ['SCRIPT', 'STYLE'].includes(e.tagName) || !vis(e) || !has(e, needle)) continue;
-      const score = txt(e).length - (txt(e).toLowerCase() === needle.toLowerCase() ? 1e6 : 0);
+      // exact text first; among equals prefer what appeared since the last click (e.g. the opened room panel)
+      const score = txt(e).length - (txt(e).toLowerCase() === needle.toLowerCase() ? 1e6 : 0)
+                    - (e.hasAttribute('data-vold') ? 0 : 1e4);
       if (score < bestScore) { best = e; bestScore = score; }
     }
   }
@@ -277,6 +348,15 @@ SCROLL_JS = """
 }
 """
 
+MARK_OLD_JS = "() => document.querySelectorAll('body *').forEach(e => e.setAttribute('data-vold', ''))"
+
+SCROLL_BY_JS = """
+(dy) => { const m = document.querySelector('section.stMain, [data-testid="stMain"]');
+  let c = m; while (c && !(c.scrollHeight > c.clientHeight && /(auto|scroll)/.test(getComputedStyle(c).overflowY)))
+    c = c.parentElement;
+  (c || document.scrollingElement).scrollBy({top: dy, behavior: 'smooth'}); }
+"""
+
 SCROLL_TOP_JS = """
 () => { document.querySelectorAll('*').forEach(c => { if (c.scrollTop > 0) c.scrollTo({top: 0, behavior: 'smooth'}); });
         window.scrollTo({top: 0, behavior: 'smooth'}); }
@@ -289,7 +369,9 @@ HIGHLIGHT_JS = """
 """
 
 ACTION_COST = {"hover": 1.8, "scroll_to_text": 1.6, "highlight_text": 1.8, "click_button": 3.0,
-               "click_button_near_text": 4.5, "wait_for_text": 0.3, "scroll_to_top": 1.5}
+               "click_button_near_text": 7.0, "wait_for_text": 0.3, "scroll_to_top": 1.5, "click_text": 2.6,
+               "click_key": 2.6, "type_text": 2.0, "scroll_by": 1.2}
+TYPE_CPS = 25  # type_text speed, characters per second
 
 
 @dataclass
@@ -328,7 +410,9 @@ class Browser:
         vp = {"width": round(W / self.zoom), "height": round(H / self.zoom)}
         kw = dict(viewport=vp, device_scale_factor=self.zoom)
         if record:
-            kw.update(record_video_dir=str(self.tmp / "raw"), record_video_size={"width": W, "height": H})
+            # Playwright records CSS pixels (device scale is ignored): record the viewport size, encode_segment
+            # scales it to W x H, otherwise the page sits in the top-left corner with a grey margin
+            kw.update(record_video_dir=str(self.tmp / "raw"), record_video_size=vp)
         ctx = self.browser.new_context(**kw)
         ctx.add_init_script(f"window.__vx={self.cursor[0]};window.__vy={self.cursor[1]};" + CURSOR_JS)
         return ctx
@@ -365,6 +449,34 @@ class Browser:
         page.mouse.move(x, y)
         self.cursor = (x, y)
         page.wait_for_timeout(int(hold * 1000))
+
+    def _click(self, page, loc, vid: str | None = None) -> None:
+        """Visible click: cursor dot glides to the element, presses, Streamlit reruns."""
+        page.evaluate(MARK_OLD_JS)
+        box = loc.bounding_box() if vid else None
+        if vid and not (box and 110 <= box["y"] and box["y"] + box["height"] <= page.viewport_size["height"]):
+            page.evaluate(SCROLL_JS, [vid, False])  # below the sticky top bar, not under it
+            page.wait_for_timeout(900)
+        else:
+            loc.scroll_into_view_if_needed(timeout=5000)
+        page.wait_for_timeout(300)
+        self._move_to(page, loc, hold=0.4)
+        page.evaluate("window.__cursorClick()")
+        loc.click(timeout=5000)
+        self._settle(page, 0.6)
+
+    def _input(self, page, label: str):
+        """Text input / textarea / chat input by placeholder, aria-label or widget label."""
+        cands = [page.get_by_placeholder(label), page.get_by_label(label),
+                 page.locator(f'[data-testid="stChatInput"] textarea[placeholder*="{label}"]')]
+        end = time.monotonic() + 8
+        while time.monotonic() < end:
+            for c in cands:
+                for i in range(c.count()):
+                    if c.nth(i).is_visible():
+                        return c.nth(i)
+            page.wait_for_timeout(250)
+        raise LookupError(f"input not found: {label!r}")
 
     def open(self, ctx, url: str, ready_text: str | None):
         page = ctx.new_page()
@@ -408,18 +520,48 @@ class Browser:
                 page.evaluate(SCROLL_JS, [vid, False])
                 page.wait_for_timeout(1000)
                 self._move_to(page, loc, hold=0.4)
+                page.evaluate(MARK_OLD_JS)
                 page.evaluate("window.__cursorClick()")
                 loc.click(timeout=5000)
                 self._settle(page, 0.6)
-                if near:  # show the result where the button was (e.g. "recorded: approved", mock)
+                if near:  # show the result where the button was ("Approved (mock), nothing was executed")
                     try:
-                        res, rid = self._find(page, "recorded:", timeout=5)
+                        try:
+                            res, rid = self._find(page, "(mock)", timeout=1.2)  # page has settled already
+                        except LookupError:
+                            try:  # the decided card left the "Pending" list: open "Decided" to show it
+                                tab, tid = self._find(page, "Decided", mode="click", timeout=2)
+                                log(f"{label} near {near!r}: card moved to Decided -> showing it there")
+                                self._click(page, tab, tid)
+                                res, rid = self._find(page, "(mock)", timeout=3)
+                            except LookupError:
+                                res, rid = self._find(page, "recorded:", timeout=2)
                         page.evaluate(SCROLL_JS, [rid, False])
                         page.wait_for_timeout(900)
                         page.evaluate(HIGHLIGHT_JS, [rid, 1800])
-                        page.wait_for_timeout(1500)
+                        page.wait_for_timeout(300)  # the scene's remaining seconds hold the result on screen
                     except LookupError:
                         pass
+            elif kind == "click_text":
+                loc, vid = self._find(page, str(arg), mode="click", timeout=8)
+                self._click(page, loc, vid)
+            elif kind == "click_key":
+                box = page.locator(f".st-key-{arg}").first
+                box.wait_for(state="visible", timeout=8000)
+                inner = box.locator("button, [role=button], input, label, a")
+                self._click(page, inner.first if inner.count() else box)
+            elif kind == "type_text":
+                loc = self._input(page, str(arg["into"]))
+                self._move_to(page, loc, hold=0.3)
+                loc.click(timeout=5000)
+                loc.press_sequentially(str(arg["text"]), delay=int(1000 / TYPE_CPS))
+                if arg.get("submit"):
+                    page.wait_for_timeout(300)
+                    loc.press("Enter")
+                self._settle(page, 0.6)
+            elif kind == "scroll_by":
+                page.evaluate(SCROLL_BY_JS, int(arg))
+                page.wait_for_timeout(1200)
             elif kind == "next_url_at_seconds":
                 pass  # handled by record_scene
             else:
@@ -642,7 +784,13 @@ def start_viewer(cfg: dict) -> tuple[subprocess.Popen, str]:
         log(f"port {url.port} is busy -> viewer on {port}")
     approvals = ROOT / cfg.get("approvals_file", "out/video_approvals.json")
     approvals.unlink(missing_ok=True)
-    env = dict(os.environ, PLATO40_APPROVALS=str(approvals), PLATO40_NO_LLM="1")
+    env = dict(os.environ, PLATO40_APPROVALS=str(approvals), PLATO40_DEFAULT_DATASET="off")
+    if cfg.get("copilot"):
+        env.pop("PLATO40_NO_LLM", None)
+    else:
+        env["PLATO40_NO_LLM"] = "1"
+    if not cfg.get("run_pipeline", True):
+        env["STEWARD_GUIDED_DEMO"] = "0"
     cmd = [sys.executable, "-m", "streamlit", "run", "viewer/app.py", "--server.headless", "true",
            "--server.port", str(port), "--browser.gatherUsageStats", "false", "--",
            "--decisions", cfg.get("decisions", "out/qs.jsonl"), "--data", cfg.get("data", "data/quickstart")]
@@ -661,6 +809,8 @@ def start_viewer(cfg: dict) -> tuple[subprocess.Popen, str]:
 # ---------------------------------------------------------------- main
 
 def voice_mode(requested: str, scene_id: str, piper_ok: bool) -> str:
+    if requested == "elevenlabs":
+        return "tts"
     human = (VO_DIR / f"{scene_id}.wav").exists()
     if requested == "human":
         if not human:
@@ -675,20 +825,26 @@ def voice_mode(requested: str, scene_id: str, piper_ok: bool) -> str:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--cut", choices=["short", "submission"], default="short")
-    ap.add_argument("--voice", choices=["auto", "human", "tts", "none"], default="auto")
+    ap.add_argument("--cut", default="short", help="a cut name from the storyboard's `cuts`")
+    ap.add_argument("--voice", choices=["auto", "human", "tts", "elevenlabs", "none"],
+                    help="tts = offline Piper; elevenlabs = ElevenLabs API (ELEVENLABS_API_KEY)", default="auto")
     ap.add_argument("--holdout", default=None, help="text for [HOLDOUT]; empty drops that sentence")
     ap.add_argument("--keep", action="store_true", help="keep per-scene clips in out/video/<cut>_work/")
     ap.add_argument("--storyboard", type=Path, default=STORYBOARD)
+    ap.add_argument("--copilot", action="store_true",
+                    help="let the viewer use the LLM key from .env/environment (Ask the building live)")
     args = ap.parse_args(argv)
     if not shutil.which("ffmpeg"):
         raise SystemExit("ffmpeg not found on PATH")
 
     sb = load_storyboard(args.storyboard)
     cfg, scenes = sb["viewer"], {s["id"]: s for s in sb["scenes"]}
+    cfg["copilot"] = args.copilot
     placeholders = dict(sb.get("placeholders") or {})
     if args.holdout is not None:
         placeholders["HOLDOUT"] = args.holdout
+    if args.cut not in sb["cuts"]:
+        raise SystemExit(f"--cut {args.cut!r}: not in storyboard cuts {sorted(sb['cuts'])}")
     order = sb["cuts"][args.cut]
     OUT.mkdir(parents=True, exist_ok=True)
     work = OUT / f"{args.cut}_work"
@@ -696,9 +852,15 @@ def main(argv=None) -> int:
     (work / "raw").mkdir(parents=True)
 
     # 1. fresh pipeline output for the viewer; terminal scene runs its own commands for real
-    log(f"python run.py {cfg['data']} --out {cfg['decisions']}")
-    subprocess.run([sys.executable, "run.py", cfg["data"], "--out", cfg["decisions"]], cwd=ROOT, check=True,
-                   stdout=subprocess.DEVNULL)
+    if cfg.get("run_pipeline", True):
+        log(f"python run.py {cfg['data']} --out {cfg['decisions']}")
+        subprocess.run([sys.executable, "run.py", cfg["data"], "--out", cfg["decisions"]], cwd=ROOT, check=True,
+                       stdout=subprocess.DEVNULL)
+    else:
+        log(f"run_pipeline: false -> using {cfg['decisions']} and {cfg['data']} as they are")
+        for f in (cfg["decisions"], cfg["data"]):
+            if not (ROOT / f).exists():
+                raise SystemExit(f"missing {f} (run_pipeline: false needs it)")
     terminal = {}
     for sid in order:
         if scenes[sid].get("kind") == "terminal":
@@ -706,7 +868,12 @@ def main(argv=None) -> int:
 
     # 2. voice per scene -> scene lengths and sentence timings
     piper = None
-    if args.voice == "tts" or (args.voice == "auto" and any(not (VO_DIR / f"{s}.wav").exists() for s in order)):
+    if args.voice == "elevenlabs":
+        try:
+            piper = ElevenLabsTTS(OUT / "voices" / "elevenlabs")
+        except ImportError:
+            raise SystemExit("--voice elevenlabs: pip install elevenlabs")
+    elif args.voice == "tts" or (args.voice == "auto" and any(not (VO_DIR / f"{s}.wav").exists() for s in order)):
         try:
             model = piper_model(OUT / "voices")
             piper = Piper(model) if model else None
@@ -715,8 +882,12 @@ def main(argv=None) -> int:
     plan = []
     for sid in order:
         sc = scenes[sid]
-        text = scene_text(sc, placeholders, dev_fallback=terminal.get(sid, (None, False))[1])
-        sentences = split_sentences(text)
+        subs = sc.get("subtitles")
+        if subs:
+            sentences = [str(x["text"]) for x in subs]
+        else:
+            text = scene_text(sc, placeholders, dev_fallback=terminal.get(sid, (None, False))[1])
+            sentences = split_sentences(text)
         mode = voice_mode(args.voice, sid, piper is not None)
         wav, times = None, []
         if mode == "human":
@@ -724,17 +895,20 @@ def main(argv=None) -> int:
             times = proportional_times(sentences, 0.0, wav_seconds(wav))
         elif mode == "tts":
             wav = work / f"{sid}_vo.wav"
-            times = piper.scene(sentences, wav, work)
+            times = piper.scene(sentences, wav, work, [float(x["at"]) for x in subs] if subs else None,
+                                float(sc["seconds"]))
         voice_s = wav_seconds(wav) if wav else 0.0
         seconds = max(float(sc["seconds"]), voice_s + TAIL_S if wav else 0.0)
-        if not wav:
+        if subs and not wav:
+            times = subtitle_times(subs, seconds)
+        elif not wav:
             times = proportional_times(sentences, 0.3, seconds - 0.5)
         plan.append({"id": sid, "mode": mode, "wav": wav, "seconds": round(seconds, 2), "times": times})
         log(f"scene {sid}: {mode}, voice {voice_s:.1f}s -> {seconds:.1f}s")
     total = TITLE_S + sum(p["seconds"] for p in plan)
     log(f"cut {args.cut}: {total:.1f}s")
-    if args.cut == "submission" and total > MAX_SUBMISSION_S:
-        raise SystemExit(f"submission cut is {total:.1f}s > {MAX_SUBMISSION_S:.0f}s; shorten the storyboard")
+    if args.cut != "short" and total > MAX_SUBMISSION_S:
+        raise SystemExit(f"{args.cut} cut is {total:.1f}s > {MAX_SUBMISSION_S:.0f}s; shorten the storyboard")
 
     # 3. record
     proc, base = start_viewer(cfg)

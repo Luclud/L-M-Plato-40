@@ -1,0 +1,144 @@
+# Final submission video (T32): real pages, Holdout year, subtitles only (no voice).
+viewer:
+  base_url: http://localhost:8501
+  decisions: decisions_holdout.jsonl   # committed holdout run; never regenerate it here
+  data: data/holdout
+  run_pipeline: false
+  viewport: {width: 1920, height: 1080}
+  zoom: 1.15
+  approvals_file: out/video_approvals.json   # deleted before recording: every approval pending on camera
+cuts:
+  final: [building, incident, incidents, housekeeping, approvals, ask, learned, proof, outro]
+placeholders: {}
+scenes:
+  - id: building
+    url: "/?t=2026-03-09T16:30Z"          # Mon 9 Mar, 17:30 local
+    seconds: 30
+    actions:
+      - wait_for_text: "Needs attention now"
+      - hover: header "Holdout"
+      - highlight_text: "Needs attention now"
+      - scroll_to_text: "Floor 2"
+      - hover: side panel "Plant"
+      - click_key: tile_R202
+      - wait_for_text: "Water use"
+      - scroll_to_text: "Water use"
+    subtitles:
+      - {at: 0,  text: "Steward runs PLATO-40, a fictional 40-room self-check-in hotel."}
+      - {at: 5,  text: "This is the unseen holdout year, run with code frozen before its release."}
+      - {at: 10, text: "The Building page shows the hotel at one moment, using only what was known then."}
+      - {at: 15, text: "Open incidents come first. Here: a water leak in Room 202."}
+      - {at: 20, text: "Every room, the heating and ventilation plant, and who is on shift."}
+      - {at: 25, text: "Clicking a room shows its day. The water meter never stops."}
+  - id: incident
+    url: "/incidents?episode=WL-00322"
+    seconds: 32
+    actions:
+      - wait_for_text: "What we saw"
+      - pause: 4
+      - scroll_to_text: "What we saw"
+      - pause: 3
+      - scroll_to_text: "Why we think so"
+      - pause: 3
+      - scroll_to_text: "What we did"
+      - pause: 3
+      - highlight_text: "Shut off"
+      - scroll_to_text: "How we'll know it worked"
+    subtitles:
+      - {at: 0,  text: "Every incident opens as a story: what we saw, why, what we did, how we check."}
+      - {at: 5,  text: "About 28 litres every 15 minutes for an hour, in an empty room."}
+      - {at: 10, text: "Showers, cleaning and meter resets are ruled out first."}
+      - {at: 15, text: "At 17:15 Steward flags the leak and asks for an inspection."}
+      - {at: 21, text: "An hour later water still runs, so it proposes shutting it off. That needs a manager and the guest."}
+      - {at: 27, text: "The meter confirms the repair, and the incident closes on 11 March."}
+  - id: incidents
+    url: "/incidents"
+    seconds: 16
+    actions:
+      - wait_for_text: "Most severe"
+      - click_text: "Water leak"
+      - click_text: "Needs approval"
+      - type_text: {into: "Search room or asset", text: "202", submit: true}
+      - pause: 1
+      - click_text: "Routine work handled automatically"
+    subtitles:
+      - {at: 0,  text: "All 168 incidents of the year, most severe first."}
+      - {at: 5,  text: "Filter by type, by what needs approval, or search a room."}
+      - {at: 10, text: "Routine work runs on its own: 1,920 proposed guest replies in 6 languages, 361 simulated energy plans."}
+  - id: housekeeping
+    urls: ["/housekeeping?t=2026-04-24T04:00Z", "/housekeeping?t=2026-04-24T04:30Z"]   # 06:00 and 06:30 local
+    seconds: 22
+    actions:
+      - wait_for_text: "Today's turnovers"
+      - pause: 4
+      - next_url_at_seconds: 6
+      - wait_for_text: "Today's turnovers"
+      - pause: 4
+      - click_text: "Show plan changes"
+      - pause: 3
+      - click_text: "Only what was known at the selected time"
+    subtitles:
+      - {at: 0,  text: "Housekeeping shows who cleans which room, and every check-in deadline."}
+      - {at: 6,  text: "At 06:15 a cleaner calls in sick. Steward re-plans with the staff it still has."}
+      - {at: 12, text: "The old plan stays visible, so every change can be traced."}
+      - {at: 17, text: "Switch this off to see how the day really went."}
+  - id: approvals
+    url: "/approvals"
+    seconds: 15
+    actions:
+      - wait_for_text: "Pending"
+      - pause: 3
+      - click_button_near_text: {button: "Approve", text: "Fri 24 Apr"}
+    subtitles:
+      - {at: 0,  text: "Anything costly or risky waits for a manager here."}
+      - {at: 5,  text: "Here: an extra cleaner for 24 April, because one called in sick."}
+      - {at: 11, text: "In this prototype approving is a mock. Nothing is executed."}
+  - id: ask
+    url: "/ask"
+    seconds: 23   # live AI copilot (--copilot + key): answers take ~4-5 s each
+    actions:
+      - wait_for_text: "What would you like to know?"
+      - click_key: ask_suggest_0
+      - pause: 6
+      - type_text: {into: "Ask about a room", text: "Show the heat pump on 26 Jan", submit: true}
+      - pause: 5
+      - scroll_by: 400
+    subtitles:
+      - {at: 0,  text: "Ask the building answers from the decision log and the building data."}
+      - {at: 8,  text: "Every answer cites its decisions. Measurements come with a chart."}
+      - {at: 17, text: "It is read-only: it cannot approve, decide or change anything."}
+  - id: learned
+    url: "/learned"
+    seconds: 15
+    actions:
+      - wait_for_text: "For CLARA next year"
+      - highlight_text: "For the next PLATO building"
+      - highlight_text: "For CLARA next year"
+      - click_text: "Show full evidence"
+    subtitles:
+      - {at: 0,  text: "After a year, Steward turns operations into lessons."}
+      - {at: 5,  text: "Left: design advice for the next PLATO building. Right: operating rules for CLARA."}
+      - {at: 10, text: "Each lesson shows how it was checked and how sure we are."}
+  - id: proof
+    url: "/proof"
+    seconds: 18
+    actions:
+      - wait_for_text: "Safety & contract check"
+      - click_button: "Run check"
+      - wait_for_text: "PASS"
+      - pause: 3
+      - scroll_to_text: "BMS vs us"
+      - scroll_to_text: "Data quality"
+      - scroll_to_text: "Downloads"
+    subtitles:
+      - {at: 0,  text: "Proof runs the independent validator on every decision."}
+      - {at: 5,  text: "PASS: 2,775 decisions, zero safety violations."}
+      - {at: 10, text: "It compares itself with the building's own alarms and lists every data gap."}
+      - {at: 15, text: "All decisions and lessons can be downloaded."}
+  - id: outro
+    url: "/?t=2026-03-09T16:30Z"
+    seconds: 5
+    actions:
+      - wait_for_text: "Needs attention now"
+    subtitles:
+      - {at: 0, text: "Steward. Runs the building, answers to people."}
