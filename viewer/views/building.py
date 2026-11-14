@@ -109,14 +109,12 @@ def floors(c: dict, rooms: pd.DataFrame, open_eps: pd.DataFrame, planned: dict):
     for r in rooms.itertuples():
         by_floor.setdefault(r.room_id[1], []).append(r)
     for fl in sorted(by_floor, reverse=True):
-        cols = st.columns([0.7] + [1] * len(by_floor[fl]))
-        cols[0].markdown(f"**Floor {fl}**")
+        cols = st.columns([0.9] + [1] * len(by_floor[fl]))
+        cols[0].markdown(f"<div class='floor-l'>Floor {fl}</div>", unsafe_allow_html=True)
         for col, r in zip(cols[1:], by_floor[fl]):
             num = r.room_id[1:]
             lab = f"{num} :red[●]" if r.room_id in hot or f"WM_{r.room_id}" in hot else num
             tip = f"{L.label('asset', r.room_id)} · {STATE_NAMES[r.state]}"
-            if r.state == "unknown":
-                lab += " · no data"
             border = f"1px solid {EDGES[r.state]}"
             if r.room_id in planned:
                 when, res = planned[r.room_id]
@@ -142,26 +140,58 @@ def floors(c: dict, rooms: pd.DataFrame, open_eps: pd.DataFrame, planned: dict):
 
 
 def plant(status: dict):
-    cols = st.columns(len(status))
-    for col, (tile, s) in zip(cols, status.items()):
-        col.markdown(f"<div class='plant'><span class='name'>{PLANT_NAMES[tile]}</span>"
-                     f"<span class='state {s}'>{PLANT_STATUS[s]}</span></div>", unsafe_allow_html=True)
+    st.markdown("<div class='side-h'>Plant</div><div class='plant-list'>" + "".join(
+        f"<div class='plant'><span class='name'>{PLANT_NAMES[tile]}</span>"
+        f"<span class='state {s}'>{PLANT_STATUS[s]}</span></div>" for tile, s in status.items()) + "</div>",
+        unsafe_allow_html=True)
 
 
 def staff(sh: pd.DataFrame, t):
+    head = f"<div class='side-h gap'>Staff today <span>as known at {_hm(t)}</span></div>"
     if sh.empty:
-        st.caption(f"Staff today (as known at {_hm(t)}): no shifts published.")
+        st.markdown(head + "<div class='side-row muted'>No shifts published.</div>", unsafe_allow_html=True)
         return
-    parts = []
+    rows = []
     for r in sh.itertuples():
         name = L.label("resource", r.resource_id)
         if r.status == "scheduled":
-            parts.append(f"{name} ✓ {_hm(r.start)}–{_hm(r.end)}")
+            rows.append(f"<div class='side-row'><span>{name} ✓</span>"
+                        f"<span class='num'>{_hm(r.start)}–{_hm(r.end)}"
+                        f"</span></div>")
         else:
             st_ = r.status.replace("_", " ")
-            parts.append(f"**{name} {st_}**" + (f" (known {_hm(r.known)})" if r.known is not None else ""))
-    st.markdown(f"<div style='height:.6rem'></div>", unsafe_allow_html=True)
-    st.markdown(f"**Staff today** (as known at {_hm(t)}): " + " · ".join(parts))
+            known = f"known {_hm(r.known)}" if r.known is not None else ""
+            rows.append(f"<div class='side-row warn'><span>{name} {st_}</span><span class='num'>{known}</span></div>")
+    st.markdown(head + "".join(rows), unsafe_allow_html=True)
+
+
+def today(n: dict):
+    items = [("Guest replies", n["guest_request"]), (f"Energy plans ({L.SIMULATED.lower()})", n["energy_optimization"]),
+             ("Supplies & waste", n["logistics"]), ("Cleanings scheduled", n["cleanings"])]
+    st.markdown("<div class='side-h gap'>Today so far</div>" + "".join(
+        f"<div class='side-row'><span>{k}</span><span class='num'>{v}</span></div>" for k, v in items),
+        unsafe_allow_html=True)
+
+
+def kpis(d: dict, t, n_rooms: int):
+    """Headline numbers at the selected moment (the same series the charts below draw)."""
+    def now(key, col):
+        return _now_value(_upto(d[key][col], d[key].index, t), t)
+
+    def f(v, fmt, unit=""):
+        return "–" if v is None else f"{v:{fmt}}{unit}"
+
+    load, pv, grid = now("energy", "Building load"), now("energy", "Solar (PV)"), now("energy", "From the grid")
+    booked, dirty = now("rooms", "Booked"), now("rooms", "Needs cleaning")
+    inside, outside = now("temps", "Rooms (average)"), now("temps", "Outdoors")
+    water = now("water", "Whole building")
+    tiles = [("Power use", f(load, ".0f", " kW"), f"{f(pv, '.0f', ' kW')} solar · {f(grid, '.0f', ' kW')} from the grid"),
+             ("Rooms booked", f"{f(booked, '.0f')}<small> / {n_rooms}</small>", f"{f(dirty, '.0f')} need cleaning"),
+             ("Room temperature", f(inside, ".1f", " °C"), f"average · {f(outside, '.1f', ' °C')} outdoors"),
+             ("Water use", f(water, ".0f", " L"), "per 15 min · whole building")]
+    st.markdown("<div class='kpis'>" + "".join(
+        f"<div class='kpi'><div class='k'>{k}</div><div class='v'>{v}</div><div class='s'>{sub}</div></div>"
+        for k, v, sub in tiles) + "</div>", unsafe_allow_html=True)
 
 
 def room_panel(c: dict, room: str, t, day_start, day_end):
@@ -291,32 +321,17 @@ def _fig(frame: pd.DataFrame, t, day_start, day_end, unit: str, fmt: str, ymin=N
 
 def day_charts(c: dict, t, day_start, day_end):
     """Today in four charts, each drawn up to the selected moment."""
-    tw_ = get_twin(str(c["data_dir"]))
-    d = day_series(str(c["data_dir"]), day_start, day_end, c["store"], tw_)
-    n = len(tw_.rooms)
+    d = day_series(str(c["data_dir"]), day_start, day_end, c["store"], get_twin(str(c["data_dir"])))
 
-    def head(title: str, now: str | None):
-        st.markdown(f"**{title}**" + (f" <span class='chart-now'>· {now}</span>" if now else ""),
-                    unsafe_allow_html=True)
-
-    def num(frame, col, fmt, unit):
-        v = _now_value(_upto(frame[col], frame.index, t), t)
-        return None if v is None else f"{v:{fmt}} {unit} now"
-
-    st.markdown("<div style='height:.4rem'></div>", unsafe_allow_html=True)
     st.markdown("##### Today in numbers")
     st.caption(f"Measured so far today, up to {_hm(t)}. Gaps in a line are missing data (unknown, not zero).")
-    specs = [
-        ("Energy", "energy", "kW", ".1f", 0, num(d["energy"], "Building load", ".0f", "kW load")),
-        ("Rooms", "rooms", "", ".0f", 0, num(d["rooms"], "Booked", ".0f", f"of {n} booked")),
-        ("Temperature", "temps", "°C", ".1f", None, num(d["temps"], "Rooms (average)", ".1f", "°C in rooms")),
-        ("Water use", "water", "L", ".0f", 0, num(d["water"], "Whole building", ".0f", "L per 15 min")),
-    ]
+    specs = [("Energy", "energy", "kW", ".1f", 0), ("Rooms", "rooms", "", ".0f", 0),
+             ("Temperature", "temps", "°C", ".1f", None), ("Water use", "water", "L", ".0f", 0)]
     for row in (specs[:2], specs[2:]):
         cols = st.columns(2, gap="medium")
-        for col, (title, key, unit, fmt, ymin, now) in zip(cols, row):
+        for col, (title, key, unit, fmt, ymin) in zip(cols, row):
             with col, st.container(border=True, key=f"card_chart_{key}"):
-                head(title, now)
+                st.markdown(f"**{title}**")
                 frame = d[key]
                 if frame.where(frame.index.to_series() <= t, axis=0).dropna(how="all").empty:
                     st.caption("No measurements yet today.")
@@ -340,13 +355,16 @@ t = twin.floor_t(st.query_params.get("t", t))
 day_start, day_end = twin.local_day(t)
 open_eps = twin.open_at(spans(str(c["decisions"]), c["mtime"]), t)
 pending = twin.pending_at(c["df"], list(open_eps.episode), t, c.get("approvals"))
-attention(c, t, open_eps, pending)
-floors(c, tw.rooms_at(t), open_eps, twin.planned_cleanings(c["df"], t, day_end))
-plant(tw.plant_at(t, open_eps))
-staff(twin.staff_at(tw.roster, t, day_start, day_end), t)
-n = twin.today_counts(c["df"], day_start, t)
-st.caption(f"Today so far: {n['guest_request']} guest replies · {n['energy_optimization']} energy plan(s) "
-           f"({L.SIMULATED.lower()}) · {n['logistics']} supplies & waste · {n['cleanings']} cleanings scheduled")
-if st.session_state.get("b_room"):
-    room_panel(c, st.session_state["b_room"], t, day_start, day_end)
+d = day_series(str(c["data_dir"]), day_start, day_end, c["store"], tw)
+kpis(d, t, len(tw.rooms))
+main, side = st.columns([3.1, 1], gap="large")
+with main:
+    attention(c, t, open_eps, pending)
+    floors(c, tw.rooms_at(t), open_eps, twin.planned_cleanings(c["df"], t, day_end))
+    if st.session_state.get("b_room"):
+        room_panel(c, st.session_state["b_room"], t, day_start, day_end)
+with side, st.container(border=True, key="card_side"):
+    plant(tw.plant_at(t, open_eps))
+    staff(twin.staff_at(tw.roster, t, day_start, day_end), t)
+    today(twin.today_counts(c["df"], day_start, t))
 day_charts(c, t, day_start, day_end)
