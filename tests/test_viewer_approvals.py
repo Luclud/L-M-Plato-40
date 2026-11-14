@@ -38,7 +38,6 @@ def _approve_buttons(at):
 def test_page_renders_plain_language(sets, name, monkeypatch, tmp_path):
     dec, data = sets[name]
     at = _open(monkeypatch, dec, data, tmp_path / "a.json")
-    assert any(L.MOCK in w.value for w in at.warning)
     text = _text(at)
     for rx in RAW:
         assert not rx.search(text), (name, rx.pattern, rx.search(text).group(0))

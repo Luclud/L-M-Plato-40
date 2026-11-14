@@ -143,7 +143,6 @@ def render_day(c: dict, day, moment=None, key="hk", known_only=True, show_change
     st.markdown(f"**{summary_text(s)}**" + (f" · as known at {_hm(as_of)}" if as_of is not None else ""))
     st.plotly_chart(figure(d, as_of, moment, highlight_rooms, highlight_res, show_changes), width="stretch",
                     theme=None, key=f"{key}_chart", config={"displayModeBar": False})
-    st.caption(L.SCHEDULE_LEGEND)
     return d
 
 
@@ -213,8 +212,10 @@ def page():
     if st.session_state.get("hk_time") not in opts:
         st.session_state["hk_time"] = opts[0]
     a2.select_slider("Time (local)", opts, key="hk_time", on_change=_on_change)
-    known = a3.toggle(L.SCHEDULE_KNOWN_ONLY, value=True, key="hk_known")
-    changes = a4.toggle(L.SCHEDULE_CHANGES, value=False, key="hk_changes")
+    with a3.container(key="hk_switch_known"):   # style.css: pushed down to the slider's track
+        known = st.toggle(L.SCHEDULE_KNOWN_ONLY, value=True, key="hk_known")
+    with a4.container(key="hk_switch_changes"):
+        changes = st.toggle(L.SCHEDULE_CHANGES, value=False, key="hk_changes")
     steps = {_hm(s): s for s in twin.day_steps(st.session_state["hk_day"])}
     t = steps.get(st.session_state["hk_time"], t)
     d = render_day(c, st.session_state["hk_day"], t, key="hk", known_only=known, show_changes=changes)

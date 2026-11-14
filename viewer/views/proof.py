@@ -121,7 +121,7 @@ if len(gw):
                  hide_index=True)
 
 st.markdown("#### Downloads")
-d1, d2, d3 = st.columns(3)
+d1, d2, d3, _ = st.columns([1, 1, 1, 3])   # buttons side by side, not spread
 dec = c["decisions"]
 d1.download_button("decisions.jsonl", dec.read_bytes() if dec.exists() else b"", file_name=dec.name,
                    icon=":material/download:", key="dl_dec")

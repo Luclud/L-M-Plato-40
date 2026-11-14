@@ -1,4 +1,4 @@
-"""What we learned: Level 3 insight cards for PLATO (design) and CLARA (operations), target architecture, limits."""
+"""What we learned: Level 3 insight cards for PLATO (design) and CLARA (operations), limits."""
 from __future__ import annotations
 
 import json
@@ -156,10 +156,7 @@ else:
             for r in mine:
                 card(r, insights_ai.entry(r, ai_store))
 md = (d / "insights.md").read_text(encoding="utf-8") if (d / "insights.md").exists() else ""
-arch, lim = section(md, "Target architecture"), section(md, "Limitations")
-if arch:
-    st.markdown("#### What the next building's operations system looks like")
-    st.markdown(arch)
+lim = section(md, "Limitations")
 if lim:
     st.markdown("#### Limitations")
     st.markdown(lim)

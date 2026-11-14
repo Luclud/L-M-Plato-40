@@ -51,7 +51,6 @@ code, kbd, .mono { font-variant-numeric: tabular-nums; }
 .brand-mark { height: 3.5rem; width: auto; flex: none; display: block; }
 .brand-name { font: 600 1.35rem/1.15 "Space Grotesk", sans-serif; letter-spacing: -.02em; color: var(--ink); }
 .chart-now { color: var(--muted); font-weight: 400; font-variant-numeric: tabular-nums; }
-.brand-note { font-size: .82rem; color: var(--muted); margin-top: .15rem; }
 
 /* --- building: legend + plant tiles (building.py) --- */
 .legend { display: flex; flex-wrap: wrap; gap: .4rem .9rem; align-items: center; font-size: .82rem; color: var(--muted);
@@ -114,3 +113,12 @@ code, kbd, .mono { font-variant-numeric: tabular-nums; }
 }
 [class*="st-key-card_attention"] { border-left: 3px solid var(--warn) !important; }
 .legend + div, .legend { margin-bottom: .6rem; }
+
+/* --- housekeeping: the two switches sit on the time slider's track line (housekeeping.py) --- */
+[class*="st-key-hk_switch_"] { padding-top: 2.15rem; }
+
+/* --- approvals: "Open incident" pinned to the card's top-right corner (approvals.py) --- */
+[class*="st-key-corner_"] { align-items: flex-end; }
+[class*="st-key-corner_"] [data-testid="stElementContainer"] { width: auto !important; }
+[class*="st-key-corner_"] [data-testid="stPageLink"],
+[class*="st-key-corner_"] [data-testid="stPageLink"] > div { display: flex; justify-content: flex-end; }

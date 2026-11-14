@@ -166,9 +166,7 @@ def _pick() -> tuple[str, str]:
         st.session_state["dataset"] = options[0]
     c1, c2 = st.columns([5, 2])
     c1.markdown(
-        f"<div class='brand'><img class='brand-mark' src='{logo_uri()}' alt='{L.APP_NAME} logo'><div><div class='brand-name'>{L.APP_NAME}</div>"
-        "<div class='brand-note'>Fictional building, synthetic data · simulated effects are marked “Simulated” · "
-        "guest messages are proposed and never sent · approvals here are mock</div></div></div>",
+        f"<div class='brand'><img class='brand-mark' src='{logo_uri()}' alt='{L.APP_NAME} logo'><div><div class='brand-name'>{L.APP_NAME}</div></div></div>",
         unsafe_allow_html=True)
     c2.selectbox("Dataset", options, key="dataset", label_visibility="collapsed")
     if st.session_state["dataset"] == CUSTOM:
