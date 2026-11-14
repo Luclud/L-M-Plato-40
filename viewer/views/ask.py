@@ -1,12 +1,16 @@
 """Ask the building: questions about the loaded run, answered only from the decision log, with numbered sources."""
 from __future__ import annotations
 
+from pathlib import Path
+
 import pandas as pd
 import streamlit as st
 
 from viewer import copilot
 from viewer import labels as L
 from viewer.views import common
+
+BOT_AVATAR = str(Path(__file__).resolve().parents[1] / "assets" / "bot_avatar.png")
 
 LABELS = {"llm": L.AI_ANSWER, "cached:llm": f"{L.AI_ANSWER} · {L.CACHED_ANSWER}",
           "offline": L.OFFLINE_ANSWER, "cached:offline": f"{L.OFFLINE_ANSWER} · {L.CACHED_ANSWER}"}
@@ -20,7 +24,7 @@ def suggestions(decisions: str, mtime: float, _df: pd.DataFrame) -> list[str]:
 def show(turn: dict):
     with st.chat_message("user"):
         st.markdown(turn["q"])
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar=BOT_AVATAR):
         if turn.get("error"):
             st.warning(f"{turn['error']} Showing the answer looked up without the AI model instead.",
                        icon=":material/cloud_off:")
